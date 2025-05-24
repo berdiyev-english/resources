@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Тренажёр: Собери английское предложение</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin:0;
+      padding:0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f0f5fa;
+      min-height:100vh;
+    }
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      background: #fff;
+      box-shadow: 0 2px 16px rgba(135,152,172,0.18);
+      border-radius:15px;
+      padding: 18px 8px 16px 8px;
+      margin-top:20px;
+      min-height:85vh;
+      display: flex;
+      flex-direction:column;
+      justify-content: flex-start;
+      box-sizing: border-box;
+    }
+
+    .top-block {
+      margin-bottom:22px;
+      padding-bottom:20px;
+      border-bottom:1.4px solid #e4effd;
+      text-align:center;
+    }
+    .promo-photo {
+      width:120px;
+      height:120px;
+      border-radius: 50%;
+      object-fit:cover;
+      box-shadow:0 2px 14px #81befd33;
+      margin:0 auto 14px auto;
+      display: block;
+    }
+    .promo-title {
+      font-size:24px;
+      color:#001707;
+      font-weight:600;
+      margin-bottom:10px;
+    }
+    .promo-desc {
+      font-size:16px;
+      color:#001707;
+      font-weight:400;
+      margin-bottom:0;
+    }
+    /* остальной тренажёр */
+    .sentence {
+      font-size: 1.38em;
+      text-align: center;
+      margin-bottom: 16px;
+      font-weight: bold;
+      color: #23498d;
+      background: #e9f1fc;
+      border-radius: 9px;
+      padding: 15px 10px 13px 10px;
+      box-shadow: 0 1px 7px #dae7ff30;
+      border: 1.5px solid #bddafb;
+      max-width: 96%;
+      margin-left: auto;
+      margin-right: auto;
+      letter-spacing: 0.5px;
+    }
+    .assembled {
+      min-height:40px;
+      border:1.5px dashed #034a7d;
+      border-radius:8px;
+      background:#eaf5ff;
+      color:#232e38;
+      font-size:1.15em;
+      margin-bottom:8px;
+      padding: 9px 5px 7px 8px;
+      word-break: break-word;
+      box-sizing:border-box;
+      font-weight:500;
+      letter-spacing: .5px;
+    }
+    #scheme {
+      text-align:center;
+      color: #d77215;
+      font-style:italic;
+      margin-bottom:7px;
+      font-size:1em;
+      min-height: 22px;
+      letter-spacing: .4px;
+      user-select: text;
+      font-weight: 500;
+    }
+    .words {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom:15px;
+    }
+    .word-btn {
+      background: #1d6cf9;
+      color:#fff;
+      border: none;
+      border-radius: 7px;
+      padding: 10px 18px;
+      font-size: 1.07em;
+      margin: 1.5px 0 1.5px 0;
+      cursor: pointer;
+      transition: background .20s;
+      box-shadow:0 2px 7px #dbeafd66;
+      min-width:48px;
+    }
+    .word-btn:disabled {
+      background: #a4b4cc;
+      color: #fff;
+      cursor: default;
+      opacity:.74;
+    }
+    .sound-btn {
+      background: #e3f2ff;
+      color: #254696;
+      border: none;
+      border-radius: 7px;
+      padding: 2px 9px;
+      font-size: 1.07em;
+      margin-left: 2px;
+      cursor: pointer;
+      vertical-align: middle;
+      transition: background .17s;
+      box-shadow: none;
+    }
+    .sound-btn:active { background: #c8dbf7;}
+    .word-cell {
+      display: inline-block;
+      margin-right: 2px;
+      margin-bottom: 4px;
+    }
+    .result {
+      font-weight: bold;
+      font-size: 1.13em;
+      min-height: 28px;
+      text-align:center;
+      margin-bottom: 8px;
+      color: #0e594d;
+      transition: color .18s;
+    }
+    .hint-block {
+      border-top:1px solid #a3b8d9;
+      padding-top:8px;
+      margin-top: 10px;
+      font-size: 1em;
+      color: #465987;
+      background: #f5faff;
+      border-radius: 7px;
+    }
+    .hint-block b { color: #1a388b; }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      justify-content: center;
+      margin-top:10px;
+      margin-bottom: 4px;
+    }
+    .mini-btn {
+      background: #26b179;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 7px 16px;
+      font-size: 1em;
+      cursor:pointer;
+      transition: background .20s;
+      margin-bottom:2.5px;
+    }
+    .mini-btn:disabled {
+      background:#abd7c8; opacity:.75;
+    }
+    @media (max-width: 600px) {
+      .container {max-width: 99vw; margin:2px auto;}
+      .sentence { font-size:1.09em;}
+      .word-btn { font-size:0.98em; padding:9px 10px; min-width:38px;}
+      .promo-title { font-size: 1.17em;}
+      .promo-desc {font-size: 0.99em;}
+      .hint-block {font-size:0.99em;}
+      #scheme {font-size:.97em;}
+      .assembled {font-size:1.03em;}
+    }
+    @media (max-width:400px){
+      .container{padding: 7px 1vw;}
+      .word-btn,.sound-btn {font-size: .93em;}
+      .sentence {font-size: 1em;}
+      .promo-photo { width:70px; height:70px;}
+      .promo-title { font-size: 1em;}
+      .promo-desc {font-size: 0.93em;}
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ШАПКА -->
+  <div class="top-block">
+    <img class="promo-photo"
+         src="https://static.tildacdn.info/tild3532-3739-4433-a633-613530366563/IMG_7738.PNG"
+         alt="Английский тренажёр"/>
+    <div class="promo-title">
+      Соберите английское предложение
+    </div>
+    <div class="promo-desc">
+      Очень хорошее упражнение, чтобы начать говорить на английском и понимать его
+    </div>
+  </div>
+  <!-- КОНЕЦ ШАПКИ -->
+
+  <hr class="divider">
+  <div class="sentence" id="russianSentence"></div>
+  <div class="assembled" id="assembled"></div>
+  <div id="scheme"></div>
+  <div class="words" id="words"></div>
+
+  <div class="controls">
+    <button class="mini-btn" onclick="clearAssembled()">Сбросить</button>
+    <button class="mini-btn" onclick="nextSentence(true)">Другое предложение</button>
+    <button class="mini-btn" onclick="playSound()" title="Озвучить перевод">🔊</button>
+  </div>
+
+  <div class="result" id="result"></div>
+  <div class="hint-block" id="hintblock"></div>
+
+</div>
+<script>
+const sentences = [
+  {ru: "Я буду читать книгу.", en: "I will read a book."},
+  {ru: "Ты будешь пить чай?", en: "Will you drink tea?"},
+  {ru: "Она не будет работать завтра.", en: "She will not work tomorrow."},
+  {ru: "Ты говоришь по-английски?", en: "Do you speak English?"},
+  {ru: "Я не понимаю.", en: "I do not understand."},
+  {ru: "Ты видел этот фильм?", en: "Did you see this movie?"},
+  {ru: "Он не слушает музыку.", en: "He does not listen to music."},
+  {ru: "Ты плавал вчера?", en: "Did you swim yesterday?"},
+  {ru: "Она будет учить английский?", en: "Will she learn English?"},
+  {ru: "Она готовит обед.", en: "She cooks lunch."},
+  {ru: "Ты часто смотришь телевизор?", en: "Do you often watch TV?"},
+  {ru: "Мы не играем на улице.", en: "We do not play outside."},
+  {ru: "Будь осторожен", en: "Be careful"},
+  {ru: "Будь осторожен за рулем", en: "Be careful driving"},
+  {ru: "Ты не мог бы перевести это для меня?", en: "Can you translate this for me?"},
+  {ru: "Чикаго очень отличается от Бостона", en: "Chicago is very different from Boston"},
+  {ru: "Не беспокойтесь", en: "Don't worry"},
+  {ru: "Все знают это", en: "Everyone knows it"},
+  {ru: "Всё готово", en: "Everything is ready"},
+  {ru: "Отлично", en: "Excellent"},
+  {ru: "Время от времени", en: "From time to time"},
+  {ru: "Хорошая идея", en: "Good idea"},
+  {ru: "Ему это очень нравится", en: "He likes it very much"},
+  {ru: "Помогите!", en: "Help!"},
+  {ru: "Он скоро приезжает (приходит)", en: "He's coming soon"},
+  {ru: "Он прав", en: "He's right"},
+  {ru: "Он очень раздражающий", en: "He's very annoying"},
+  {ru: "Он очень знаменит", en: "He's very famous"},
+  {ru: "Как твои дела?", en: "How are you?"},
+  {ru: "Как идёт работа?", en: "How's work going?"},
+  {ru: "Поторопись!", en: "Hurry!"},
+  {ru: "Я уже поел", en: "I ate already"},
+  {ru: "Я не слышу тебя", en: "I can't hear you"},
+  {ru: "Я хотел бы прогуляться (пройтись пешком)", en: "I'd like to go for a walk"},
+  {ru: "Я не знаю, как это использовать", en: "I don't know how to use it"},
+  {ru: "Он мне не нравится", en: "I don't like him"},
+  {ru: "Мне это не нравится", en: "I don't like it"},
+  {ru: "Я не очень хорошо разговариваю", en: "I don't speak very well"},
+  {ru: "Я не понимаю", en: "I don't understand"},
+  {ru: "Я не хочу это", en: "I don't want it"},
+  {ru: "Я не хочу то", en: "I don't want that"},
+  {ru: "Я не хочу тебя беспокоить", en: "I don't want to bother you"},
+  {ru: "Я хорошо себя чувствую", en: "I feel good"},
+  {ru: "Если тебе нужна моя помощь, пожалуйста, дай мне знать", en: "If you need my help, please let me know"},
+  {ru: "Я покинул рабочее место в 6", en: "I get off of work at 6"},
+  {ru: "У меня головная боль", en: "I have a headache"},
+  {ru: "Я надеюсь, у тебя и твоей жены будет хорошая поездка", en: "I hope you and your wife have a nice trip"},
+  {ru: "Я знаю", en: "I know"},
+  {ru: "Она мне нравится", en: "I like her"},
+  {ru: "Я позвоню тебе, когда буду уезжать", en: "I'll call you when I leave"},
+  {ru: "Я приду назад позже", en: "I'll come back later"},
+  {ru: "Я возьму это", en: "I'll take it"},
+  {ru: "Я довезу тебя до автобусной остановки", en: "I'll take you to the bus stop"},
+  {ru: "Я заплачу", en: "I'll pay"},
+  {ru: "Я потерял свои часы", en: "I lost my watch"},
+  {ru: "Я люблю тебя", en: "I love you"},
+  {ru: "Я американец", en: "I'm an American"},
+  {ru: "Я навожу порядок в своей комнате", en: "I'm cleaning my room"},
+  {ru: "Мне холодно", en: "I'm cold"},
+  {ru: "Я иду забрать тебя", en: "I'm coming to pick you up"},
+  {ru: "Я ухожу", en: "I'm going to leave"},
+  {ru: "Я хорошо, а ты?", en: "I'm good, and you?"},
+  {ru: "Я счастлив", en: "I'm happy"},
+  {ru: "Я голоден", en: "I'm hungry"},
+  {ru: "Я замужем (женат)", en: "I'm married"},
+  {ru: "Я не занят", en: "I'm not busy"},
+  {ru: "Я не замужем (не женат)", en: "I'm not married"},
+  {ru: "Я еще не готов", en: "I'm not ready yet"},
+  {ru: "Я не уверен", en: "I'm not sure"},
+  {ru: "Извиняюсь, мы все распродали", en: "I'm sorry, we're sold out"},
+  {ru: "У меня жажда", en: "I'm thirsty"},
+  {ru: "Я очень занят. У меня сейчас нет времени", en: "I'm very busy. I don't have time now"},
+  {ru: "Мне нужно сменить одежду", en: "I need to change clothes"},
+  {ru: "Мне нужно идти домой", en: "I need to go home"},
+  {ru: "Я хочу только лёгкую закуску", en: "I only want a snack"},
+  {ru: "Мистер Смит американец?", en: "Is Mr. Smith an American?"},
+  {ru: "Этого достаточно?", en: "Is that enough?"},
+  {ru: "Я думаю, что очень хорошо", en: "I think it's very good"},
+  {ru: "Я думаю, это очень вкусно", en: "I think it tastes good"},
+  {ru: "Я думал, что одежда была дешевле", en: "I thought the clothes were cheaper"},
+  {ru: "Это больше, чем 2 мили", en: "It's longer than 2 miles"},
+  {ru: "Я здесь 2 дня", en: "I've been here for two days"},
+  {ru: "Я слышал, что Техас - красивое место", en: "I've heard Texas is a beautiful place"},
+  {ru: "Я никогда этого раньше не видел", en: "I've never seen that before"},
+  {ru: "Я собирался покинуть ресторан, когда пришли мои друзья", en: "I was about to leave the restaurant when my friends arrived"},
+  {ru: "Немного", en: "Just a little"},
+  {ru: "Один момент", en: "Just a moment"},
+  {ru: "Позвольте мне проверить", en: "Let me check"},
+  {ru: "Позвольте мне подумать об этом", en: "Let me think about it"},
+  {ru: "Давайте пойдем, посмотрим", en: "Let's go have a look"},
+  {ru: "Давайте попрактикуем английский", en: "Let's practice English"},
+  {ru: "Можно поговорить с Миссис Смит, пожалуйста?", en: "May I speak to Mrs. Smith please?"},
+  {ru: "Больше чем это", en: "More than that"},
+  {ru: "Ничего страшного", en: "Never mind"},
+  {ru: "В следующий раз", en: "Next time"},
+  {ru: "Абсурд", en: "Nonsense"},
+  {ru: "Нет, спасибо", en: "No, thank you"},
+  {ru: "Больше ничего", en: "Nothing else"},
+  {ru: "Не недавно", en: "Not recently"},
+  {ru: "Еще нет", en: "Not yet"},
+  {ru: "Конечно", en: "Of course"},
+  {ru: "Хорошо", en: "Okay"},
+  {ru: "Пожалуйста, заполните эту форму", en: "Please fill out this form"},
+  {ru: "Пожалуйста, довезите меня до этого адреса", en: "Please take me to this address"},
+  {ru: "Пожалуйста, запишите это", en: "Please write it down"},
+  {ru: "Действительно?", en: "Really?"},
+  {ru: "Прямо здесь", en: "Right here"},
+  {ru: "Прямо там", en: "Right there"},
+  {ru: "До скорого", en: "See you later"},
+  {ru: "До завтра", en: "See you tomorrow"},
+  {ru: "Увидимся сегодня вечером", en: "See you tonight"},
+  {ru: "Она симпатичная", en: "She's pretty"},
+  {ru: "Извини, что помешал тебе", en: "Sorry to bother you"},
+  {ru: "Остановитесь", en: "Stop!"},
+  {ru: "Воспользуйся шансом", en: "Take a chance"},
+  {ru: "Вынеси это на улицу", en: "Take it outside"},
+  {ru: "Скажи мне", en: "Tell me"},
+  {ru: "Спасибо за все", en: "Thanks for everything"},
+  {ru: "Спасибо за вашу помощь", en: "Thanks for your help"},
+  {ru: "Спасибо", en: "Thank you"},
+  {ru: "Спасибо, мисс", en: "Thank you miss"},
+  {ru: "Спасибо, сэр", en: "Thank you sir"},
+  {ru: "Спасибо большое", en: "Thank you very much"},
+  {ru: "Это выглядит превосходно", en: "That looks great"},
+  {ru: "Все в порядке", en: "That's alright"},
+  {ru: "Этого достаточно", en: "That's enough"},
+  {ru: "Это нормально", en: "That's fine"},
+  {ru: "Вот и все", en: "That's it"},
+  {ru: "Это плохо пахнет", en: "That smells bad"},
+  {ru: "Это несправедливо", en: "That's not fair"},
+  {ru: "Это неправильно", en: "That's not right"},
+  {ru: "Это правильно", en: "That's right"},
+  {ru: "Это очень плохо", en: "That's too bad"},
+  {ru: "Это очень много", en: "That's too many"},
+  {ru: "Это очень много", en: "That's too much"},
+  {ru: "Книга под столом", en: "The book is under the table"},
+  {ru: "Они скоро вернутся", en: "They'll be right back"},
+  {ru: "Они одинаковые", en: "They're the same"},
+  {ru: "Они очень заняты", en: "They're very busy"},
+  {ru: "Это не работает", en: "This doesn't work"},
+  {ru: "Это очень тяжело", en: "This is very difficult"},
+  {ru: "Это очень важно", en: "This is very important"},
+  {ru: "Попробуй это", en: "Try it"},
+  {ru: "Очень хорошо, спасибо", en: "Very good, thanks"},
+  {ru: "Нам это очень нравится", en: "We like it very much"},
+  {ru: "Не могли бы вы получить сообщение?", en: "Would you take a message please?"},
+  {ru: "Да, действительно", en: "Yes, really"},
+  {ru: "Ты красивый", en: "You're beautiful"},
+  {ru: "Ты очень милый", en: "You're very nice"},
+  {ru: "Ты очень умный", en: "You're very smart"},
+  {ru: "Все твои вещи здесь", en: "Your things are all here"},
+  {ru: "Конечно!", en: "Sure!"},
+  {ru: "Добрый день", en: "Good afternoon"},
+  {ru: "Добрый вечер, сэр", en: "Good evening sir"},
+  {ru: "Удачи", en: "Good Luck"},
+  {ru: "Доброе утро", en: "Good morning"},
+  {ru: "Превосходно", en: "Great"},
+  {ru: "С днем рождения", en: "Happy Birthday"},
+  {ru: "Хорошей поездки", en: "Have a good trip"},
+  {ru: "Здравствуйте", en: "Hello"},
+  {ru: "Приятно с тобой познакомиться", en: "Nice to meet you"},
+  {ru: "Пожалуйста, позвони мне", en: "Please call me"},
+  {ru: "Около 300 километров", en: "About 300 kilometers"},
+  {ru: "Билет в один конец", en: "A one way ticket"},
+  {ru: "Ты собираешься ей помочь?", en: "Are you going to help her?"},
+  {ru: "Билет в два конца", en: "A round trip ticket"},
+  {ru: "Во сколько?", en: "At what time?"},
+  {ru: "Могу я назначить встречу на следующую среду?", en: "Can I make an appointment for next Wednesday?"},
+  {ru: "Ты не мог бы повторить это, пожалуйста?", en: "Can you repeat that please?"},
+  {ru: "Это дорога ведёт в Нью-Йорк?", en: "Does this road go to New York?"},
+  {ru: "У вас достаточно денег?", en: "Do you have enough money?"},
+  {ru: "Ты умеешь готовить?", en: "Do you know how to cook?"},
+  {ru: "Ты знаешь, что тут сказано?", en: "Do you know what this says?"},
+  {ru: "Ты хочешь, чтобы я заехал и забрал тебя?", en: "Do you want me to come and pick you up?"},
+  {ru: "Следуйте за мной", en: "Follow me"},
+  {ru: "Отсюда до туда", en: "From here to there"},
+  {ru: "Идите прямо", en: "Go straight ahead"},
+  {ru: "Ты приехал?", en: "Have you arrived?"},
+  {ru: "Ты был в Бостоне?", en: "Have you been to Boston?"},
+  {ru: "Как мне туда добраться?", en: "How do I get there?"},
+  {ru: "Как мне добраться до улицы Дэниел?", en: "How do I get to Daniel Street?"},
+  {ru: "Как мне добраться до Американского посольства?", en: "How do I get to the American Embassy?"},
+  {ru: "Сколько это занимает на машине?", en: "How long does it take by car?"},
+  {ru: "Сколько занимает добраться до Джорджии?", en: "How long does it take to get to Georgia?"},
+  {ru: "Насколько долог полёт?", en: "How long is the flight?"},
+  {ru: "Как был фильм?", en: "How was the movie?"},
+  {ru: "Я хотел бы сделать звонок", en: "I'd like to make a phone call"},
+  {ru: "Я хотел бы забронировать место", en: "I'd like to make a reservation"},
+  {ru: "У меня есть к тебе вопрос", en: "I have a question."},
+  {ru: "Я возьму то тоже", en: "I'll take that one also"},
+  {ru: "Я сейчас приду", en: "I'm coming right now"},
+  {ru: "Я еду домой через четыре дня", en: "I'm going home in four days"},
+  {ru: "Я уезжаю завтра", en: "I'm leaving Tomorrow"},
+  {ru: "Я ищу почту", en: "I'm looking for the post office"},
+  {ru: "Это твоя ручка?", en: "Is this pen yours?"},
+  {ru: "Хотел бы я иметь один такой", en: "I wish I had one"},
+  {ru: "Один билет до Нью-Йорка, пожалуйста", en: "One ticket to New York please"},
+  {ru: "В один конец или в оба?", en: "One way or round trip?"},
+  {ru: "Пожалуйста, говорите медленнее", en: "Please speak slower"},
+  {ru: "Пожалуйста, довезите меня до аэропорта", en: "Please take me to the airport"},
+  {ru: "Туда", en: "That way"},
+  {ru: "Самолёт вылетает в 5:30 вечера", en: "The plane departs at 5:30PM"},
+  {ru: "Они приехали вчера", en: "They arrived yesterday"},
+  {ru: "Повернись кругом", en: "Turn around"},
+  {ru: "Поверни налево", en: "Turn left"},
+  {ru: "Поверни направо", en: "Turn right"},
+  {ru: "В какое время ты идешь на автобусную остановку?", en: "What time are you going to the bus station?"},
+  {ru: "Когда это произошло?", en: "When did this happen?"},
+  {ru: "Когда ты приехал в Бостон?", en: "When did you arrive in Boston?"},
+  {ru: "Когда он приезжает?", en: "When does he arrive?"},
+  {ru: "Когда оно прибудет?", en: "When does it arrive?"},
+  {ru: "Когда открывается банк?", en: "When does the bank open?"},
+  {ru: "Когда отъезжает автобус?", en: "When does the bus leave?"},
+  {ru: "Когда ты приезжаешь?", en: "When do you arrive?"},
+  {ru: "Когда ты уезжаешь?", en: "When do you leave?"},
+  {ru: "Где я могу это отправить по почте?", en: "Where can I mail this?"},
+  {ru: "Откуда она?", en: "Where is she from?"},
+  {ru: "Где ванная комната?", en: "Where is the bathroom?"},
+  {ru: "Почему бы и нет?", en: "Why not?"},
+  {ru: "Ты напомнишь мне?", en: "Will you remind me?"},
+  {ru: "Несколько", en: "A few"},
+  {ru: "Подожди чуть-чуть", en: "Wait a little"},
+  {ru: "Позвони в полицию", en: "Call the police"},
+  {ru: "Твоей жене понравилась Калифорния?", en: "Did your wife like California?"},
+  {ru: "У тебя есть кофе?", en: "Do you have any coffee?"},
+  {ru: "У вас есть что-нибудь подешевле?", en: "Do you have anything cheaper?"},
+  {ru: "Вы принимаете кредитные карточки?", en: "Do you take credit cards?"},
+  {ru: "Как ты играешь?", en: "How are you playing?"},
+  {ru: "Сколько человек в Нью-Йорке?", en: "How many people are there in New York?"},
+  {ru: "Почём эти серьги?", en: "How much are these earrings?"},
+  {ru: "Сколько это стоит в день?", en: "How much does it cost per day?"},
+  {ru: "Сколько это стоит?", en: "How much does this cost?"},
+  {ru: "Сколько я вам должен?", en: "How much do I owe you?"},
+  {ru: "Сколько будет стоить доехать до Майами?", en: "How much is it to go to Miami?"},
+  {ru: "Сколько денег ты зарабатываешь?", en: "How much money do you make?"},
+  {ru: "Я хотел бы поесть в ресторане на 5-ой улице", en: "I'd like to eat at 5th street restaurant"},
+  {ru: "У меня нет девушки", en: "I don't have a girlfriend"},
+  {ru: "У меня нет денег", en: "I don't have any money"},
+  {ru: "У меня есть бронь", en: "I have a reservation"},
+  {ru: "У меня будет то же самое", en: "I'll have the same thing"},
+  {ru: "Я заплачу за обед", en: "I'll pay for dinner"},
+  {ru: "Я заплачу за билеты", en: "I'll pay for the tickets"},
+  {ru: "Мне 26 лет", en: "I'm 26 years old"},
+  {ru: "Мне надо попрактиковать свой английский", en: "I need to practice my English"},
+  {ru: "Не так ли?", en: "Isn't it?"},
+  {ru: "Это нормально?", en: "Is that ok?"},
+  {ru: "Есть ли для меня почта?", en: "Is there any mail for me?"},
+  {ru: "Сейчас 11:30 вечера", en: "It's 11:30pm"},
+  {ru: "Сейчас четверть десятого", en: "It's a quarter past nine"},
+  {ru: "Пожалуйста, входите", en: "Please come in"},
+  {ru: "Извините, мы не принимаем кредитные карты", en: "Sorry, we don't accept credit cards"},
+  {ru: "Извините, мы принимаем только наличные", en: "Sorry, we only accept Cash"},
+  {ru: "Этот ресторан недорогой", en: "That restaurant is not expensive"},
+  {ru: "Это слишком дорого", en: "That's too expensive"},
+  {ru: "Здесь много людей", en: "There are many people here"},
+  {ru: "Они берут 26 долларов в день", en: "They charge 26 dollars per day"},
+  {ru: "Каков обменный курс для долларов?", en: "What's the exchange rate for dollars?"},
+  {ru: "Какой номер телефона?", en: "What's the phone number?"},
+  {ru: "Где я могу купить билеты?", en: "Where can I buy tickets?"},
+  {ru: "Где бы вы хотели встретиться?", en: "Where would you like to meet?"},
+  {ru: "Который лучше?", en: "Which one is better?"},
+  {ru: "Напротив почты", en: "Across from the post office"},
+  {ru: "В 3 часа", en: "At 3 o'clock"},
+  {ru: "Будь тихим", en: "Be quiet"},
+  {ru: "Ты не мог бы порекомендовать хороший ресторан?", en: "Can you recommend a good restaurant?"},
+  {ru: "Вот", en: "Here it is"},
+  {ru: "Вот, пожалуйста", en: "Here you are"},
+  {ru: "Он на кухне", en: "He's in the kitchen"},
+  {ru: "Он учится в Бостонском Университете", en: "He studies at Boston University"},
+  {ru: "Как это далеко?", en: "How far is it?"},
+  {ru: "Как далеко до Чикаго?", en: "How far is it to Chicago?"},
+  {ru: "Сколько миль до Пенсильвании?", en: "How many miles is it to Pennsylvania?"},
+  {ru: "Мне нужен одноместный номер", en: "I'd like a single room"},
+  {ru: "Я люблю смотреть телевизор", en: "I like to watch TV"},
+  {ru: "Это вкусно!", en: "It's delicious!"},
+  {ru: "Сейчас пол-двенадцатого", en: "It's half past 11"},
+  {ru: "Это меньше, чем 5 долларов", en: "It's less than 5 dollars"},
+  {ru: "Это больше, чем 5 долларов", en: "It's more than 5 dollars"},
+  {ru: "Это около супермаркета", en: "It's near the Supermarket"},
+  {ru: "Сегодня не обещали дождь", en: "It's not supposed to rain today"},
+  {ru: "Все нормально", en: "It's ok"},
+  {ru: "Это на 7-ой улице", en: "It's on 7th street"},
+  {ru: "Сейчас очень жарко", en: "It's really hot"},
+  {ru: "На завтра обещали дождь", en: "It's supposed to rain tomorrow"},
+  {ru: "Я собирался в библиотеку", en: "I was going to the library"},
+  {ru: "Я был в библиотеке", en: "I was in the library"},
+  {ru: "Пойдем", en: "Let's go"},
+  {ru: "Может быть", en: "Maybe"},
+  {ru: "Больше 200 миль", en: "More than 200 miles"},
+  {ru: "Мой дом близко к банку", en: "My house is close to the bank"},
+  {ru: "Около банка", en: "Near the bank"},
+  {ru: "Налево", en: "On the left"},
+  {ru: "Направо", en: "On the right"},
+  {ru: "На втором этаже", en: "On the second floor"},
+  {ru: "Снаружи отеля", en: "Outside the hotel"},
+  {ru: "Вот здесь", en: "Over here"},
+  {ru: "Вот там", en: "Over there"},
+  {ru: "Книга сзади стола", en: "The book is behind the table"},
+  {ru: "Книга перед столом", en: "The book is in front of the table"},
+  {ru: "Книга около стола", en: "The book is near the table"},
+  {ru: "Книга рядом со столом", en: "The book is next to the table"},
+  {ru: "Книга на столе", en: "The book is on top of the table"},
+  {ru: "Несколько книг на столе", en: "There are some books on the table"},
+  {ru: "Книга лежит под столом", en: "There's a book under the table"},
+  {ru: "Мы из Калифорнии", en: "We're from California"},
+  {ru: "Какой адрес?", en: "What's the address?"},
+  {ru: "Куда ты идешь?", en: "Where are you going?"},
+  {ru: "Где это?", en: "Where is it?"},
+  {ru: "Куда бы вы хотели пойти?", en: "Where would you like to go?"},
+  {ru: "Кто выиграл?", en: "Who won?"},
+  {ru: "Весь день", en: "All day"},
+  {ru: "Давно", en: "A long time ago"},
+  {ru: "Они приезжают этим вечером?", en: "Are they coming this evening?"},
+  {ru: "Тебе удобно?", en: "Are you comfortable?"},
+  {ru: "Твои дети с тобой?", en: "Are your children with you?"},
+  {ru: "Как можно скорее", en: "As soon as possible"},
+  {ru: "В 3 часа дня", en: "At 3 o'clock in the afternoon"},
+  {ru: "На 5-ой улице", en: "At 5th street"},
+  {ru: "В 7 часов вечера", en: "At 7 o'clock at night."},
+  {ru: "В 7 часов утра", en: "At 7 o'clock in the morning"},
+  {ru: "Во сколько это произошло?", en: "At what time did it happen?"},
+  {ru: "Могу я вам помочь?", en: "Can I help you?"},
+  {ru: "У тебя есть бассейн?", en: "Do you have a swimming pool?"},
+  {ru: "У вас есть это 11-го размера?", en: "Do you have this in size 11?"},
+  {ru: "Ты думаешь, ты вернешься до 11:30?", en: "Do you think you'll be back by 11:30?"},
+  {ru: "Каждый день я встаю в 6 утра", en: "Everyday I get up at 6AM."},
+  {ru: "Каждую неделю", en: "Every week"},
+  {ru: "Срок годности", en: "Expiration date."},
+  {ru: "Ты долго ждал?", en: "Have you been waiting long?"},
+  {ru: "Он вернётся через 20 минут", en: "He'll be back in 20 minutes."},
+  {ru: "Его семья приезжает завтра", en: "His family is coming tomorrow."},
+  {ru: "Как насчёт субботы?", en: "How about Saturday?"},
+  {ru: "Как долго ты собираешься остаться?", en: "How long are you going to stay?"},
+  {ru: "Как долго ты собираешься быть в Калифорнии?", en: "How long are you going to stay in California?"},
+  {ru: "Сколько это займёт?", en: "How long will it take?"},
+  {ru: "Сколько итого?", en: "How much altogether?"},
+  {ru: "Сколько это будет стоить?", en: "How much will it cost?"},
+  {ru: "У меня не достаточно денег", en: "I don't have enough money."},
+  {ru: "Я собираюсь выходить", en: "I'm getting ready to go out."},
+  {ru: "Я просто смотрю", en: "I'm just looking. (Shopping)"},
+  {ru: "Я тоже беспокоюсь", en: "I'm worried too."},
+  {ru: "Сегодня вечером будет холодно", en: "It'll be cold this evening."},
+  {ru: "Сегодня шел сильный дождь", en: "It rained very hard today."},
+  {ru: "Это стоит 17 долларов", en: "It's 17 dollars."},
+  {ru: "Сейчас 6 утра", en: "It's 6AM."},
+  {ru: "Сейчас 8:45", en: "It's 8:45."},
+  {ru: "Сейчас без четверти 7", en: "It's a quarter to 7."},
+  {ru: "Сегодня пойдёт снег", en: "It's going to snow today."},
+  {ru: "Это здесь", en: "It's here."},
+  {ru: "Это там", en: "It's there."},
+  {ru: "Я уже это видел", en: "I've already seen it."},
+  {ru: "Джон едет завтра в отпуск", en: "John is going on vacation tomorrow."},
+  {ru: "Мой день рождения 27 августа", en: "My birthday is August 27th."},
+  {ru: "Сейчас или позже?", en: "Now or later?"},
+  {ru: "22 октября", en: "October 22nd"},
+  {ru: "Она хочет знать, когда ты придёшь", en: "She wants to know when you're coming."},
+  {ru: "Иногда я ложусь спать в 11 вечера, иногда в 11:30", en: "Sometimes I go to sleep at 11PM, sometimes at 11:30PM."},
+  {ru: "Много времени", en: "There's plenty of time."},
+  {ru: "Весь день", en: "The whole day."},
+  {ru: "Мы опаздываем", en: "We're late."},
+  {ru: "В какой день они придут?", en: "What day are they coming over?"},
+  {ru: "Какой сегодня день недели?", en: "What day of the week is it?"},
+  {ru: "Какая сегодня дата?", en: "What is today's date?"},
+  {ru: "Какая у тебя религия?", en: "What's your religion?"},
+  {ru: "В какое время они приезжают?", en: "What time are they arriving?"},
+  {ru: "В какое время ты встал?", en: "What time did you get up?"},
+  {ru: "В какое время ты пошел спать?", en: "What time did you go to sleep?"},
+  {ru: "В какое время ты проснулся?", en: "What time did you wake up?"},
+  {ru: "В какое время это начинается?", en: "What time does it start?"},
+  {ru: "В какое время ты думаешь ты приедешь?", en: "What time do you think you'll arrive?"},
+  {ru: "Сколько времени?", en: "What time is it?"},
+  {ru: "Когда они приезжают?", en: "When are they coming?"},
+  {ru: "Когда ты возвращаешься?", en: "When are you coming back?"},
+  {ru: "Когда ты собираешься забрать своего друга?", en: "When are you going to pick up your friend?"},
+  {ru: "Когда ты уезжаешь?", en: "When are you leaving?"},
+  {ru: "Когда вы переезжаете?", en: "When are you moving?"},
+  {ru: "Когда следующий автобус до Филадельфии?", en: "When is the next bus to Philadelphia?"},
+  {ru: "Когда твой день рождения?", en: "When is your birthday?"},
+  {ru: "Когда я пошел в магазин, у них не было яблок.", en: "When I went to the store, they didn't have any apples."},
+  {ru: "Когда ты разговаривал со своей мамой в последний раз?", en: "When was the last time you talked to your mother?"},
+  {ru: "Когда он вернется?", en: "When will he be back?"},
+  {ru: "Когда это будет готово?", en: "When will it be ready?"},
+  {ru: "Куда ты собираешься пойти?", en: "Where are you going to go?"},
+  {ru: "Ты занят?", en: "Are you busy?"},
+  {ru: "Можно нам побольше хлеба, пожалуйста?", en: "Can we have some more bread please?"},
+  {ru: "У тебя есть деньги?", en: "Do you have any money?"},
+  {ru: "На сколько ночей?", en: "For how many nights?"},
+  {ru: "Как долго вы будете оставаться?", en: "How long will you be staying?"},
+  {ru: "Мне нужна карта города", en: "I'd like a map of the city."},
+  {ru: "Мне нужна комната для некурящих", en: "I'd like a non-smoking room."},
+  {ru: "Мне нужна комната", en: "I'd like a room."},
+  {ru: "Мне нужна комната с двумя кроватями, пожалуйста", en: "I'd like a room with two beds please."},
+  {ru: "Мне нужен врач", en: "I need a doctor."},
+  {ru: "Есть в городе ночной клуб?", en: "Is there a nightclub in town?"},
+  {ru: "Есть ресторан в отеле?", en: "Is there a restaurant in the hotel?"},
+  {ru: "Есть магазин поблизости?", en: "Is there a store near here?"},
+  {ru: "Извините, у нас нет свободных мест", en: "Sorry, we don't have any vacancies."},
+  {ru: "Отвезите меня в отель Marriott", en: "Take me to the Marriott Hotel."},
+  {ru: "Какова цена за ночь? (В отеле)", en: "What's the charge per night? (Hotel)"},
+  {ru: "В какое время выезд?", en: "What time is check out?"},
+  {ru: "Где аэропорт?", en: "Where is the airport?"},
+  {ru: "Где почтовый ящик?", en: "Where's the mail box?"},
+  {ru: "Ты здесь один?", en: "Are you here alone?"},
+  {ru: "Можно мне привести друга?", en: "Can I bring my friend?"},
+  {ru: "Можно чек, пожалуйста?", en: "Can I have a receipt please?"},
+  {ru: "Может быть дешевле?", en: "Can it be cheaper?"},
+  {ru: "Можно нам меню, пожалуйста?", en: "Can we have a menu please."},
+  {ru: "Ты не мог бы подержать это для меня?", en: "Can you hold this for me?"},
+  {ru: "У тебя есть дети?", en: "Do you have any children?"},
+  {ru: "Ты знаешь, сколько это стоит?", en: "Do you know how much it costs?"},
+  {ru: "Ты ел в том ресторане?", en: "Have you eaten at that restaurant?"},
+  {ru: "Ты уже поел?", en: "Have you eaten yet?"},
+  {ru: "Ты когда-нибудь пробовал картофельный суп?", en: "Have you ever had Potato soup?"},
+  {ru: "Он любит сок, но ему не нравится молоко.", en: "He likes juice, but he doesn't like milk."},
+  {ru: "Вот ваш салат", en: "Here is your salad."},
+  {ru: "Вот ваш заказ", en: "Here's your order."},
+  {ru: "Как это на вкус?", en: "How does it taste?"},
+  {ru: "Сколько человек в ресторане?", en: "How many people in the restaurant?"},
+  {ru: "Я согласен", en: "I agree"},
+  {ru: "Я бы хотел столик у окна", en: "I'd like a table near the window."},
+  {ru: "Я хотел бы позвонить в Соединенные Штаты", en: "I'd like to call the United States."},
+  {ru: "Я там не был", en: "I haven't been there."},
+  {ru: "Я не закончил есть", en: "I haven't finished eating."},
+  {ru: "Мне это нравится", en: "I like it."},
+  {ru: "Я позвоню тебе", en: "I'll give you a call."},
+  {ru: "Чашку чая, пожалуйста", en: "I'll have a cup of tea please."},
+  {ru: "Стакан воды, пожалуйста", en: "I'll have a glass of water please."},
+  {ru: "Я из Америки", en: "I'm from America."},
+  {ru: "Я иду спать", en: "I'm going to bed."},
+  {ru: "Я здесь по делам", en: "I'm here on business."},
+  {ru: "Извините", en: "I'm sorry."},
+  {ru: "У меня всего 5 долларов", en: "I only have 5 dollars."},
+  {ru: "Мне кажется, мне нужно увидеть врача", en: "I think I need to see a doctor."},
+  {ru: "Сегодня 25 августа", en: "It's August 25th."},
+  {ru: "Я понимаю", en: "I understand."},
+  {ru: "У меня день рождения 3 июня", en: "My birthday is on June 3rd."},
+  {ru: "Еда была вкусной", en: "The food was delicious."},
+  {ru: "В холодильнике есть несколько яблок", en: "There are some apples in the refrigerator."},
+  {ru: "Поблизости есть ресторан", en: "There's a restaurant near here."},
+  {ru: "Вон там есть ресторан, но я не думаю, что он очень хороший", en: "There's a restaurant over there, but I don't think it's very good."},
+  {ru: "Официант!", en: "Waiter!"},
+  {ru: "Официантка!", en: "Waitress!"},
+  {ru: "Мы можем есть итальянскую или китайскую еду", en: "We can eat Italian or Chinese food."},
+  {ru: "Нам два стакана воды, пожалуйста", en: "We'll have two glasses of water please."},
+  {ru: "Что ты собираешься заказать?", en: "What are you going to order?"},
+  {ru: "Что вы порекомендуете?", en: "What do you recommend?"},
+  {ru: "Какой у тебя адрес электронной почты?", en: "What's your email address?"},
+  {ru: "Что бы вы хотели выпить?", en: "What would you like to drink?"},
+  {ru: "Что бы вы хотели поесть?", en: "What would you like to eat?"},
+  {ru: "Где банкомат?", en: "Where is an ATM?"},
+  {ru: "Где есть врач, который говорит по-английски?", en: "Where is there a doctor who speaks English?"},
+  {ru: "Который?", en: "Which one?"},
+  {ru: "Ты не попросишь его прийти сюда?", en: "Would you ask him to come here?"},
+  {ru: "Не хотите стакан воды?", en: "Would you like a glass of water?"},
+  {ru: "Не хотите кофе или чай?", en: "Would you like coffee or tea?"},
+  {ru: "Не хотите что-нибудь выпить?", en: "Would you like something to drink?"},
+  {ru: "Не хотите воды?", en: "Would you like some water?"},
+  {ru: "Не хотите немного вина?", en: "Would you like some wine?"},
+  {ru: "Не хотите пройтись?", en: "Would you like to go for a walk?"},
+  {ru: "Не хотите посмотреть телевизор?", en: "Would you like to watch TV?"},
+  {ru: "Ты американец?", en: "Are you American?"},
+  {ru: "Ты придешь этим вечером?", en: "Are you coming this evening?"},
+  {ru: "Ты свободен сегодня вечером?", en: "Are you free tonight?"},
+  {ru: "Ты собираешься полететь на самолете или поезде?", en: "Are you going to take a plane or train?"},
+  {ru: "Ты голоден?", en: "Are you hungry?"},
+  {ru: "Ты уверен?", en: "Are you sure?"},
+  {ru: "Ты работаешь завтра?", en: "Are you working Tomorrow?"},
+  {ru: "Бизнес идет хорошо", en: "Business is good."},
+  {ru: "Ваше здоровье!", en: "Cheers!"},
+  {ru: "Вчера шел снег?", en: "Did it snow yesterday?"},
+  {ru: "Ты получил мое письмо?", en: "Did you get my email?"},
+  {ru: "Ты принял свои лекарства?", en: "Did you take your medicine?"},
+  {ru: "Ты чувствуешь себя лучше?", en: "Do you feel better?"},
+  {ru: "Ты часто ездишь во Флориду?", en: "Do you go to Florida often?"},
+  {ru: "У тебя есть другой?", en: "Do you have another one?"},
+  {ru: "Ты знаешь, где есть магазин, который продает полотенца?", en: "Do you know where there's a store that sells towels?"},
+  {ru: "Тебе здесь нравится?", en: "Do you like it here?"},
+  {ru: "Тебе нравится книга?", en: "Do you like the book?"},
+  {ru: "Тебе что-нибудь нужно?", en: "Do you need anything?"},
+  {ru: "Ты занимаешься каким-нибудь спортом?", en: "Do you play any sports?"},
+  {ru: "Вы продаете лекарства? (в магазине)", en: "Do you sell medicine? (store)"},
+  {ru: "Вы изучаете английский?", en: "Do you study English?"},
+  {ru: "Ты хочешь пойти со мной?", en: "Do you want to come with me?"},
+  {ru: "Извините", en: "Excuse me."},
+  {ru: "Позвони мне", en: "Give me a call."},
+  {ru: "Твой брат был в Калифорнии?", en: "Has your brother been to California?"},
+  {ru: "Они ее уже встречали?", en: "Have they met her yet?"},
+  {ru: "Ты делал это раньше?", en: "Have you done this before?"},
+  {ru: "Как долго ты здесь?", en: "How long have you been here?"},
+  {ru: "Как долго ты был в Америке?", en: "How long have you been in America?"},
+  {ru: "Как долго ты здесь живешь?", en: "How long have you lived here?"},
+  {ru: "Сколько у вас детей?", en: "How many children do you have?"},
+  {ru: "На скольких языках вы говорите?", en: "How many languages do you speak?"},
+  {ru: "Сколько человек в вашей семье?", en: "How many people do you have in your family"},
+  {ru: "Сколько бы вы хотели?", en: "How much would you like?"},
+  {ru: "Сколько вам лет?", en: "How old are you?"},
+  {ru: "Я купил рубашку вчера", en: "I bought a shirt yesterday."},
+  {ru: "Я плохо себя чувствую", en: "I don't feel well."},
+  {ru: "У меня болит рука", en: "I have pain in my arm."},
+  {ru: "Мне нужно постирать одежду", en: "I have to wash my clothes."},
+  {ru: "У меня две сестры", en: "I have two sisters."},
+  {ru: "Я скажу ему, что ты звонил", en: "I'll tell him you called."},
+  {ru: "Мне 32", en: "I'm 32."},
+  {ru: "У меня аллергия на морепродукты", en: "I'm allergic to seafood."},
+  {ru: "Я американец", en: "I'm American."},
+  {ru: "У меня 8 размер", en: "I'm a size 8."},
+  {ru: "Я в порядке, а ты?", en: "I'm fine, and you?"},
+  {ru: "Я не боюсь", en: "I'm not afraid."},
+  {ru: "Я болен", en: "I'm sick."},
+  {ru: "Я помню", en: "I remember."},
+  {ru: "Я немного говорю по-английски", en: "I speak a little English"},
+  {ru: "Твой дом похож на этот?", en: "Is your house like this one?"},
+  {ru: "Твой муж тоже из Бостона?", en: "Is your husband also from Boston?"},
+  {ru: "Это не очень дорого", en: "It's not very expensive."},
+  {ru: "Я там был", en: "I've been there."},
+  {ru: "Давайте поделимся", en: "Let's share."},
+  {ru: "Моя дочь здесь", en: "My daughter is here."},
+  {ru: "Мой отец там был", en: "My father has been there."},
+  {ru: "Мой отец - юрист", en: "My father is a lawyer."},
+  {ru: "Моя бабушка умерла в прошлом году", en: "My grandmother passed away last year."},
+  {ru: "Меня зовут Джон Смит", en: "My name is John Smith."},
+  {ru: "Мой сын изучает компьютеры", en: "My son studies computers."},
+  {ru: "Нет, я американец", en: "No, I'm American."},
+  {ru: "Нет, это первый раз", en: "No, this is the first time."},
+  {ru: "Наши дети в Америке", en: "Our children are in America."},
+  {ru: "Она эксперт", en: "She's an expert."},
+  {ru: "Она старше меня", en: "She's older than me."},
+  {ru: "Эта машина похожа на мою машину", en: "That car is similar to my car."},
+  {ru: "Это Миссис Смит", en: "This is Mrs. Smith."},
+  {ru: "Это моя мама", en: "This is my mother."},
+  {ru: "Я здесь первый раз", en: "This is the first time I've been here."},
+  {ru: "У нас два мальчика и одна девочка", en: "We have two boys and one girl"},
+  {ru: "Что ты собираешься делать сегодня вечером?", en: "What are you going to do tonight?"},
+  {ru: "Какие у тебя хобби?", en: "What are your hobbies?"},
+  {ru: "Что вы изучаете?", en: "What do you study?"},
+  {ru: "Чем вы хотите заняться?", en: "What do you want to do?"},
+  {ru: "В какую школу ты ходил?", en: "What school did you go to?"},
+  {ru: "Какой твой любимый фильм?", en: "What's your favorite movie?"},
+  {ru: "Какая у тебя фамилия?", en: "What's your last name?"},
+  {ru: "Как тебя зовут?", en: "What's your name?"},
+  {ru: "Где футболки?", en: "Where are the t-shirts?"},
+  {ru: "Куда ты пошел?", en: "Where did you go?"},
+  {ru: "Где ты выучил английский?", en: "Where did you learn English?"},
+  {ru: "Где ты работал до того, как начал работать здесь?", en: "Where did you work before you worked here?"},
+  {ru: "Где ты живешь?", en: "Where do you live?"},
+  {ru: "Где ты был?", en: "Where were you?"},
+  {ru: "Кто отправил это письмо?", en: "Who sent this letter?"},
+  {ru: "Не хотите купить это?", en: "Would you like to buy this?"},
+  {ru: "Ваши дети очень хорошо воспитаны", en: "Your children are very well behaved."},
+  {ru: "Ваша дочь", en: "Your daughter."},
+  {ru: "Ты умнее его", en: "You're smarter than him"},
+  {ru: "Ты очень хорошо говоришь по-английски", en: "You speak English very well."},
+  {ru: "Есть какие-нибудь концерты?", en: "Are there any concerts?"},
+  {ru: "Ты хочешь пойти в кино?", en: "Do you want to go to the movies?"},
+  {ru: "Ты видел этот фильм?", en: "Have you seen this movie?"},
+  {ru: "Он сказал, что ты любишь смотреть фильмы", en: "He said you like to watch movies."},
+  {ru: "Каков ваш рост?", en: "How tall are you?"},
+  {ru: "Банк далеко?", en: "Is the bank far?"},
+  {ru: "Есть кинотеатр поблизости?", en: "Is there a movie theater nearby?"},
+  {ru: "Чем люди обычно занимаются летом в Лос-Анджелесе?", en: "What do people usually do in the summer in Los Angeles?"},
+  {ru: "Какая музыка тебе нравится?", en: "What kind of music do you like?"},
+  {ru: "Какая твоя любимая еда?", en: "What's your favorite food?"},
+  {ru: "В какое время начинается фильм?", en: "What time does the movie start?"},
+  {ru: "Кто был твоим учителем?", en: "Who was your teacher?"},
+  {ru: "Не хотите поужинать со мной?", en: "Would you like to have dinner with me?"},
+  {ru: "Не хотите взять фильм напрокат?", en: "Would you like to rent a movie?"},
+  {ru: "Можно стакан воды, пожалуйста?", en: "Can I have a glass of water please?"},
+  {ru: "Могу я воспользоваться твоим телефоном?", en: "Can I use your phone?"},
+  {ru: "У тебя есть номер такси?", en: "Do you have the number for a taxi?"},
+  {ru: "Ты ее знаешь?", en: "Do you know her?"},
+  {ru: "Ты знаешь, где она?", en: "Do you know where she is?"},
+  {ru: "Ты играешь в баскетбол?", en: "Do you play basketball?"},
+  {ru: "Полный бак, пожалуйста. (на заправке)", en: "Fill it up, please. (gas station)"},
+  {ru: "Ему нужна новая одежда", en: "He needs some new clothes."},
+  {ru: "Сколько то стоит?", en: "How much is that?"},
+  {ru: "Сколько это стоит?", en: "How much is this?"},
+  {ru: "Я вам верю", en: "I believe you."},
+  {ru: "Я бы хотел купить телефонную карту, пожалуйста", en: "I'd like to buy a phone card please."},
+  {ru: "Я хотел бы пойти домой", en: "I'd like to go home."},
+  {ru: "Я хотел бы пройтись по магазинам", en: "I'd like to go shopping."},
+  {ru: "Если тебе это нравится, я могу купить больше", en: "If you like it I can buy more."},
+  {ru: "Я начинающий", en: "I'm a beginner."},
+  {ru: "Я сыт", en: "I'm full"},
+  {ru: "Я просто шучу", en: "I'm just kidding."},
+  {ru: "Я холост (незамужняя)", en: "I'm single"},
+  {ru: "Когда поедешь домой, постарайся ехать медленно", en: "When you go home, try to drive slowly"},
+  {ru: "Я говорю на двух языках", en: "I speak two languages"},
+  {ru: "Я думал, он сказал что-то другое", en: "I thought he said something else."},
+  {ru: "Это не слишком далеко", en: "It's not too far"},
+  {ru: "Я обычно пью кофе на завтрак", en: "I usually drink coffee at breakfast"},
+  {ru: "К сожалению, у нас нет", en: "Sorry, we don't have any"},
+  {ru: "Книги дорогие", en: "The books are expensive"},
+  {ru: "Примерь это", en: "Try it"},
+  {ru: "Что вы хотите купить?", en: "What do you want to buy?"},
+  {ru: "Какой размер?", en: "What size?"},
+  {ru: "В какое время открывается магазин?", en: "What time does the store open?"},
+  {ru: "Когда прилетает самолет?", en: "When does the plane arrive?"},
+  {ru: "Где ты?", en: "Where are you?"},
+  {ru: "Не хотите что-нибудь поесть?", en: "Would you like something to eat?"},
+  {ru: "Я это правильно произношу?", en: "Am I pronouncing it correctly?"},
+  {ru: "Могу я попросить вас об услуге?", en: "Can you do me a favor?"},
+  {ru: "Ты можешь мне помочь?", en: "Can you help me?"},
+  {ru: "Ты не мог бы повторить это еще раз, пожалуйста?", en: "Can you please say that again?"},
+  {ru: "Ты не мог бы показать мне?", en: "Can you show me?"},
+  {ru: "Кто-нибудь здесь говорит по-английски?", en: "Does anyone here speak English?"},
+  {ru: "Не делай этого", en: "Don't do that."},
+  {ru: "Ты в это веришь?", en: "Do you believe that?"},
+  {ru: "У тебя есть карандаш?", en: "Do you have a pencil?"},
+  {ru: "Вы курите?", en: "Do you smoke?"},
+  {ru: "Вы говорите по-английски?", en: "Do you speak English?"},
+  {ru: "Извините, что вы сказали?", en: "Excuse me, what did you say?"},
+  {ru: "Забудьте об этом", en: "Forget it."},
+  {ru: "Как ты это произносишь?", en: "How do you pronounce that?"},
+  {ru: "Как сказать это по-английски?", en: "How do you say it in English?"},
+  {ru: "Как ты это произнесешь по буквам?", en: "How do you spell it?"},
+  {ru: "Как ты произнесешь по буквам слово \"Сиэттл\"?", en: "How do you spell the word \"Seattle?"},
+  {ru: "Я умею плавать", en: "I can swim."},
+  {ru: "Я не ясно тебя слышу", en: "I can't hear you clearly."},
+  {ru: "Я не против", en: "I don't mind."},
+  {ru: "Я не очень хорошо говорю по-английски", en: "I don't speak English very well."},
+  {ru: "Я так не думаю", en: "I don't think so."},
+  {ru: "Я не понимаю, что ты говоришь", en: "I don't understand what your saying."},
+  {ru: "В комнате есть кондиционер?", en: "Is there air conditioning in the room?"},
+  {ru: "Я думаю, что у тебя слишком много одежды", en: "I think you have too many clothes"},
+  {ru: "Я тебе доверяю", en: "I trust you."},
+  {ru: "Я теперь понимаю", en: "I understand now."},
+  {ru: "Давайте встретимся перед отелем", en: "Let's meet in front of the hotel."},
+  {ru: "Пожалуйста, присаживайтесь", en: "Please sit down."},
+  {ru: "Пожалуйста, говорите по-английски", en: "Please speak English."},
+  {ru: "Пожалуйста, говорите медленнее", en: "Please speak more slowly."},
+  {ru: "Извините, я не расслышал", en: "Sorry, I didn't hear clearly."},
+  {ru: "Это означает друг", en: "That means friend."},
+  {ru: "Это неправильно", en: "That's wrong."},
+  {ru: "Попробуй сказать это", en: "Try to say it."},
+  {ru: "Что это значит?", en: "What does this mean?"},
+  {ru: "Что здесь написано?", en: "What does this say?"},
+  {ru: "Что означает это слово?", en: "What does this word mean?"},
+  {ru: "Какой обменный курс?", en: "What's the exchange rate?"},
+  {ru: "Чья это книга?", en: "Whose book is that?"},
+  {ru: "Почему ты не идешь?", en: "Why aren't you going?"},
+  {ru: "Почему вы смеетесь?", en: "Why are you laughing?"},
+  {ru: "Почему ты это сделал?", en: "Why did you do that?"},
+  {ru: "У тебя есть аллергия на что-нибудь?", en: "Are you allergic to anything?"},
+  {ru: "Ты готов?", en: "Are you ready?"},
+  {ru: "Позвони мне", en: "Call me"},
+  {ru: "Ты прислал мне цветы?", en: "Did you send me flowers?"},
+  {ru: "Вы продаете батарейки?", en: "Do you sell batteries?"},
+  {ru: "Мне все равно", en: "I don't care."},
+  {ru: "Я сдаюсь", en: "I give up."},
+  {ru: "Я попал в аварию", en: "I got in an accident."},
+  {ru: "У меня простуда", en: "I have a cold."},
+  {ru: "У меня есть один в машине", en: "I have one in my car."},
+  {ru: "Я испек этот пирог", en: "I made this cake."},
+  {ru: "Я учитель", en: "I'm a teacher."},
+  {ru: "Я работаю на себя", en: "I'm self-employed."},
+  {ru: "Мне еще много чего нужно сделать", en: "I still have a lot to do."},
+  {ru: "Я еще не решил", en: "I still haven't decided."},
+  {ru: "Это зависит от погоды", en: "It depends on the weather."},
+  {ru: "Сегодня очень холодно", en: "It's very cold today."},
+  {ru: "Мой багаж потерян", en: "My luggage is missing."},
+  {ru: "У меня болит живот", en: "My stomach hurts."},
+  {ru: "У меня болит горло", en: "My throat is sore."},
+  {ru: "Мои часы украли", en: "My watch has been stolen."},
+  {ru: "Прими это лекарство", en: "Take this medicine."},
+  {ru: "Авария произошла на перекрестке", en: "The accident happened at the intersection."},
+  {ru: "Произошла автомобильная авария", en: "There has been a car accident."},
+  {ru: "Где я могу обменять доллары США?", en: "Where can I exchange U.S. dollars?"},
+  {ru: "Где ты работаешь?", en: "Where do you work?"},
+  {ru: "Где ближайшая больница?", en: "Where's the nearest hospital?"},
+  {ru: "Где почта?", en: "Where's the post office?"},
+  {ru: "Что-нибудь еще?", en: "Anything else?"},
+  {ru: "Они одинаковые?", en: "Are they the same?"},
+  {ru: "Ты боишься?", en: "Are you afraid?"},
+  {ru: "Ты собираешься посетить их свадьбу?", en: "Are you going to attend their wedding?"},
+  {ru: "Ты женат/замужем?", en: "Are you married?"},
+  {ru: "Ты в порядке?", en: "Are you okay?"},
+  {ru: "Ты болен?", en: "Are you sick?"},
+  {ru: "Сзади банка", en: "Behind the bank."},
+  {ru: "Могу я одолжить немного денег?", en: "Can I borrow some money?"},
+  {ru: "Можно счет, пожалуйста?", en: "Can I have the bill please?"},
+  {ru: "Ты можешь перезвонить позже?", en: "Can you call back later?"},
+  {ru: "Ты можешь понести это для меня?", en: "Can you carry this for me?"},
+  {ru: "Ты можешь это починить?", en: "Can you fix this?"},
+  {ru: "Ты можешь привести пример?", en: "Can you give me an example?"},
+  {ru: "Не могли бы вы говорить громче, пожалуйста?", en: "Can you speak louder please?"},
+  {ru: "Ты умеешь плавать?", en: "Can you swim?"},
+  {ru: "Ему нравится школа?", en: "Does he like the school?"},
+  {ru: "Вы принимаете доллары США?", en: "Do you accept U.S. Dollars?"},
+  {ru: "У тебя есть девушка?", en: "Do you have a girlfriend?"},
+  {ru: "У тебя назначена встреча?", en: "Do you have an appointment?"},
+  {ru: "У тебя проблема?", en: "Do you have a problem?"},
+  {ru: "Ты это слышишь?", en: "Do you hear that?"},
+  {ru: "Ты знаешь, как добраться до отеля Marriott?", en: "Do you know how to get to the Marriott Hotel?"},
+  {ru: "Ты знаешь, что это означает?", en: "Do you know what this means?"},
+  {ru: "Ты знаешь, где я могу взять такси?", en: "Do you know where I can get a taxi?"},
+  {ru: "Ты знаешь, где мои очки?", en: "Do you know where my glasses are?"},
+  {ru: "Тебе нравятся твои коллеги?", en: "Do you like your co-workers?"},
+  {ru: "Тебе нужно что-нибудь еще?", en: "Do you need anything else?"},
+  {ru: "Ты понимаешь?", en: "Do you understand?"},
+  {ru: "Дай мне ручку", en: "Give me the pen."},
+  {ru: "Откуда ты знаешь?", en: "How do you know?"},
+  {ru: "Как она?", en: "How is she?"},
+  {ru: "Как долго это?", en: "How long is it?"},
+  {ru: "Сколько?", en: "How many?"},
+  {ru: "Сколько это стоит?", en: "How much is it?"},
+  {ru: "Мне нужно сделать много дел", en: "I have a lot of things to do."},
+  {ru: "Через 30 минут", en: "In 30 minutes."},
+  {ru: "Кто-нибудь еще придет?", en: "Is anyone else coming?"},
+  {ru: "Все в порядке?", en: "Is everything ok?"},
+  {ru: "На улице холодно?", en: "Is it cold outside?"},
+  {ru: "Это далеко отсюда?", en: "Is it far from here?"},
+  {ru: "Жарко?", en: "Is it hot?"},
+  {ru: "Идет дождь?", en: "Is it raining?"},
+  {ru: "Есть что-нибудь подешевле?", en: "Is there anything cheaper?"},
+  {ru: "Твой сын здесь?", en: "Is your son here?"},
+  {ru: "Мне подождать?", en: "Should I wait?"},
+  {ru: "Большой или маленький?", en: "The big one or the small one?"},
+  {ru: "Машины американские", en: "The cars are American."},
+  {ru: "Были какие-нибудь проблемы?", en: "Were there any problems?"},
+  {ru: "Ты был в библиотеке прошлой ночью?", en: "Were you at the library last night?"},
+  {ru: "Что ты делаешь?", en: "What are you doing?"},
+  {ru: "О чем ты думаешь?", en: "What are you thinking about?"},
+  {ru: "О чем вы двое разговариваете?", en: "What are you two talking about?"},
+  {ru: "Что ты делал прошлой ночью?", en: "What did you do last night?"},
+  {ru: "Что ты делал вчера?", en: "What did you do yesterday?"},
+  {ru: "Что ты думаешь?", en: "What did you think?"},
+  {ru: "Что они изучают?", en: "What do they study?"},
+  {ru: "Что у вас есть?", en: "What do you have?"},
+  {ru: "Что вы думаете?", en: "What do you think?"},
+  {ru: "Что случилось?", en: "What happened?"},
+  {ru: "Что это?", en: "What is it?"},
+  {ru: "Что то?", en: "What is that?"},
+  {ru: "Что мне надеть?", en: "What should I wear?"},
+  {ru: "Что внутри?", en: "What's in it?"},
+  {ru: "Какая температура?", en: "What's the temperature?"},
+  {ru: "Что это?", en: "What's this?"},
+  {ru: "В чем дело?", en: "What's up?"},
+  {ru: "Откуда ты?", en: "Where are you from?"},
+  {ru: "Где я могу арендовать машину?", en: "Where can I rent a car?"},
+  {ru: "Где это произошло?", en: "Where did it happen?"},
+  {ru: "Где ты это выучил?", en: "Where did you learn it?"},
+  {ru: "Где ты работал до этого?", en: "Where did you work before you worked here?"},
+  {ru: "Где ты живешь?", en: "Where do you live?"},
+  {ru: "Где ты был?", en: "Where were you?"},
+  {ru: "Что лучше, спагетти или куриный салат?", en: "Which is better, the spaghetti or chicken salad?"},
+  {ru: "Какой ты хочешь?", en: "Which one do you want?"},
+  {ru: "Который дешевле?", en: "Which one is cheaper?"},
+  {ru: "Который самый лучший?", en: "Which one is the best?"},
+  {ru: "В какую школу он ходит?", en: "Which school does he go to?"},
+  {ru: "Кто они?", en: "Who are they?"},
+  {ru: "Кого вы ищете?", en: "Who are you looking for?"},
+  {ru: "Кто это? (по телефону)", en: "Who is it? (Inquiring about who is on the phone)"},
+  {ru: "Кто звонит?", en: "Who's calling?"},
+  {ru: "Кто тот мужчина вон там?", en: "Who's that man over there?"},
+  {ru: "Кто тебя этому научил?", en: "Who taught you that?"},
+  {ru: "Почему ты это сказал?", en: "Why did you say that?"},
+  {ru: "Ты передашь мне соль, пожалуйста?", en: "Will you pass me the salt please?"},
+  {ru: "Ты положишь это в машину для меня?", en: "Will you put this in the car for me?"},
+  {ru: "Не попросишь его перезвонить мне, пожалуйста?", en: "Would you ask him to call me back please?"},
+  {ru: "У тебя очень хорошая машина", en: "You have a very nice car."},
+  {ru: "Ты похож на мою сестру", en: "You look like my sister."},
+  {ru: "6 долларов в час", en: "6 dollars per hour."},
+  {ru: "Ты ждешь кого-то?", en: "Are you waiting for someone?"},
+  {ru: "Ты сегодня работаешь?", en: "Are you working today?"},
+  {ru: "Принеси мне рубашку, пожалуйста", en: "Bring me my shirt please."},
+  {ru: "Ты любишь смотреть телевизор?", en: "Do you like to watch TV?"},
+  {ru: "Тебе нравится твой начальник?", en: "Do you like your boss?"},
+  {ru: "Ты закончил учиться?", en: "Have you finished studying?"},
+  {ru: "Он инженер", en: "He's an Engineer."},
+  {ru: "Он очень трудолюбивый", en: "He's very hard working."},
+  {ru: "Он работает в компьютерной компании в Нью-Йорке", en: "He works at a computer company in New York."},
+  {ru: "Как долго ты здесь работаешь?", en: "How long have you worked here?"},
+  {ru: "Сколько часов в неделю вы работаете?", en: "How many hours a week do you work?"},
+  {ru: "Сколько у тебя денег?", en: "How much money do you have?"},
+  {ru: "Как погода?", en: "How's the weather?"},
+  {ru: "Как прошла поездка?", en: "How was the trip?"},
+  {ru: "Я забыл", en: "I forget."},
+  {ru: "Я в порядке", en: "I'm good."},
+  {ru: "Я готов", en: "I'm ready."},
+  {ru: "Мне еще много чего нужно купить", en: "I still have a lot of things to buy."},
+  {ru: "Я это видел", en: "I've seen it."},
+  {ru: "Кем он работает?", en: "What does he do for work?"},
+  {ru: "Кем работает твой отец?", en: "What does your father do for work?"},
+  {ru: "Кем вы работаете?", en: "What do you do for work?"},
+  {ru: "Кем работают ваши родители?", en: "What do your parents do for work?"},
+  {ru: "В чем дело?", en: "What's the matter?"},
+  {ru: "Во сколько ты ходишь на работу каждый день?", en: "What time do you go to work everyday?"},
+  {ru: "Когда ты приезжаешь в США?", en: "When do you arrive in the U.S.?"},
+  {ru: "Когда ты заканчиваешь работу?", en: "When do you get off work?"},
+  {ru: "Куда ты это положил?", en: "Where did you put it?"},
+  {ru: "Где болит?", en: "Where does it hurt?"},
+  {ru: "Куда ты хочешь пойти?", en: "Where do you want to go?"},
+  {ru: "Иди сюда", en: "Come here."},
+  {ru: "Часто зимой идет снег в Массачусетсе?", en: "Does it often snow in the winter in Massachusetts?"},
+  {ru: "Ты думаешь, сегодня пойдет дождь?", en: "Do you think it'll rain today?"},
+  {ru: "Ты думаешь, завтра пойдет дождь?", en: "Do you think it's going to rain tomorrow?"},
+  {ru: "Как бизнес?", en: "How's business?"},
+  {ru: "Это близко?", en: "Is it close?"},
+  {ru: "Это возможно?", en: "Is it possible?"},
+  {ru: "Это готово?", en: "Is it ready?"},
+  {ru: "Это стоит 20 долларов в час", en: "It costs 20 dollars per hour."},
+  {ru: "Болит здесь", en: "It hurts here."},
+  {ru: "Это далеко отсюда", en: "It's far from here."},
+  {ru: "Сегодня будет жарко", en: "It's going to be hot today (It will be hot today)"},
+  {ru: "Это к северу отсюда", en: "It's north of here."},
+  {ru: "Это вон там", en: "It's over there."},
+  {ru: "Идет дождь", en: "It's raining."},
+  {ru: "Слишком поздно", en: "It's too late."},
+  {ru: "Это очень важно", en: "It's very important."},
+  {ru: "Это скоро прибудет", en: "It will arrive shortly."},
+  {ru: "Дороги скользкие", en: "The roads are slippery."},
+  {ru: "Какова стоимость номера?", en: "What's the room rate?"},
+  {ru: "Какая погода будет завтра?", en: "What will the weather be like tomorrow?"},
+];
+let current = 0, assembledWords = [], wordOrder = [], prevIdx = -1, allowInput = true;
+
+// Функция для озвучивания отдельного слова
+function playWord(word){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new window.SpeechSynthesisUtterance(word);
+  u.lang="en-US";
+  const voices = window.speechSynthesis.getVoices();
+  u.voice = voices.find(v=>v.lang && v.lang.startsWith('en')) || null;
+  window.speechSynthesis.speak(u);
+}
+
+// Схема для трёх типов предложений
+function getSentenceType(en) {
+  const base = en.replace(/[.,?!]/g, '').toLowerCase();
+  if (/^(what|where|when|how|why|who|which|whose|whom|are|is|am|does|do|did|will|can|would|should|could|must|was|were)\b/.test(base)) {
+    let begin = "";
+    if (/^(what|where|when|how|why|who|which|whose|whom)\b/.test(base))
+      begin = "Вопросительное слово + ";
+    return { type: "Вопрос", hint: `${begin}Вспомогательный глагол + подлежащее + сказуемое (+ всё остальное)`};
+  }
+  if (/(\bnot\b)|n['’]t/.test(base)) {
+    return { type: "Отрицание", hint: "Подлежащее + вспомогательный глагол + not + сказуемое (+ всё остальное)" };
+  }
+  return { type: "Утверждение", hint: "Подлежащее + (вспомогательный глагол) + сказуемое (+ всё остальное)" };
+}
+
+function shuffle(arr) {
+  for(let i = arr.length-1; i > 0; i--) {
+    let j = Math.floor(Math.random()*(i+1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+function showSentence(idx) {
+  current = idx;
+  prevIdx = idx;
+  assembledWords = [];
+  allowInput = true;
+  document.getElementById('russianSentence').innerText = sentences[idx].ru;
+  document.getElementById('result').innerText = '';
+  document.getElementById('assembled').innerText = '';
+
+  const info = getSentenceType(sentences[idx].en);
+
+  // В схеме явно разъясняем где может быть вопросительное слово
+  document.getElementById('scheme').innerText =
+    info.hint +
+    (info.type === "Вопрос"
+      ? " (если есть вопросительное слово — What, Where, Why, When, How и др., оно ставится первым)"
+      : "");
+
+  let words = sentences[idx].en.replace(/[.,?!]/g, '').split(' ');
+  wordOrder = words.slice();
+  let shuffled = words.slice(); shuffle(shuffled);
+
+  let html = '';
+  shuffled.forEach(word => {
+    html += `
+      <span class="word-cell">
+        <button class="word-btn" type="button" onclick="selectWord(this, '${word.replaceAll("'", "\\'")}')">${word}</button>
+        <button class="sound-btn" onclick="event.stopPropagation();playWord('${word.replaceAll("'", "\\'")}');return false;" title="Прослушать слово">🔊</button>
+      </span>
+    `;
+  });
+  document.getElementById('words').innerHTML = html;
+  updateButtonsState();
+
+  // Расширенная справка
+  document.getElementById('hintblock').innerHTML =
+    `<b>Тип предложения:</b> ${info.type}<br>
+    <hr>
+    <b>Что такое вспомогательные глаголы?</b><br>
+    <span style="color:#145ca1">
+      Вспомогательные глаголы (auxiliary verbs) — это служебные слова, которые сами по себе не переводятся, но помогают строить вопросы, отрицания и некоторые времена. <br>
+    </span>
+    <b>Примеры (без "have"):</b> <span style="color:#2057b4"><b>do</b>, <b>does</b>, <b>did</b>, <b>will</b>, <b>am</b>, <b>is</b>, <b>are</b>, <b>was</b>, <b>were</b>, <b>can</b>, <b>could</b>, <b>shall</b>, <b>should</b>, <b>would</b>, <b>must</b></span>.<br>
+    <br>
+    <b>В каждом предложении ставится только <u>один</u> вспомогательный глагол!</b><br>
+    <br>
+    <b>Как строится вопрос:</b><br>
+    Если есть вопросительное слово (<span style="color:#155c85">What, Where, Why, When, How, Who</span> и др.), оно идёт в <b>самом начале</b>.<br>
+    Затем — <b>вспомогательный глагол</b>, подлежащее и смысловой глагол.<br>
+    <b>Пример (с вопросительным словом):</b> <span style="color:#2a8649">Where do you live?</span><br>
+    <b>Пример (без):</b> <span style="color:#2a8649">Do you play football?</span><br>
+    <br>
+    <span style="color:#ba2323; font-weight:bold;">ВАЖНО! Do, does, did не ставятся в обычном (утвердительном) предложении!</span> Используйте их только для <b>вопросов</b> и <b>отрицаний</b>.<br>
+    <b>Пример (утверждение):</b> I play football.<br>
+    <b>Пример (отрицание):</b> I do not play football.<br>
+    <b>Пример (вопрос):</b> Do you play football?<br>
+    `;
+}
+
+function updateButtonsState() {
+  const btns = document.querySelectorAll('.word-btn');
+  let expected = wordOrder[assembledWords.length];
+  btns.forEach(btn => {
+    btn.disabled = (btn.innerText !== expected && !btn.disabled) || !allowInput;
+  });
+}
+
+function selectWord(btn, word) {
+  if(!allowInput || btn.disabled) return;
+  if (word !== wordOrder[assembledWords.length]) {
+    return;
+  }
+  assembledWords.push(word);
+  btn.disabled = true;
+  document.getElementById('assembled').innerText = assembledWords.join(' ');
+  document.getElementById('result').innerText = '';
+  updateButtonsState();
+
+  if(assembledWords.length === wordOrder.length) {
+    allowInput = false;
+    playSound();
+    setTimeout(() => checkSentence(true), 300);
+  }
+}
+
+function checkSentence(autoNext=false){
+  let correct = sentences[current].en.replace(/[.,?!]/g, '').trim().replace(/\s+/g, ' ').toLowerCase();
+  let user = assembledWords.join(' ').trim().toLowerCase();
+
+  if(!user){
+    document.getElementById('result').innerText = "Пожалуйста, соберите предложение.";
+    allowInput = true;
+    updateButtonsState();
+    return;
+  }
+
+  if(user === correct){
+      document.getElementById('result').innerText = "✅ Правильно!";
+      if(autoNext) setTimeout(() => nextSentence(false), 1100);
+  } else {
+      document.getElementById('result').innerText = "❌ Ошибка в логике сборки.";
+      allowInput = true;
+      clearAssembled();
+  }
+}
+
+function clearAssembled() {
+  allowInput = true;
+  assembledWords = [];
+  document.getElementById('assembled').innerText = '';
+  document.querySelectorAll('.word-btn').forEach(b => {
+      b.disabled = false;
+  });
+  updateButtonsState();
+  document.getElementById('result').innerText = '';
+}
+
+function nextSentence(direct=false) {
+  let next;
+  do {
+    next = Math.floor(Math.random() * sentences.length);
+  } while(next === prevIdx && sentences.length>1);
+  showSentence(next);
+  document.getElementById('result').innerText = '';
+}
+
+// Озвучка полного предложения (tts)
+function playSound(){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utt = new window.SpeechSynthesisUtterance(sentences[current].en);
+  utt.lang = "en-US";
+  const voices = window.speechSynthesis.getVoices();
+  utt.voice = voices.find(v=>v.lang && v.lang.startsWith('en')) || null;
+  window.speechSynthesis.speak(utt);
+}
+
+window.onload = () => {
+  if (window.speechSynthesis.onvoiceschanged !== undefined) {
+    window.speechSynthesis.onvoiceschanged = function(){};
+  }
+  showSentence(Math.floor(Math.random()*sentences.length));
+};
+</script>
+</body>
+</html>
