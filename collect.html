@@ -77,6 +77,13 @@
     }
     .promo-btn:hover { background: #3e82fa;}
     /* --- остальное остается как было --- */
+    h2 {
+      text-align:center;
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+      color: #2a4960;
+      font-weight:500;
+    }
     .divider {
       border: none;
       border-top: 2.5px solid #b5cef7;
@@ -144,14 +151,14 @@
       color:#fff;
       border: none;
       border-radius: 7px;
-      padding: 16px 26px; /* Увеличил padding */
-      font-size: 1.5em; /* Увеличил шрифт */
+      padding: 16px 26px;
+      font-size: 1.5em;
       margin: 0;
       cursor: pointer;
       transition: background .20s, opacity .18s;
       box-shadow:0 2px 7px #dbeafd66;
-      min-width:65px; /* Увеличил мин. ширину */
-      min-height:52px; /* Увеличил мин. высоту */
+      min-width:65px;
+      min-height:52px;
       font-weight: 500;
       position: relative;
       z-index: 1;
@@ -172,15 +179,15 @@
       color: #254696;
       border: none;
       border-radius: 7px;
-      padding: 3px 13px; /* Увеличил padding */
-      font-size: 1.3em; /* Увеличил шрифт */
+      padding: 3px 13px;
+      font-size: 1.3em;
       margin-left: 4px;
       cursor: pointer;
       vertical-align: middle;
       transition: background .17s;
       box-shadow: none;
-      min-width: 40px; /* Увеличил мин. ширину */
-      min-height: 40px; /* Увеличил мин. высоту */
+      min-width: 40px;
+      min-height: 40px;
       font-weight: 400;
     }
     .sound-btn:active { background: #c8dbf7;}
@@ -251,41 +258,43 @@
       font-style: italic;
       font-size: 0.98em;
     }
-    /* Медиазапросы для адаптивности (увеличен размер для мобильных) */
+    /* Медиазапросы для адаптивности (УСИЛИВАЕМ размер для мобильных) */
     @media (max-width: 600px) {
       .container {max-width: 99vw; margin:2px auto;}
-      .sentence { font-size:1.15em;} /* Чуть увеличил русское предложение */
+      .sentence { font-size:1.2em;} /* Немного увеличил русское предложение */
       .word-btn {
-         font-size:1.3em; /* Сделал больше на средних экранах */
-         padding:12px 10px; /* Скорректировал padding */
-         min-width:40px; min-height:36px; /* Скорректировал мин. размеры */
+         font-size:1.4em; /* Сделал БОЛЬШЕ на средних экранах */
+         padding:14px 10px; /* Скорректировал padding */
+         min-width:45px; min-height:38px; /* Скорректировал мин. размеры */
       }
       .sound-btn {
-         font-size:1.15em; /* Сделал больше на средних экранах */
-         padding:4px 8px; /* Скорректировал padding */
-         min-width:35px; min-height:35px; /* Скорректировал мин. размеры */
+         font-size:1.25em; /* Сделал БОЛЬШЕ на средних экранах */
+         padding:5px 9px; /* Скорректировал padding */
+         min-width:38px; min-height:38px; /* Скорректировал мин. размеры */
       }
+      .words { gap: 10px; } /* Чуть уменьшил gap */
       h2 {font-size:1.11em;}
       .theory {font-size:0.98em;}
       .hint-block {font-size:0.97em;}
       #scheme {font-size:.97em;}
-      .assembled {font-size:1.03em;}
+      .assembled {font-size:1.05em;} /* Чуть увеличил собранное */
       .promo-title {font-size:1.07em;}
     }
     @media (max-width:400px){
       .container{padding: 7px 1vw;}
+      .sentence {font-size: 1.1em;} /* Еще чуть увеличил русское предложение */
        .word-btn {
-         font-size: 1.15em; /* Сделал больше на маленьких экранах */
-         padding:10px 8px; /* Скорректировал padding */
-         min-width:34px; min-height:32px; /* Скорректировал мин. размеры */
+         font-size: 1.3em; /* Сделал БОЛЬШЕ на маленьких экранах */
+         padding:11px 9px; /* Скорректировал padding */
+         min-width:40px; min-height:35px; /* Скорректировал мин. размеры */
       }
       .sound-btn {
-         font-size: 1.05em; /* Сделал больше на маленьких экранах */
-         padding:3px 7px; /* Скорректировал padding */
-         min-width:30px; min-height:30px; /* Скорректировал мин. размеры */
+         font-size: 1.1em; /* Сделал БОЛЬШЕ на маленьких экранах */
+         padding:4px 8px; /* Скорректировал padding */
+         min-width:35px; min-height:35px; /* Скорректировал мин. размеры */
       }
+      .words { gap: 8px; } /* Еще чуть уменьшил gap */
       .theory {font-size:.93em;}
-      .sentence {font-size: 1.05em;} /* Чуть увеличил русское предложение */
     }
   </style>
 </head>
