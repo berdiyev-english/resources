@@ -1,6 +1,6 @@
 {
-  "name": "Английский с нуля",
-  "short_name": "B-ENG:Английский с нуля",
+  "name": "Материалы для Английского",
+  "short_name": "B-ENG:Материалы",
   "start_url": "/resources/",
   "display": "standalone",
   "background_color": "#ffffff",
