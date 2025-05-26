@@ -144,14 +144,14 @@
       color:#fff;
       border: none;
       border-radius: 7px;
-      padding: 15px 24px;
-      font-size: 1.43em;
+      padding: 16px 26px; /* Увеличил padding */
+      font-size: 1.5em; /* Увеличил шрифт */
       margin: 0;
       cursor: pointer;
       transition: background .20s, opacity .18s;
       box-shadow:0 2px 7px #dbeafd66;
-      min-width:60px;
-      min-height:48px;
+      min-width:65px; /* Увеличил мин. ширину */
+      min-height:52px; /* Увеличил мин. высоту */
       font-weight: 500;
       position: relative;
       z-index: 1;
@@ -172,15 +172,15 @@
       color: #254696;
       border: none;
       border-radius: 7px;
-      padding: 2px 12px;
-      font-size: 1.43em;
+      padding: 3px 13px; /* Увеличил padding */
+      font-size: 1.3em; /* Увеличил шрифт */
       margin-left: 4px;
       cursor: pointer;
       vertical-align: middle;
       transition: background .17s;
       box-shadow: none;
-      min-width: 38px;
-      min-height: 44px;
+      min-width: 40px; /* Увеличил мин. ширину */
+      min-height: 40px; /* Увеличил мин. высоту */
       font-weight: 400;
     }
     .sound-btn:active { background: #c8dbf7;}
@@ -251,10 +251,20 @@
       font-style: italic;
       font-size: 0.98em;
     }
+    /* Медиазапросы для адаптивности (увеличен размер для мобильных) */
     @media (max-width: 600px) {
       .container {max-width: 99vw; margin:2px auto;}
-      .sentence { font-size:1.09em;}
-      .word-btn, .sound-btn { font-size:1.08em; padding:10px 7px; min-width:36px; min-height:32px;}
+      .sentence { font-size:1.15em;} /* Чуть увеличил русское предложение */
+      .word-btn {
+         font-size:1.3em; /* Сделал больше на средних экранах */
+         padding:12px 10px; /* Скорректировал padding */
+         min-width:40px; min-height:36px; /* Скорректировал мин. размеры */
+      }
+      .sound-btn {
+         font-size:1.15em; /* Сделал больше на средних экранах */
+         padding:4px 8px; /* Скорректировал padding */
+         min-width:35px; min-height:35px; /* Скорректировал мин. размеры */
+      }
       h2 {font-size:1.11em;}
       .theory {font-size:0.98em;}
       .hint-block {font-size:0.97em;}
@@ -264,9 +274,18 @@
     }
     @media (max-width:400px){
       .container{padding: 7px 1vw;}
-      .word-btn,.sound-btn {font-size: .93em;}
+       .word-btn {
+         font-size: 1.15em; /* Сделал больше на маленьких экранах */
+         padding:10px 8px; /* Скорректировал padding */
+         min-width:34px; min-height:32px; /* Скорректировал мин. размеры */
+      }
+      .sound-btn {
+         font-size: 1.05em; /* Сделал больше на маленьких экранах */
+         padding:3px 7px; /* Скорректировал padding */
+         min-width:30px; min-height:30px; /* Скорректировал мин. размеры */
+      }
       .theory {font-size:.93em;}
-      .sentence {font-size: 1em;}
+      .sentence {font-size: 1.05em;} /* Чуть увеличил русское предложение */
     }
   </style>
 </head>
