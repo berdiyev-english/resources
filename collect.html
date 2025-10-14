@@ -4,19 +4,58 @@
   <meta charset="UTF-8">
   <title>Тренажёр: Собери английское предложение</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Шрифт -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
+    :root{
+      --glass: rgba(18,22,34,.66);
+      --line: rgba(255,255,255,.14);
+      --text: #eef1f7;
+      --maxw: 820px;
+    }
     body {
       margin:0;
       padding:0;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f0f5fa;
+      font-family: "DM Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(900px 520px at -25% -25%, rgba(34,211,238,0.10), transparent 60%),
+        radial-gradient(780px 520px at 125% -10%, rgba(16,185,129,0.08), transparent 60%),
+        linear-gradient(180deg, #0b1020 0%, #05070f 100%);
       min-height:100vh;
     }
+    /* Стильная шапка */
+    .topbar{
+      position: sticky; top: 10px; z-index: 20;
+      margin: 10px auto 10px auto; max-width: var(--maxw);
+      display: flex; align-items: center; gap: 10px; justify-content: space-between;
+      padding: 10px 12px; border-radius: 14px;
+      background: var(--glass);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 8px 40px rgba(0,0,0,.25);
+      color: var(--text);
+    }
+    .brand{
+      font-weight: 700; letter-spacing:.2px;
+    }
+    .back-btn{
+      display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+      padding:8px 12px; border-radius:10px; border:1px solid var(--line);
+      background: rgba(255,255,255,.06); color:#fff;
+      transition: filter .15s ease, transform .15s ease;
+    }
+    .back-btn:hover{ filter:brightness(0.96) }
+    .back-btn:active{ transform: translateY(1px) }
+
+    /* Контейнер оставляем белым — красиво на тёмном фоне */
     .container {
-      max-width: 500px;
+      max-width: var(--maxw);
       margin: 0 auto;
       background: #fff;
-      box-shadow: 0 2px 16px rgba(135,152,172,0.18);
+      box-shadow: 0 16px 44px rgba(0,0,0,.25);
       border-radius:15px;
       padding: 18px 8px 16px 8px;
       margin-top:20px;
@@ -26,6 +65,7 @@
       justify-content: flex-start;
       box-sizing: border-box;
     }
+
     .promo-block {
       display: flex;
       flex-direction: column;
@@ -76,7 +116,7 @@
       transition: background .18s;
     }
     .promo-btn:hover { background: #3e82fa;}
-    /* --- остальное остается как было --- */
+
     h2 {
       text-align:center;
       font-size: 1.5rem;
@@ -218,20 +258,26 @@
       margin-bottom: 4px;
     }
     .mini-btn {
-      background: #26b179;
+      background: linear-gradient(135deg, #26b179, #1f8d69);
       color: #fff;
       border: none;
       border-radius: 7px;
       padding: 9px 20px;
       font-size: 1.1em;
       cursor:pointer;
-      transition: background .20s;
+      transition: background .20s, filter .2s;
       margin-bottom:2.5px;
+      box-shadow: 0 6px 18px rgba(31,141,105,.22);
     }
+    .mini-btn:hover{ filter: brightness(.96); }
     .mini-btn:disabled {
       background:#abd7c8; opacity:.75;
     }
-    /* Теоретический блок (теперь внизу) */
+    .mini-btn-secondary{
+      background: linear-gradient(135deg, #4f46e5, #22c1c3);
+      box-shadow: 0 6px 18px rgba(79,70,229,.28);
+    }
+    /* Теория */
     .theory {
       background: #f5f7ff;
       color: #26345b;
@@ -258,100 +304,112 @@
       font-style: italic;
       font-size: 0.98em;
     }
-    /* Медиазапросы для адаптивности (УСИЛИВАЕМ размер для мобильных) */
+
+    /* Адаптив */
     @media (max-width: 600px) {
       .container {max-width: 99vw; margin:2px auto;}
-      .sentence { font-size:1.2em;} /* Немного увеличил русское предложение */
+      .sentence { font-size:1.2em;}
       .word-btn {
-         font-size:1.4em; /* Сделал БОЛЬШЕ на средних экранах */
-         padding:14px 10px; /* Скорректировал padding */
-         min-width:45px; min-height:38px; /* Скорректировал мин. размеры */
+         font-size:1.4em;
+         padding:14px 10px;
+         min-width:45px; min-height:38px;
       }
       .sound-btn {
-         font-size:1.25em; /* Сделал БОЛЬШЕ на средних экранах */
-         padding:5px 9px; /* Скорректировал padding */
-         min-width:38px; min-height:38px; /* Скорректировал мин. размеры */
+         font-size:1.25em;
+         padding:5px 9px;
+         min-width:38px; min-height:38px;
       }
-      .words { gap: 10px; } /* Чуть уменьшил gap */
+      .words { gap: 10px; }
       h2 {font-size:1.11em;}
       .theory {font-size:0.98em;}
       .hint-block {font-size:0.97em;}
       #scheme {font-size:.97em;}
-      .assembled {font-size:1.05em;} /* Чуть увеличил собранное */
+      .assembled {font-size:1.05em;}
       .promo-title {font-size:1.07em;}
     }
     @media (max-width:400px){
       .container{padding: 7px 1vw;}
-      .sentence {font-size: 1.1em;} /* Еще чуть увеличил русское предложение */
-       .word-btn {
-         font-size: 1.3em; /* Сделал БОЛЬШЕ на маленьких экранах */
-         padding:11px 9px; /* Скорректировал padding */
-         min-width:40px; min-height:35px; /* Скорректировал мин. размеры */
+      .sentence {font-size: 1.1em;}
+      .word-btn {
+         font-size: 1.3em;
+         padding:11px 9px;
+         min-width:40px; min-height:35px;
       }
       .sound-btn {
-         font-size: 1.1em; /* Сделал БОЛЬШЕ на маленьких экранах */
-         padding:4px 8px; /* Скорректировал padding */
-         min-width:35px; min-height:35px; /* Скорректировал мин. размеры */
+         font-size: 1.1em;
+         padding:4px 8px;
+         min-width:35px; min-height:35px;
       }
-      .words { gap: 8px; } /* Еще чуть уменьшил gap */
+      .words { gap: 8px; }
       .theory {font-size:.93em;}
     }
   </style>
 </head>
 <body>
-<div class="container">
 
-  <!-- РЕКЛАМНЫЙ/ПРИГЛАСИТЕЛЬНЫЙ БЛОК С ФОТО/КНОПКОЙ -->
-  <div class="promo-block">
-    <img class="promo-avatar"
-    src="https://static.tildacdn.info/tild3532-3739-4433-a633-613530366563/-/resize/504x/IMG_7738.PNG" alt="преподаватель">
-    <div class="promo-title">
-      Соберите английское предложение
+  <!-- Шапка -->
+  <header class="topbar">
+    <button id="backBtn" class="back-btn" title="Назад">← Назад</button>
+    <div class="brand">B‑ENG • Sentence Builder</div>
+  </header>
+
+  <div class="container">
+    <!-- Рекламный блок -->
+    <div class="promo-block">
+      <img class="promo-avatar"
+        src="https://static.tildacdn.info/tild3532-3739-4433-a633-613530366563/-/resize/504x/IMG_7738.PNG" alt="преподаватель">
+      <div class="promo-title">
+        Соберите английское предложение
+      </div>
+      <div class="promo-desc">
+        Очень хорошее упражнение, чтобы начать говорить на английском и понимать его
+      </div>
+      <!-- Открывается в этой же вкладке -->
+      <a class="promo-btn" href="https://t.me/+NvMX2DrTa3w1NTVi">
+        Бесплатный урок Английского
+      </a>
     </div>
-    <div class="promo-desc">
-      Очень хорошее упражнение, чтобы начать говорить на английском и понимать его
+
+    <!-- Тренажёр -->
+    <div class="sentence" id="russianSentence"></div>
+    <div class="assembled" id="assembled"></div>
+    <div id="scheme"></div>
+    <div class="words" id="words"></div>
+
+    <div class="controls">
+      <button class="mini-btn" onclick="clearAssembled()">Сбросить</button>
+      <button class="mini-btn" onclick="nextSentence(true)">Другое предложение</button>
+      <button class="mini-btn" onclick="playSound()" title="Озвучить перевод">🔊</button>
+      <button class="mini-btn mini-btn-secondary" onclick="playSentenceByWords()" title="Озвучить по словам">🔊 по словам</button>
+      <button class="mini-btn" style="background:#9aa3b2" onclick="stopPlayback()" title="Остановить озвучку">⏹ Стоп</button>
     </div>
-    <a class="promo-btn" href="https://t.me/+NvMX2DrTa3w1NTVi" target="_blank">
-      Бесплатный урок Английского
-    </a>
-  </div>
-  <!-- КОНЕЦ РЕКЛАМНОГО БЛОКА -->
 
-  <!-- сам тренажёр -->
-  <div class="sentence" id="russianSentence"></div>
-  <div class="assembled" id="assembled"></div>
-  <div id="scheme"></div>
-  <div class="words" id="words"></div>
+    <div class="result" id="result"></div>
+    <div class="hint-block" id="hintblock"></div>
 
-  <div class="controls">
-    <button class="mini-btn" onclick="clearAssembled()">Сбросить</button>
-    <button class="mini-btn" onclick="nextSentence(true)">Другое предложение</button>
-    <button class="mini-btn" onclick="playSound()" title="Озвучить перевод">🔊</button>
+    <div class="theory">
+      <div class="theory-title">Что такое вспомогательные глаголы?</div>
+      Вспомогательные глаголы (<strong>auxiliary verbs</strong>) — это служебные слова, которые сами по себе не переводятся, но&nbsp;помогают строить <strong>вопросы</strong>, <strong>отрицания</strong> и&nbsp;некоторые времена.<br>
+      <strong>Примеры</strong> (без "have"): <span style="color:#216"><b>do</b></span>, <span style="color:#216"><b>does</b></span>, <span style="color:#216"><b>did</b></span>, <span style="color:#216"><b>will</b></span>, <span style="color:#216"><b>am</b></span>, <span style="color:#216"><b>is</b></span>, <span style="color:#216"><b>are</b></span>, <span style="color:#216"><b>was</b></span>, <span style="color:#216"><b>were</b></span>, <span style="color:#216"><b>can</b></span>, <span style="color:#216"><b>could</b></span>, <span style="color:#216"><b>shall</b></span>, <span style="color:#216"><b>should</b></span>, <span style="color:#216"><b>would</b></span>, <span style="color:#216"><b>must</b></span>.
+      <span class="remark">В каждом предложении ставится только <b>один вспомогательный глагол!</b></span>
+      <br><br>
+      <strong>Как строится вопрос:</strong><br>
+      <ul>
+        <li>Если есть <b>вопросительное слово</b> (What, Where, Why, When, How, Who и др.), оно идёт в самом начале.</li>
+        <li>Затем — <b>вспомогательный глагол</b>, <b>подлежащее</b> и <b>смысловой глагол</b>.</li>
+        <li>Пример с вопросительным словом: <span style="color: #173"><b>Where do you live?</b></span></li>
+        <li>Пример без вопросительного: <span style="color: #173"><b>Do you play football?</b></span></li>
+      </ul>
+      <span class="remark"><b>ВАЖНО!</b> <b>Do, does, did</b> не ставятся в обычном (утвердительном) предложении! Используйте их только для вопросов и отрицаний.<br>
+      Пример (утверждение): I play football.<br>
+      Пример (отрицание): I do not play football.<br>
+      Пример (вопрос): Do you play football?
+      </span>
+    </div>
   </div>
-  <div class="result" id="result"></div>
-  <div class="hint-block" id="hintblock"></div>
-  <div class="theory">
-    <div class="theory-title">Что такое вспомогательные глаголы?</div>
-    Вспомогательные глаголы (<strong>auxiliary verbs</strong>) — это служебные слова, которые сами по себе не переводятся, но&nbsp;помогают строить <strong>вопросы</strong>, <strong>отрицания</strong> и&nbsp;некоторые времена.<br>
-    <strong>Примеры</strong> (без "have"): <span style="color:#216"><b>do</b></span>, <span style="color:#216"><b>does</b></span>, <span style="color:#216"><b>did</b></span>, <span style="color:#216"><b>will</b></span>, <span style="color:#216"><b>am</b></span>, <span style="color:#216"><b>is</b></span>, <span style="color:#216"><b>are</b></span>, <span style="color:#216"><b>was</b></span>, <span style="color:#216"><b>were</b></span>, <span style="color:#216"><b>can</b></span>, <span style="color:#216"><b>could</b></span>, <span style="color:#216"><b>shall</b></span>, <span style="color:#216"><b>should</b></span>, <span style="color:#216"><b>would</b></span>, <span style="color:#216"><b>must</b></span>.
-    <span class="remark">В каждом предложении ставится только <b>один вспомогательный глагол!</b></span>
-    <br><br>
-    <strong>Как строится вопрос:</strong><br>
-    <ul>
-      <li>Если есть <b>вопросительное слово</b> (What, Where, Why, When, How, Who и др.), оно идёт в самом начале.</li>
-      <li>Затем — <b>вспомогательный глагол</b>, <b>подлежащее</b> и <b>смысловой глагол</b>.</li>
-      <li>Пример с вопросительным словом: <span style="color: #173"><b>Where do you live?</b></span></li>
-      <li>Пример без вопросительного: <span style="color: #173"><b>Do you play football?</b></span></li>
-    </ul>
-    <span class="remark"><b>ВАЖНО!</b> <b>Do, does, did</b> не ставятся в обычном (утвердительном) предложении! Используйте их только для вопросов и отрицаний.<br>
-    Пример (утверждение): I play football.<br>
-    Пример (отрицание): I do not play football.<br>
-    Пример (вопрос): Do you play football?
-    </span>
-  </div>
-</div>
+
 <script>
-// --- весь JS для тренажёра ---
+// ====== ДАННЫЕ ======
 const sentences = [
   {ru: "Я буду читать книгу.", en: "I will read a book."},
   {ru: "Ты будешь пить чай?", en: "Will you drink tea?"},
@@ -968,7 +1026,7 @@ const sentences = [
   {ru: "Как ты это произносишь?", en: "How do you pronounce that?"},
   {ru: "Как сказать это по-английски?", en: "How do you say it in English?"},
   {ru: "Как ты это произнесешь по буквам?", en: "How do you spell it?"},
-  {ru: "Как ты произнесешь по буквам слово \"Сиэттл\"?", en: "How do you spell the word \"Seattle?"},
+  {ru: "Как ты произнесешь по буквам слово \"Сиэттл\"?", en: "How do you spell the word \"Seattle\"?"},
   {ru: "Я умею плавать", en: "I can swim."},
   {ru: "Я не ясно тебя слышу", en: "I can't hear you clearly."},
   {ru: "Я не против", en: "I don't mind."},
@@ -1167,20 +1225,95 @@ const sentences = [
   {ru: "Какова стоимость номера?", en: "What's the room rate?"},
   {ru: "Какая погода будет завтра?", en: "What will the weather be like tomorrow?"},
 ];
+
+// ====== СОСТОЯНИЕ ======
 let current = 0, assembledWords = [], wordOrder = [], prevIdx = -1, allowInput = true;
 let usedWordByIndex = [];
 
-function playWord(word){
-  if(!('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
-  const u = new window.SpeechSynthesisUtterance(word);
-  u.lang="en-US";
-  u.rate = 0.7;
-  const voices = window.speechSynthesis.getVoices();
-  u.voice = voices.find(v=>v.lang && v.lang.startsWith('en')) || null;
-  window.speechSynthesis.speak(u);
+// ====== АУДИО: Wooordhunt MP3 + fallback TTS ======
+let currentAudio = null;
+let chainPlaying = false, chainAbort = false;
+
+function sanitizeWord(raw){
+  return (raw||'').toLowerCase().replace(/[^a-z]/g,'');
 }
 
+function playWordMP3(word, accent='us'){
+  return new Promise(resolve=>{
+    const clean = sanitizeWord(word);
+    if (!clean) return resolve(false);
+    const url = `https://wooordhunt.ru/data/sound/sow/${accent}/${clean}.mp3`;
+    const audio = new Audio();
+    audio.src = url;
+    audio.preload = 'none';
+    currentAudio = audio;
+    audio.onended = ()=> resolve(true);
+    audio.onerror = ()=> resolve(false);
+    audio.onabort = ()=> resolve(false);
+    audio.play().catch(()=> resolve(false));
+  });
+}
+
+function playTTS(word, rate=0.9){
+  return new Promise(resolve=>{
+    if(!('speechSynthesis' in window)) return resolve(false);
+    try{
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(word);
+      u.lang = "en-US";
+      u.rate = rate;
+      const voices = window.speechSynthesis.getVoices();
+      u.voice = voices.find(v=>v.lang && v.lang.startsWith('en')) || null;
+      u.onend = ()=> resolve(true);
+      u.onerror = ()=> resolve(false);
+      window.speechSynthesis.speak(u);
+    }catch(e){ resolve(false); }
+  });
+}
+
+// Публичная: проиграть слово (MP3 US -> MP3 UK -> TTS)
+async function playWord(word){
+  stopPlayback(); // прерываем возможную цепочку
+  const okUs = await playWordMP3(word, 'us');
+  if (okUs) return;
+  const okUk = await playWordMP3(word, 'uk');
+  if (okUk) return;
+  await playTTS(word);
+}
+
+async function playWoordhuntOrTTS(word){
+  const okUs = await playWordMP3(word, 'us');
+  if (okUs) return true;
+  const okUk = await playWordMP3(word, 'uk');
+  if (okUk) return true;
+  return await playTTS(word);
+}
+
+async function playSentenceByWords(){
+  if (chainPlaying) return;
+  chainPlaying = true; chainAbort = false;
+
+  const text = sentences[current].en;
+  const wordsArray = text.split(/\s+/);
+
+  for (let i=0; i<wordsArray.length; i++){
+    if (chainAbort) break;
+    const raw = wordsArray[i];
+    await playWoordhuntOrTTS(raw);
+    await new Promise(r=> setTimeout(r, 60));
+  }
+  chainPlaying = false;
+}
+
+function stopPlayback(){
+  chainAbort = true;
+  try{
+    if (currentAudio){ currentAudio.pause(); currentAudio.currentTime = 0; }
+  }catch(e){}
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+}
+
+// ====== ЛОГИКА ТРЕНАЖЁРА ======
 function getSentenceType(en) {
   const base = en.replace(/[.,?!]/g, '').toLowerCase();
   if (/^(what|where|when|how|why|who|which|whose|whom|are|is|am|does|do|did|will|can|would|should|could|must|was|were)\b/.test(base)) {
@@ -1316,6 +1449,7 @@ function nextSentence(direct=false) {
 }
 
 function playSound(){
+  stopPlayback();
   if(!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
   const utt = new window.SpeechSynthesisUtterance(sentences[current].en);
@@ -1326,6 +1460,36 @@ function playSound(){
   window.speechSynthesis.speak(utt);
 }
 
+// ====== НАВИГАЦИЯ/СЕРВИС ======
+// Кнопка назад
+(function initBack(){
+  const backBtn = document.getElementById('backBtn');
+  if (!backBtn) return;
+  backBtn.addEventListener('click', ()=>{
+    if (document.referrer && history.length > 1) history.back();
+    else location.href = '/';
+  });
+})();
+
+// Убрать target="_blank" у всех ссылок (на всякий случай)
+(function openLinksInSameTab(){
+  document.querySelectorAll('a[target="_blank"]').forEach(a => a.removeAttribute('target'));
+  const mo = new MutationObserver((mutations)=>{
+    for (const m of mutations) {
+      if (m.type === 'childList') {
+        m.addedNodes.forEach(n=>{
+          if (n.nodeType === 1) n.querySelectorAll?.('a[target="_blank"]').forEach(a=>a.removeAttribute('target'));
+        });
+      }
+      if (m.type === 'attributes' && m.target.matches?.('a[target="_blank"]')) {
+        m.target.removeAttribute('target');
+      }
+    }
+  });
+  mo.observe(document.body, {subtree:true, childList:true, attributes:true, attributeFilter:['target']});
+})();
+
+// Старт
 window.onload = () => {
   if (window.speechSynthesis.onvoiceschanged !== undefined) {
     window.speechSynthesis.onvoiceschanged = function(){};
