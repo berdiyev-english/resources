@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>To Be English — материалы и инструменты</title>
-  <meta name="theme-color" content="#0a0e1a"/>
+  <title>B‑eng — материалы и инструменты</title>
   <meta name="format-detection" content="telephone=no"/>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#0a0e1a"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
 
   <style>
     :root{
-      /* Снял «зелёные засветы»: ослабил и утащил радиальные пятна в стороны */
+      /* Фон */
       --bg-grad:
         radial-gradient(900px 520px at -25% -25%, rgba(34,211,238,0.10), transparent 60%),
         radial-gradient(780px 520px at 125% -10%, rgba(16,185,129,0.08), transparent 60%),
@@ -20,30 +20,32 @@
       --muted: #a9b3c2;
       --accent: #ff623b;
 
-      /* Более тёмное стекло, чтобы фон «не простреливал» */
-      --card: rgba(12,14,22,.72);
+      --card: rgba(12,14,22,.78);
       --line: rgba(255,255,255,.14);
       --line-soft: rgba(255,255,255,.10);
       --glass: rgba(18,22,34,.66);
 
       --safe-bottom: env(safe-area-inset-bottom, 0px);
 
-      /* Liquid Glass для нижнего меню */
+      /* Нижнее меню — настраиваемые размеры */
+      --nav-h: 84px;        /* высота меню */
+      --items: 5;           /* пунктов меню */
+      --knob-xpad: 8px;     /* горизонтальный отступ бегунка от краёв трека */
+      --knob-ypad: 6px;     /* вертикальный зазор (0 = бегунок максимально высокий) */
+      --knob-scale: 0.94;   /* ширина бегунка относительно колонки */
+      --knob-origin: right; /* направление “пружинки” */
+      --knobR: 16px;        /* радиус бегунка и рамки активной иконки */
+
       --glass-surface: #cbd0d6;
-      --light: #fff;
-      --dark: #000;
-      --glass-reflex-dark: 2;
-      --glass-reflex-light: .35;
+      --light: #fff; --dark: #000;
+      --glass-reflex-dark: 2; --glass-reflex-light: .35;
       --saturation: 160%;
 
-      --nav-h: 86px;
       --max: 1120px;
 
-      /* Размеры фото — ещё меньше */
-      --imgH: 450px;   /* десктоп */
-      --imgH-m: 390px;  /* мобильный */
-      --heroSize: 72px;
-      --heroSize-m: 64px;
+      /* Размер фото в карточках */
+      --imgH: 450px;   /* desktop */
+      --imgH-m: 390px; /* mobile  */
     }
 
     *{ box-sizing: border-box }
@@ -53,6 +55,8 @@
       font-family:"DM Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       background: var(--bg-grad);
       color: var(--text);
+      font-size: 17px;
+      line-height: 1.6;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
     }
@@ -64,27 +68,28 @@
     .header-bar{
       max-width: var(--max); margin: 0 auto;
       display:flex; align-items:center; justify-content:space-between; gap:10px;
-      padding:10px 14px; border-radius: 18px;
+      padding:12px 16px; border-radius: 18px;
       background: var(--glass);
       border: 1px solid var(--line);
       backdrop-filter: blur(14px);
       box-shadow: 0 8px 40px rgba(0,0,0,.25);
     }
-    .brand{ text-decoration:none; color:inherit; font-weight:700; letter-spacing:.2px; }
-    .top-nav{ display:flex; flex-wrap:wrap; gap:8px; }
+    .brand{ text-decoration:none; color:inherit; font-weight:700; letter-spacing:.2px; font-size:18px; }
+    .top-nav{ display:flex; gap:10px; }
     .top-link{
       display:inline-flex; align-items:center;
       padding:8px 12px; border-radius:12px;
       border:1px solid var(--line);
       background: rgba(255,255,255,.06);
-      color:#fff;
+      color:#fff; text-decoration:none;
+      font-size:14px;
     }
     .top-link:hover{ background: rgba(255,255,255,.10); }
 
     /* Layout */
-    main{ max-width: var(--max); margin:0 auto; padding: 14px 16px calc(var(--nav-h) + 48px + var(--safe-bottom)); }
+    main{ max-width: var(--max); margin:0 auto; padding: 14px 16px calc(var(--nav-h) + 44px + var(--safe-bottom)); }
     .section{ margin: 18px 0 26px; }
-    .section h2{ margin: 10px 0 12px; font-size: 22px; }
+    .section h2{ margin: 6px 0 10px; font-size: 24px; }
     .lead{ color: var(--muted); margin: 8px 0 16px; }
 
     .grid{ display:grid; gap: 16px; grid-template-columns: repeat(12, 1fr); }
@@ -102,7 +107,7 @@
       box-shadow: 0 10px 30px rgba(0,0,0,.22);
       overflow:hidden;
     }
-    .pad{ padding: 14px; }
+    .pad{ padding: 16px; }
     .glass h3{ margin: 2px 0 6px; font-size: 18px }
     .glass p { margin: 0 0 10px; color: var(--muted) }
 
@@ -117,53 +122,61 @@
     }
     .btn:hover{ filter:brightness(0.96) }
     .btn:active{ transform: translateY(1px) }
-    .btn-ghost{
-      background: transparent; color: var(--text);
-      border-color: var(--line);
-    }
+    .btn-ghost{ background: transparent; color: var(--text); border-color: var(--line); }
     .rowBtns{ display:flex; flex-wrap:wrap; gap:8px }
 
     .hr{ height:1px; background: var(--line-soft); margin: 16px 0 10px; border-radius: 1px; }
-    .small-note{ color: var(--muted); font-size: 12px; }
+    .small-note{ color: var(--muted); font-size: 13px; }
 
-    /* Switcher (tabs-like buttons) */
+    /* Tags */
+    .tag{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color:#fff; font-size:12.5px;
+    }
+    .i-square{
+      width:12px; height:12px; display:inline-block; border-radius:3px;
+      background: linear-gradient(135deg, rgba(34,211,238,.7), rgba(16,185,129,.6));
+    }
+    .i-dot{
+      width:13px; height:13px; display:inline-block; border-radius:50%;
+      background: rgba(34,211,238,.22); border:1px solid rgba(34,211,238,.55);
+      position:relative; top:2px;
+    }
+    .i-dot:after{
+      content:''; position:absolute; left:3px; top:3px; width:5px; height:5px; border-radius:2px;
+      background: rgba(34,211,238,.95);
+    }
+
+    /* Pills */
     .mode-switch{ display:flex; flex-wrap:wrap; gap:6px; }
     .mode-btn{
-      display:inline-flex; align-items:center; gap:6px;
+      display:inline-flex; align-items:center; gap:6px; cursor:pointer;
       padding: 7px 10px; border-radius: 10px;
       border: 1px solid var(--line);
       background: rgba(255,255,255,.06);
-      color: #fff; opacity:.95;
-      user-select:none; font-size:13px;
+      color: #fff; opacity:.95; user-select:none; font-size:13px;
     }
-    .mode-btn.active{
-      background: #fff; color:#000; border-color: transparent;
-      box-shadow: 0 10px 24px rgba(255,255,255,.10);
-    }
+    .mode-btn.active{ background: #fff; color:#000; border-color: transparent; box-shadow: 0 10px 24px rgba(255,255,255,.10); }
 
-    /* Media (как в твоём 2‑м сайте): фото целиком, без обрезки,
-       контейнер по контенту, невысокие изображения */
+    /* Media cards */
     .media-frame{
       position: relative;
       border-radius: 14px;
       overflow: hidden;
       border: 1px solid var(--line);
       background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.04));
-      display: inline-block;  /* чтобы высота шла от картинки */
-      padding:6px;
+      display: inline-block; padding:6px;
     }
     .media-fit{ position: static; display:block; line-height: 0; }
     .media-img{
-      display: block;
-      width: auto;
-      height: auto;
-      max-width: 100%;
-      max-height: var(--imgH);
+      display: block; width: auto; height: auto;
+      max-width: 100%; max-height: var(--imgH);
       object-fit: contain;
     }
-    @media (max-width: 900px){
-      .media-img{ max-height: var(--imgH-m); }
-    }
+    @media (max-width: 900px){ .media-img{ max-height: var(--imgH-m); } }
 
     /* Радио‑табы и панели */
     .tabs-input{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); clip-path: inset(100%); white-space:nowrap; }
@@ -175,54 +188,184 @@
     #tab-practice:checked ~ main .panel[data-panel="practice"],
     #tab-speak:checked    ~ main .panel[data-panel="speak"]{ display:block; }
 
-    /* Bottom nav — Liquid Glass */
+    /* Карточки‑переключатели: показываем активную */
+    .cards[data-group] > article{ display:none; }
+    .cards[data-group] > article.active{ display:block; }
+
+    /* ===== Нижнее меню — Liquid Glass, высокая подсветка, точное совпадение с рамкой ===== */
     .bottomnav{
       position: fixed;
-      left:50%; bottom: calc(10px + var(--safe-bottom));
-      translate: -50% 0; z-index: 50;
+      left:50%; bottom: calc(6px + var(--safe-bottom)); translate: -50% 0; z-index: 50;
       width: min(760px, 94vw); height: var(--nav-h);
-      padding: 10px 12px; border-radius: 22px;
+      padding: 6px 10px; border-radius: 22px;
       background: color-mix(in srgb, var(--glass-surface) 12%, transparent);
       backdrop-filter: blur(10px) saturate(var(--saturation));
       -webkit-backdrop-filter: blur(10px) saturate(var(--saturation));
       box-shadow:
         inset 0 0 0 1px color-mix(in srgb, var(--light) calc(var(--glass-reflex-light)*10%), transparent),
-        inset 2px 3px 0px -2px color-mix(in srgb, var(--light) calc(var(--glass-reflex-light)*90%), transparent),
-        inset -2px -2px 0px -2px color-mix(in srgb, var(--light) calc(var(--glass-reflex-light)*80%), transparent),
-        inset -3px -8px 1px -6px color-mix(in srgb, var(--light) calc(var(--glass-reflex-light)*60%), transparent),
-        inset -0.3px -1px 4px 0px color-mix(in srgb, var(--dark) calc(var(--glass-reflex-dark)*12%), transparent),
-        inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--dark) calc(var(--glass-reflex-dark)*20%), transparent),
-        inset 0px 3px 4px -2px color-mix(in srgb, var(--dark) calc(var(--glass-reflex-dark)*20%), transparent),
-        0px 6px 16px 0px color-mix(in srgb, var(--dark) calc(var(--glass-reflex-dark)*10%), transparent);
-      display:flex; align-items:stretch;
+        inset 2px 1px 0px -1px color-mix(in srgb, var(--light) calc(var(--glass-reflex-light)*80%), transparent),
+        inset -1px -1px 0px -1px color-mix(in srgb, var(--light) calc(var(--glass-reflex-light)*70%), transparent),
+        inset 0 0 3px 0px color-mix(in srgb, var(--dark) calc(var(--glass-reflex-dark)*8%), transparent),
+        0px 6px 16px 0px rgba(0,0,0,.25);
+      display:flex; align-items:center;
+
+      /* общие вычисления для бегунка и рамки иконки */
+      --cellW: calc((100% - var(--knob-xpad)*2)/var(--items));
+      --knobW: calc(var(--cellW) * var(--knob-scale));
+      --knobH: calc(100% - var(--knob-ypad)*2);
+      --knobOffset: calc((var(--cellW) - var(--knobW)) / 2);
     }
-    .bottomnav__track{ position:relative; flex:1; border-radius:16px; }
+    .bottomnav__track{ position:relative; flex:1; height:100%; border-radius:16px; }
     .bottomnav__track::after{
-      content:"";
-      position:absolute; left:6px; top:6px; bottom:6px;
-      width: calc(100%/5 - 12px);
-      border-radius: 14px;
+      content:""; position:absolute; z-index: 0;
+      top: var(--knob-ypad);
+      height: var(--knobH);
+      left: calc(var(--knob-xpad) + var(--knobOffset));
+      width: var(--knobW);
+      border-radius: var(--knobR);
       background: color-mix(in srgb, var(--glass-surface) 36%, transparent);
       box-shadow:
-        inset 0 0 0 1px color-mix(in srgb, var(--light) calc(var(--glass-reflex-light)*10%), transparent),
-        inset 2px 1px 0px -1px color-mix(in srgb, var(--light) calc(var(--glass-reflex-light)*90%), transparent),
-        inset -1.5px -1px 0px -1px color-mix(in srgb, var(--light) calc(var(--glass-reflex-light)*80%), transparent),
-        inset -2px -6px 1px -5px color-mix(in srgb, var(--light) calc(var(--glass-reflex-light)*60%), transparent),
-        inset -1px 2px 3px -1px color-mix(in srgb, var(--dark) calc(var(--glass-reflex-dark)*20%), transparent),
-        inset 0px -4px 1px -2px color-mix(in srgb, var(--dark) calc(var(--glass-reflex-dark)*10%), transparent),
-        0px 3px 6px 0px color-mix(in srgb, var(--dark) calc(var(--glass-reflex-dark)*8%), transparent);
+        inset 0 0 0 1px color-mix(in srgb, var(--light) 10%, transparent),
+        inset 2px 1px 0px -1px color-mix(in srgb, var(--light) 90%, transparent),
+        inset -1px -1px 0px -1px color-mix(in srgb, var(--light) 70%, transparent),
+        inset 0px -3px 1px -2px color-mix(in srgb, var(--dark) 10%, transparent),
+        0px 3px 6px 0px rgba(0,0,0,.12);
+      transition: left 380ms cubic-bezier(1,0,.4,1);
+      transform-origin: var(--knob-origin);
     }
+    .bump .bottomnav__track::after{ animation: knobBump .46s ease; }
+    @keyframes knobBump { 0%{transform:scale(1)} 50%{transform:scale(1.05,1)} 100%{transform:scale(1)} }
+
+    /* Позиции бегунка (современные браузеры) */
+    body:has(#tab-home:checked)     .bottomnav__track::after { left: calc(var(--knob-xpad) + var(--knobOffset)); }
+    body:has(#tab-books:checked)    .bottomnav__track::after { left: calc(var(--knob-xpad) + var(--cellW)*1 + var(--knobOffset)); }
+    body:has(#tab-video:checked)    .bottomnav__track::after { left: calc(var(--knob-xpad) + var(--cellW)*2 + var(--knobOffset)); }
+    body:has(#tab-practice:checked) .bottomnav__track::after { left: calc(var(--knob-xpad) + var(--cellW)*3 + var(--knobOffset)); }
+    body:has(#tab-speak:checked)    .bottomnav__track::after { left: calc(var(--knob-xpad) + var(--cellW)*4 + var(--knobOffset)); }
+
     .bottomnav__list{
       margin:0; padding:0; list-style:none;
-      height:100%; display:grid; grid-template-columns: repeat(5, 1fr);
+      height:100%;
+      display:grid; grid-template-columns: repeat(var(--items), 1fr);
+      align-items: center;
+      position: relative; z-index: 1;
     }
-    .bottomnav__btn{ display:flex; align-items:center; justify-content:center; color: var(--text); border-radius:14px; cursor:pointer; }
+    .bottomnav__btn{
+      position:relative;
+      display:flex; align-items:center; justify-content:center;
+      color: var(--text); border-radius:14px; cursor:pointer; height:100%;
+    }
     .bottomnav__btn svg{ width:28px; height:28px; display:block; }
+
+    /* Рамка активной иконки — точно такого же размера, как бегунок */
+    .bottomnav__btn::after{
+      content:""; position:absolute;
+      width: var(--knobW); height: var(--knobH);
+      top: var(--knob-ypad); left: 50%; transform: translateX(-50%);
+      border-radius: var(--knobR);
+      border:1px solid rgba(255,255,255,.24);
+      opacity: 0; transition: opacity .18s ease;
+      pointer-events: none;
+      box-sizing: border-box;
+    }
+    body:has(#tab-home:checked)     .bottomnav__btn[for="tab-home"]::after,
+    body:has(#tab-books:checked)    .bottomnav__btn[for="tab-books"]::after,
+    body:has(#tab-video:checked)    .bottomnav__btn[for="tab-video"]::after,
+    body:has(#tab-practice:checked) .bottomnav__btn[for="tab-practice"]::after,
+    body:has(#tab-speak:checked)    .bottomnav__btn[for="tab-speak"]::after{ opacity: 1; }
+
+    /* Fallback без :has() — JS задаёт var(--pos) для бегунка */
+    .no-has .bottomnav__track::after{
+      left: calc( var(--knob-xpad) + var(--cellW) * var(--pos, 0) + var(--knobOffset));
+    }
+
+    /* ===== Об авторе — аккуратно (фото слева, текст справа; на мобиле — столбик) ===== */
+    .author-grid{
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .author-photo .media-img{ max-height: 320px; }
+    @media (max-width: 900px){
+      body{ font-size:16px; }
+      .author-grid{ grid-template-columns: 1fr; }
+      .author-photo .media-img{ max-height: 260px; }
+    }
+
+    /* ===== WebView overlay (встроенный просмотр сайтов) ===== */
+    .webview{
+      position: fixed;
+      left: 0; right: 0;
+      top: 0;
+      bottom: calc(var(--nav-h) + 12px + var(--safe-bottom));
+      z-index: 49; /* ниже нижнего меню */
+      display: none;
+      flex-direction: column;
+      backdrop-filter: blur(6px);
+    }
+    .webview--shown{ display:flex; }
+
+    .webview__bar{
+      display:flex; align-items:center; gap:8px;
+      padding: 10px 12px;
+      background: rgba(18,22,34,.85);
+      border-bottom: 1px solid var(--line);
+    }
+    .webview__title{
+      flex:1; min-width:0;
+      color:#fff; opacity:.9; font-size:14px;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    .webview__btn{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:7px 10px; border-radius: 10px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color:#fff; font-size:13px; cursor:pointer;
+    }
+    .webview__btn:hover{ background: rgba(255,255,255,.12); }
+
+    .webview__frame{
+      position:relative; flex:1; min-height: 240px;
+      background: #0b1020;
+    }
+    .webview__iframe{
+      position:absolute; inset:0;
+      width:100%; height:100%; border:0;
+      background:#0b1020;
+    }
+
+    .webview__hint{
+      position:absolute; left:50%; top:50%; transform:translate(-50%, -50%);
+      width:min(560px, 92vw);
+      background: rgba(12,14,22,.78);
+      border:1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      color: #fff; text-align:center;
+      box-shadow: 0 10px 30px rgba(0,0,0,.22);
+      display:none;
+    }
+    .webview__hint.show{ display:block; }
+
+    .webview__spinner{
+      position:absolute; left:50%; top:50%; transform:translate(-50%, -50%);
+      width:36px; height:36px; border-radius:50%;
+      border: 3px solid rgba(255,255,255,.25);
+      border-top-color:#fff; animation: spin 1s linear infinite;
+    }
+    @keyframes spin{ to{ transform: translate(-50%,-50%) rotate(360deg) } }
+
+    @media (max-width: 900px){
+      .webview__btn{ padding:6px 9px; font-size:12.5px; }
+      .webview__title{ font-size:13px; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Радио‑табы (разделы) -->
+  <!-- Радио‑табы -->
   <input class="tabs-input" type="radio" id="tab-home"     name="tab" value="home" checked>
   <input class="tabs-input" type="radio" id="tab-books"    name="tab" value="books">
   <input class="tabs-input" type="radio" id="tab-video"    name="tab" value="video">
@@ -232,11 +375,9 @@
   <!-- Header -->
   <header>
     <div class="header-bar">
-      <a class="brand" href="#">To Be English</a>
+      <a class="brand" href="#">B‑eng</a>
       <nav class="top-nav">
-        <a class="top-link" href="#bookfree" onclick="document.getElementById('tab-home').checked=true">Бесплатный урок английского</a>
-        <a class="top-link" href="#support"  onclick="document.getElementById('tab-home').checked=true">Поддержать проект</a>
-        <a class="top-link" href="#author"   onclick="document.getElementById('tab-home').checked=true">Об авторе</a>
+        <a class="top-link" href="#author" onclick="document.getElementById('tab-home').checked=true">Об авторе</a>
       </nav>
     </div>
   </header>
@@ -244,14 +385,26 @@
   <main>
     <!-- HOME -->
     <section class="panel" data-panel="home">
-      <!-- О проекте -->
+      <!-- Поддержать проект -->
+      <div class="section" id="support">
+        <div class="glass pad">
+          <h2>Поддержать проект</h2>
+          <p class="lead">Если эта подборка экономит тебе время и помогает учиться — можно поддержать развитие B‑eng.</p>
+          <div class="rowBtns">
+            <a class="btn" href="https://pay.cloudtips.ru/p/8f56d7d3" target="_blank" rel="noreferrer" data-external="1">Поддержать</a>
+            <a class="btn btn-ghost" href="https://t.me/+NvMX2DrTa3w1NTVi" target="_blank" rel="noreferrer" data-external="1">Telegram‑канал</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- О проекте + быстрые переходы -->
       <div class="section">
         <div class="glass pad">
           <h2>О проекте</h2>
           <p class="lead">
-            Здесь собраны лучшие бесплатные инструменты для английского: боты (ЕГЭ/ОГЭ/IELTS/TOEFL),
-            чтение (книги, новости), фильмы/сериалы, аудирование и мини‑уроки лексики, тренажёры
-            грамматики и перевод предложений, разговорная практика и сервисы для запоминания слов.
+            B‑eng — быстрые ссылки на лучшие бесплатные сервисы: курсы, боты и материалы,
+            чтение, видео (фильмы/аудирование/лексика), грамматика и перевод предложений,
+            разговорная практика и изучение слов. Нажми на блок — откроется соответствующий раздел.
           </p>
 
           <div class="grid">
@@ -259,26 +412,83 @@
               <div class="glass pad">
                 <h3>Бесплатные курсы</h3>
                 <p>Плейлист‑курсы + курс «Английский с нуля»</p>
+                <ul class="small-note" style="margin:8px 0 10px; padding-left:18px;">
+                  <li>Подборка YouTube‑курсов, расписано «для чего»</li>
+                  <li>Старт с нуля на Lingust</li>
+                </ul>
                 <div class="rowBtns">
-                  <a class="btn" href="#courses" onclick="return false;">Смотреть</a>
+                  <a class="btn" href="#" data-goto="home#courses">Смотреть</a>
                 </div>
               </div>
             </div>
+
             <div class="col-4">
               <div class="glass pad">
                 <h3>Боты и материалы</h3>
                 <p>Экзамены, репетитор GPT и ЕГЭ‑пак</p>
+                <ul class="small-note" style="margin:8px 0 10px; padding-left:18px;">
+                  <li>ЕГЭ/ОГЭ/IELTS/TOEFL — план, стратегии, проверка</li>
+                  <li>TO BE ENG GPT — бесплатный репетитор</li>
+                </ul>
                 <div class="rowBtns">
-                  <a class="btn" href="#bots" onclick="return false;">Открыть</a>
+                  <a class="btn" href="#" data-goto="home#bots">Открыть</a>
                 </div>
               </div>
             </div>
+
+            <div class="col-4">
+              <div class="glass pad">
+                <h3>Чтение</h3>
+                <p>Книги/новости с переводом по уровням</p>
+                <ul class="small-note" style="margin:8px 0 10px; padding-left:18px;">
+                  <li>2books, Linguasaur, AnyLang</li>
+                  <li>Новости — Breaking News English</li>
+                </ul>
+                <div class="rowBtns">
+                  <a class="btn" href="#" data-goto="books">Перейти</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="glass pad">
+                <h3>Видео</h3>
+                <p>Фильмы, аудирование, мини‑уроки лексики</p>
+                <ul class="small-note" style="margin:8px 0 10px; padding-left:18px;">
+                  <li>Inoriginal, Solarmovies, HDRezka, Zetflix</li>
+                  <li>Listen in English, iSLCollective, TubeQuizard</li>
+                  <li>TED‑Ed, 6 Minute English</li>
+                </ul>
+                <div class="rowBtns">
+                  <a class="btn" href="#" data-goto="video">Перейти</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="glass pad">
+                <h3>Грамматика</h3>
+                <p>Практика по темам + перевод предложений</p>
+                <ul class="small-note" style="margin:8px 0 10px; padding-left:18px;">
+                  <li>Test‑English — тренажёры по уровням</li>
+                  <li>Lingust (грамматика) — 148 уроков</li>
+                </ul>
+                <div class="rowBtns">
+                  <a class="btn" href="#" data-goto="practice">Перейти</a>
+                </div>
+              </div>
+            </div>
+
             <div class="col-4">
               <div class="glass pad">
                 <h3>Разговор и слова</h3>
                 <p>HelloTalk, Character.AI, NO WORD</p>
+                <ul class="small-note" style="margin:8px 0 10px; padding-left:18px;">
+                  <li>Разговор с людьми и с ИИ</li>
+                  <li>Слова по уровням и через ассоциации</li>
+                </ul>
                 <div class="rowBtns">
-                  <a class="btn" href="#" onclick="document.getElementById('tab-speak').checked=true; return false;">Перейти</a>
+                  <a class="btn" href="#" data-goto="speak">Перейти</a>
                 </div>
               </div>
             </div>
@@ -286,19 +496,46 @@
 
           <div class="hr"></div>
 
-          <!-- Поддержать -->
-          <div id="support" class="glass pad">
-            <h3>Поддержать проект</h3>
-            <p class="small-note">Если подборка полезна — поддержи развитие.</p>
-            <div class="rowBtns">
-              <a class="btn" href="https://pay.cloudtips.ru/p/8f56d7d3" target="_blank" rel="noreferrer">Поддержать</a>
-              <a class="btn btn-ghost" href="https://t.me/+NvMX2DrTa3w1NTVi" target="_blank" rel="noreferrer">Telegram‑канал</a>
+          <!-- Об авторе — аккуратно -->
+          <div id="author" class="glass pad">
+            <h3>Об авторе</h3>
+            <div class="author-grid">
+              <div class="author-photo">
+                <div class="media-frame" style="padding:8px;">
+                  <div class="media-fit">
+                    <img class="media-img"
+                         src="https://static.tildacdn.info/tild6137-3239-4731-b932-343437323234/__1.jpg"
+                         alt="Абдуррахим Бердиев">
+                  </div>
+                </div>
+              </div>
+              <div class="author-text">
+                <div class="rowBtns" style="gap:6px; margin-bottom:10px;">
+                  <span class="tag"><span class="i-square"></span> TEFL</span>
+                  <span class="tag"><span class="i-square"></span> Уровень C2</span>
+                  <span class="tag"><span class="i-square"></span> 100+ учеников</span>
+                  <span class="tag"><span class="i-square"></span> Автор B‑ENG</span>
+                </div>
+                <p style="margin:0 0 12px; color:var(--text);">
+                  Я — Абдуррахим Бердиев. Помогаю заговорить на английском, снимаю барьер и объясняю
+                  грамматику простыми схемами. Готовлю к ЕГЭ/ОГЭ и международным экзаменам (IELTS/TOEFL).
+                </p>
+                <ul style="margin:0 0 12px; padding-left:18px; color:var(--text);">
+                  <li><span class="i-dot"></span> Разговорная практика и уверенность в речи</li>
+                  <li><span class="i-dot"></span> Грамматика без лишней теории</li>
+                  <li><span class="i-dot"></span> Экзамены: стратегии, Speaking/Writing, критерии</li>
+                </ul>
+                <div class="rowBtns">
+                  <a class="btn" href="https://t.me/Berdiyev_eng" target="_blank" rel="noreferrer" data-external="1">Бесплатный урок английского</a>
+                </div>
+              </div>
             </div>
           </div>
+
         </div>
       </div>
 
-      <!-- Бесплатные курсы -->
+      <!-- КУРСЫ -->
       <div class="section" id="courses">
         <div class="glass pad">
           <div class="rowBtns" style="justify-content:space-between; flex-wrap:wrap;">
@@ -308,15 +545,38 @@
               <button class="mode-btn" data-key="ling">Lingust — с нуля</button>
             </div>
           </div>
-          <div id="courses-card" style="margin-top:12px;">
-            <!-- ДЕФОЛТ: TG -->
-            <article class="glass pad">
+
+          <div class="cards" data-group="courses" id="courses-card" style="margin-top:12px;">
+            <!-- TG -->
+            <article class="glass pad active" data-key="tg">
               <div class="grid" style="gap:12px;">
-                <div class="col-6"><div class="media-frame"><div class="media-fit"><img class="media-img" src="https://static.tildacdn.info/tild3534-3233-4463-a134-346339623162/7A7E2857-CCF4-42C5-A.jpeg" alt="Плейлист‑курсы в TG"></div></div></div>
+                <div class="col-6">
+                  <div class="media-frame"><div class="media-fit">
+                    <img class="media-img" src="https://static.tildacdn.info/tild3534-3233-4463-a134-346339623162/7A7E2857-CCF4-42C5-A.jpeg" alt="Плейлист‑курсы в TG">
+                  </div></div>
+                </div>
                 <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
                   <h3>Плейлист‑курсы в TG</h3>
-                  <p>Подборка YouTube‑курсов с пояснениями. Бесплатно.</p>
-                  <div class="rowBtns"><a class="btn" href="https://t.me/to_be_eng/190" target="_blank" rel="noreferrer">Открыть</a></div>
+                  <p>Подборка YouTube‑курсов с пояснениями. Всё бесплатно.</p>
+                  <div class="rowBtns"><a class="btn" href="https://t.me/to_be_eng/190" target="_blank" rel="noreferrer" data-external="1">Открыть</a></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Lingust -->
+            <article class="glass pad" data-key="ling">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6">
+                  <div class="media-frame"><div class="media-fit">
+                    <img class="media-img"
+                         src="https://static.tildacdn.info/tild3662-6262-4237-b766-646237396666/52B5C22F-AAA2-4AF7-8.jpeg"
+                         alt="Lingust — с нуля">
+                  </div></div>
+                </div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>Lingust — Английский с нуля</h3>
+                  <p>Пошаговый курс для старта: объяснения + практика.</p>
+                  <div class="rowBtns"><a class="btn" href="https://lingust.ru/english/english-lessons" target="_blank" rel="noreferrer">Открыть</a></div>
                 </div>
               </div>
             </article>
@@ -324,7 +584,7 @@
         </div>
       </div>
 
-      <!-- Боты -->
+      <!-- БОТЫ -->
       <div class="section" id="bots">
         <div class="glass pad">
           <div class="rowBtns" style="justify-content:space-between; flex-wrap:wrap;">
@@ -338,44 +598,86 @@
               <button class="mode-btn" data-key="free">Репетитор GPT</button>
             </div>
           </div>
-          <div id="bots-card" style="margin-top:12px;">
-            <!-- ДЕФОЛТ: EGE -->
-            <article class="glass pad">
+
+          <div class="cards" data-group="bots" id="bots-card" style="margin-top:12px;">
+            <article class="glass pad active" data-key="ege">
               <div class="grid" style="gap:12px;">
-                <div class="col-6"><div class="media-frame"><div class="media-fit"><img class="media-img" src="https://static.tildacdn.info/tild6436-3766-4232-b064-626263353832/____.jpg" alt="EGE ASSISTANT"></div></div></div>
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild6436-3766-4232-b064-626263353832/____.jpg" alt="EGE ASSISTANT">
+                </div></div></div>
                 <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
                   <h3>EGE ASSISTANT</h3>
-                  <p>План, объяснения, стратегии, проверка Speaking/Writing. Цель — 80+.</p>
-                  <div class="rowBtns"><a class="btn" href="https://t.me/EGE_ENGLISH_GPT_bot" target="_blank" rel="noreferrer">Попробовать</a></div>
+                  <p>План, объяснения, стратегии; проверка Speaking/Writing. Цель — 80+.</p>
+                  <div class="rowBtns"><a class="btn" href="https://t.me/EGE_ENGLISH_GPT_bot" target="_blank" rel="noreferrer" data-external="1">Попробовать</a></div>
                 </div>
               </div>
             </article>
-          </div>
-        </div>
-      </div>
 
-      <!-- Об авторе (компактно) -->
-      <div class="section" id="author">
-        <div class="glass pad">
-          <h3>Об авторе</h3>
-          <div class="grid" style="gap:12px; align-items:center;">
-            <div class="col-4">
-              <div class="media-frame" style="padding:4px;">
-                <div class="media-fit">
-                  <img class="media-img" style="max-height:48px"
-                       src="https://static.tildacdn.info/tild6137-3239-4731-b932-343437323234/__1.jpg"
-                       alt="Абдуррахим Бердиев">
+            <article class="glass pad" data-key="oge">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3932-6233-4638-a231-613534383636/12.jpg" alt="OGE HELPER">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>OGE HELPER</h3>
+                  <p>План подготовки, алгоритмы заданий, проверка Speaking/Writing. Цель — «5».</p>
+                  <div class="rowBtns"><a class="btn" href="https://t.me/OGE_ENG_HELPER_BOT" target="_blank" rel="noreferrer" data-external="1">Попробовать</a></div>
                 </div>
               </div>
-            </div>
-            <div class="col-8">
-              <p class="small-note" style="margin:0;">
-                Абдуррахим Бердиев — репетитор английского (TEFL, C2). Готовлю к ЕГЭ/ОГЭ/IELTS/TOEFL, автор ботов и гайдов.
-              </p>
-              <div class="rowBtns" id="bookfree" style="margin-top:8px;">
-                <a class="btn" href="https://t.me/Berdiyev_eng" target="_blank" rel="noreferrer">Бесплатный урок английского</a>
+            </article>
+
+            <article class="glass pad" data-key="ielts">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3532-3932-4635-a261-306563383261/11.jpg" alt="IELTS эксперт">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>IELTS эксперт</h3>
+                  <p>Academic/General: стратегия, критерии, лайфхаки; проверка Speaking/Writing. Цель — 7+.</p>
+                  <div class="rowBtns"><a class="btn" href="https://t.me/IELTS_berdiyev_bot" target="_blank" rel="noreferrer" data-external="1">Попробовать</a></div>
+                </div>
               </div>
-            </div>
+            </article>
+
+            <article class="glass pad" data-key="toefl">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3936-3366-4461-a139-656230353061/10.jpg" alt="TOEFL iBT эксперт">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>TOEFL iBT эксперт</h3>
+                  <p>План, практика, разбор критериев; проверка Speaking/Writing.</p>
+                  <div class="rowBtns"><a class="btn" href="https://t.me/TOBEENG_TOEFL_IBT_BOT" target="_blank" rel="noreferrer" data-external="1">Попробовать</a></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="glass pad" data-key="mat">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild6439-6435-4862-b137-346266376233/9.jpg" alt="ЕГЭ материалы">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>ЕГЭ материалы</h3>
+                  <p>Лексика, грамматика, шаблоны, тренажёры — всё под рукой в Telegram.</p>
+                  <div class="rowBtns"><a class="btn" href="https://t.me/tobeeng_ege_bot" target="_blank" rel="noreferrer" data-external="1">Открыть</a></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="glass pad" data-key="free">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3566-3038-4238-b863-343131373138/_____1.jpg" alt="TO BE ENG GPT">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>TO BE ENG GPT</h3>
+                  <p>Персональный помощник: план, задания, объяснения и speaking‑практика.</p>
+                  <div class="rowBtns"><a class="btn" href="https://t.me/Tobeeng_GPT_bot" target="_blank" rel="noreferrer" data-external="1">Попробовать</a></div>
+                </div>
+              </div>
+            </article>
+
           </div>
         </div>
       </div>
@@ -394,15 +696,56 @@
               <button class="mode-btn" data-key="bne">Breaking News</button>
             </div>
           </div>
-          <div id="books-card" style="margin-top:12px;">
-            <!-- ДЕФОЛТ: 2books -->
-            <article class="glass pad">
+
+          <div class="cards" data-group="books" id="books-card" style="margin-top:12px;">
+            <article class="glass pad active" data-key="2books">
               <div class="grid" style="gap:12px;">
-                <div class="col-6"><div class="media-frame"><div class="media-fit"><img class="media-img" src="https://static.tildacdn.info/tild3539-6535-4239-b735-666530633965/1.jpg" alt="2books.su"></div></div></div>
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3539-6535-4239-b735-666530633965/1.jpg" alt="2books.su">
+                </div></div></div>
                 <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
                   <h3>2books.su</h3>
                   <p>Книги в оригинале и адаптированные + быстрый перевод фраз.</p>
                   <div class="rowBtns"><a class="btn" href="https://2books.su/" target="_blank" rel="noreferrer">Открыть</a></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="glass pad" data-key="ling">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://linguasaur.com/ru/en/books/images/cover.svg" alt="Linguasaur">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>Linguasaur</h3>
+                  <p>Книги по уровням, заметки и перевод внутри.</p>
+                  <div class="rowBtns"><a class="btn" href="https://linguasaur.com/ru/en/books" target="_blank" rel="noreferrer">Открыть</a></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="glass pad" data-key="any">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3564-3631-4036-b636-623266636266/2.png" alt="AnyLang">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>AnyLang</h3>
+                  <p>Чтение, карточки слов и перевод — в одном месте.</p>
+                  <div class="rowBtns"><a class="btn" href="https://anylang.net/ru/books/en" target="_blank" rel="noreferrer">Открыть</a></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="glass pad" data-key="bne">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3161-3861-4234-b362-613030653564/2.jpg" alt="Breaking News English">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>Breaking News English</h3>
+                  <p>Новости с заданиями, лексикой и грамматикой по уровням.</p>
+                  <div class="rowBtns"><a class="btn" href="https://breakingnewsenglish.com/" target="_blank" rel="noreferrer">Открыть</a></div>
                 </div>
               </div>
             </article>
@@ -425,15 +768,55 @@
               <button class="mode-btn" data-key="zet">Zetflix</button>
             </div>
           </div>
-          <div id="films-card" style="margin-top:12px;">
-            <!-- ДЕФОЛТ: Inoriginal -->
-            <article class="glass pad">
+          <div class="cards" data-group="films" id="films-card" style="margin-top:12px;">
+            <article class="glass pad active" data-key="inor">
               <div class="grid" style="gap:12px;">
-                <div class="col-6"><div class="media-frame"><div class="media-fit"><img class="media-img" src="https://static.tildacdn.info/tild3336-3030-4964-b966-303862353932/10.jpg" alt="Inoriginal"></div></div></div>
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3336-3030-4964-b966-303862353932/10.jpg" alt="Inoriginal">
+                </div></div></div>
                 <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
                   <h3>Inoriginal</h3>
                   <p>Один из лучших: двойные субтитры EN/RU.</p>
                   <div class="rowBtns"><a class="btn" href="https://inoriginal.net/" target="_blank" rel="noreferrer">Открыть</a></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="glass pad" data-key="solar">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3036-3665-4436-b131-396638313261/ADB9F47D-E5AA-479B-A.jpeg" alt="Solarmovies">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>Solarmovies</h3>
+                  <p>Кино без рекламы; русские субтитры не всегда есть.</p>
+                  <div class="rowBtns"><a class="btn" href="https://solarmovies.ms/home" target="_blank" rel="noreferrer">Открыть</a></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="glass pad" data-key="hdr">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3639-6237-4435-b338-373633663331/IMG_7903.PNG" alt="HDRezka">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>HDRezka</h3>
+                  <p>Запасной вариант: переключи озвучку на EN.</p>
+                  <div class="rowBtns"><a class="btn" href="https://hdrezka.fans/" target="_blank" rel="noreferrer">Открыть</a></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="glass pad" data-key="zet">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3430-6262-4238-b332-343464626162/11.jpg" alt="Zetflix">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>Zetflix</h3>
+                  <p>Ещё один запасной ресурс.</p>
+                  <div class="rowBtns"><a class="btn" href="https://go.zetflix-online.lol/" target="_blank" rel="noreferrer">Открыть</a></div>
                 </div>
               </div>
             </article>
@@ -452,15 +835,42 @@
               <button class="mode-btn" data-key="tq">TubeQuizard</button>
             </div>
           </div>
-          <div id="listen-card" style="margin-top:12px;">
-            <!-- ДЕФОЛТ: Listen in English -->
-            <article class="glass pad">
+          <div class="cards" data-group="listen" id="listen-card" style="margin-top:12px;">
+            <article class="glass pad active" data-key="lie">
               <div class="grid" style="gap:12px;">
-                <div class="col-6"><div class="media-frame"><div class="media-fit"><img class="media-img" src="https://static.tildacdn.info/tild3636-3261-4532-b231-626664646132/BA22E78D-3200-4109-8.jpeg" alt="Listen in English"></div></div></div>
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3636-3261-4532-b231-626664646132/BA22E78D-3200-4109-8.jpeg" alt="Listen in English">
+                </div></div></div>
                 <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
                   <h3>Listen in English</h3>
                   <p>Готовые уроки по уровням с аудированием и говорением.</p>
                   <div class="rowBtns"><a class="btn" href="https://listeninenglish.com/index.php" target="_blank" rel="noreferrer">Открыть</a></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="glass pad" data-key="isl">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3836-3837-4331-b162-623335363239/12.jpg" alt="iSLCollective Video Lessons">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>iSLCollective (видео)</h3>
+                  <p>Видео‑уроки по фильмам, сериалам и темам.</p>
+                  <div class="rowBtns"><a class="btn" href="https://en.islcollective.com/english-esl-video-lessons/search" target="_blank" rel="noreferrer">Открыть</a></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="glass pad" data-key="tq">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="http://www.tubequizard.com/static/images/logo.png" alt="TubeQuizard">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>TubeQuizard</h3>
+                  <p>Тренажёр слуха: вставляй пропуски из видео.</p>
+                  <div class="rowBtns"><a class="btn" href="http://www.tubequizard.com/" target="_blank" rel="noreferrer">Открыть</a></div>
                 </div>
               </div>
             </article>
@@ -478,15 +888,29 @@
               <button class="mode-btn" data-key="bbc">6 Minute English</button>
             </div>
           </div>
-          <div id="lexis-card" style="margin-top:12px;">
-            <!-- ДЕФОЛТ: TED‑Ed -->
-            <article class="glass pad">
+          <div class="cards" data-group="lexis" id="lexis-card" style="margin-top:12px;">
+            <article class="glass pad active" data-key="ted">
               <div class="grid" style="gap:12px;">
-                <div class="col-6"><div class="media-frame"><div class="media-fit"><img class="media-img" src="https://static.tildacdn.info/tild6339-3537-4662-a130-303765373530/IMG_7745.PNG" alt="TED‑Ed"></div></div></div>
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild6339-3537-4662-a130-303765373530/IMG_7745.PNG" alt="TED‑Ed">
+                </div></div></div>
                 <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
                   <h3>TED‑Ed</h3>
                   <p>Короткие уроки с лексикой и аудированием.</p>
                   <div class="rowBtns"><a class="btn" href="https://ed.ted.com/lessons" target="_blank" rel="noreferrer">Открыть</a></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="glass pad" data-key="bbc">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3864-3339-4639-b030-653330343666/IMG_7746.PNG" alt="BBC 6 Minute English">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>6 Minute English</h3>
+                  <p>Короткие уроки от BBC: для начинающих и средних.</p>
+                  <div class="rowBtns"><a class="btn" href="https://www.bbc.co.uk/learningenglish/english/features/6-minute-english" target="_blank" rel="noreferrer">Открыть</a></div>
                 </div>
               </div>
             </article>
@@ -507,15 +931,33 @@
               <button class="mode-btn" data-key="ling">Lingust (грамматика)</button>
             </div>
           </div>
-          <div id="gram-card" style="margin-top:12px;">
-            <!-- ДЕФОЛТ: Test‑English -->
-            <article class="glass pad">
+          <div class="cards" data-group="gram" id="gram-card" style="margin-top:12px;">
+            <article class="glass pad active" data-key="test">
               <div class="grid" style="gap:12px;">
-                <div class="col-6"><div class="media-frame"><div class="media-fit"><img class="media-img" src="https://static.tildacdn.info/tild3131-3437-4330-a633-393162336665/4.jpg" alt="Test‑English"></div></div></div>
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3131-3437-4330-a633-393162336665/4.jpg" alt="Test‑English">
+                </div></div></div>
                 <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
                   <h3>Test‑English</h3>
-                  <p>Грамматика и лексика от A1 до B2 — топ тренажёры.</p>
+                  <p>Грамматика и лексика от A1 до B2 — лучшие тренажёры.</p>
                   <div class="rowBtns"><a class="btn" href="https://test-english.com/grammar-points/" target="_blank" rel="noreferrer">Открыть</a></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="glass pad" data-key="ling">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <!-- Основной источник + fallback при ошибке -->
+                  <img class="media-img"
+                       src="https://static.tildacdn.info/tild3062-6233-4431-b363-353163363163/0D4BE37D-3200-4109-8.jpeg"
+                       alt="Lingust — грамматика"
+                       onerror="this.onerror=null; this.src='https://lingust.ru/english/img/ru_logo.png';">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>Lingust — грамматика</h3>
+                  <p>148 уроков с объяснениями и упражнениями.</p>
+                  <div class="rowBtns"><a class="btn" href="https://lingust.ru/english/grammar" target="_blank" rel="noreferrer">Открыть</a></div>
                 </div>
               </div>
             </article>
@@ -527,8 +969,17 @@
       <div class="section">
         <div class="glass pad">
           <h3>Переводить предложения</h3>
-          <p class="small-note">RU → EN: отработка грамматики и слов через перевод.</p>
-          <div class="rowBtns"><a class="btn" href="https://berdiyev-english.github.io/resources/collect.html" target="_blank" rel="noreferrer">Открыть тренажёр</a></div>
+          <div class="grid" style="gap:12px;">
+            <div class="col-6">
+              <div class="media-frame"><div class="media-fit">
+                <img class="media-img" src="https://static.tildacdn.info/tild6435-3633-4265-b966-313030633165/photo.PNG" alt="RU → EN тренажёр">
+              </div></div>
+            </div>
+            <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+              <p>RU → EN: отработка грамматики и слов через перевод.</p>
+              <div class="rowBtns"><a class="btn" href="https://berdiyev-english.github.io/resources/collect.html" target="_blank" rel="noreferrer">Открыть тренажёр</a></div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -546,15 +997,42 @@
               <button class="mode-btn" data-key="gpt">TO BE ENG GPT</button>
             </div>
           </div>
-          <div id="talk-card" style="margin-top:12px;">
-            <!-- ДЕФОЛТ: HelloTalk -->
-            <article class="glass pad">
+          <div class="cards" data-group="talk" id="talk-card" style="margin-top:12px;">
+            <article class="glass pad active" data-key="hello">
               <div class="grid" style="gap:12px;">
-                <div class="col-6"><div class="media-frame"><div class="media-fit"><img class="media-img" src="https://static.tildacdn.info/tild6631-3338-4435-b966-313430333161/_____2.jpg" alt="HelloTalk"></div></div></div>
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild6631-3338-4435-b966-313430333161/_____2.jpg" alt="HelloTalk">
+                </div></div></div>
                 <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
                   <h3>HelloTalk</h3>
                   <p>Общение с носителями со всего мира.</p>
-                  <div class="rowBtns"><a class="btn" href="https://www.hellotalk.com/ru" target="_blank" rel="noreferrer">Открыть</a></div>
+                  <div class="rowBtns"><a class="btn" href="https://www.hellotalk.com/ru" target="_blank" rel="noreferrer" data-external="1">Открыть</a></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="glass pad" data-key="char">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild6435-6666-4139-a237-396664643764/_____3.jpg" alt="Character.AI">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>Character.AI</h3>
+                  <p>Бесплатный разговор с ИИ (EN), можно создавать своих персонажей.</p>
+                  <div class="rowBtns"><a class="btn" href="https://character.ai/" target="_blank" rel="noreferrer">Открыть</a></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="glass pad" data-key="gpt">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild6139-6638-4834-b766-373131303463/_____1.jpg" alt="TO BE ENG GPT">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>TO BE ENG GPT</h3>
+                  <p>Поговорит голосом на английском, поправит ошибки.</p>
+                  <div class="rowBtns"><a class="btn" href="https://t.me/Tobeeng_GPT_bot" target="_blank" rel="noreferrer" data-external="1">Попробовать</a></div>
                 </div>
               </div>
             </article>
@@ -572,11 +1050,14 @@
               <button class="mode-btn" data-key="mnemo">EnglSpace</button>
             </div>
           </div>
-          <div id="words-card" style="margin-top:12px;">
-            <!-- ДЕФОЛТ: NO WORD -->
-            <article class="glass pad">
-              <div class="grid" style="gap:12px;">
-                <div class="col-6"><div class="media-frame"><div class="media-fit"><img class="media-img" src="https://static.tildacdn.info/tild6534-6633-4438-a530-336663633635/D310B21D-4308-4034-8.jpeg" alt="NO WORD"></div></div></div>
+          <div class="cards" data-group="words" id="words-card" style="margin-top:12px;">
+            <article class="glass pad active" data-key="noword">
+                              <div class="grid" style="gap:12px;">
+                <div class="col-6">
+                  <div class="media-frame"><div class="media-fit">
+                    <img class="media-img" src="https://static.tildacdn.info/tild6534-6633-4438-a530-336663633635/D310B21D-4308-4034-8.jpeg" alt="NO WORD Telegram">
+                  </div></div>
+                </div>
                 <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
                   <h3>NO WORD (Telegram)</h3>
                   <p>Учите слова прямо в Telegram, по уровням.</p>
@@ -584,13 +1065,28 @@
                 </div>
               </div>
             </article>
-          </div>
-        </div>
-      </div>
-    </section>
+
+            <article class="glass pad" data-key="mnemo">
+              <div class="grid" style="gap:12px;">
+                <div class="col-6">
+                  <div class="media-frame"><div class="media-fit">
+                    <img class="media-img" src="https://static.tildacdn.info/tild3462-3164-4432-b633-316131343833/BEE2697D-A7E6-43D6-9.jpeg" alt="EnglSpace ассоциации">
+                  </div></div>
+                </div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>EnglSpace (ассоциации)</h3>
+                  <p>Слова через ассоциации — легко и эффективно.</p>
+                  <div class="rowBtns"><a class="btn" href="https://t.me/English_Mnemo_Bot" target="_blank" rel="noreferrer">Открыть</a></div>
+                </div>
+              </div>
+            </article>
+          </div> <!-- /#words-card -->
+        </div> <!-- /.glass pad -->
+      </div> <!-- /.section -->
+    </section> <!-- /.panel[data-panel="speak"] -->
   </main>
 
-  <!-- Bottom nav -->
+  <!-- Нижнее меню -->
   <nav class="bottomnav" role="tablist" aria-label="Нижнее меню">
     <div class="bottomnav__track">
       <ul class="bottomnav__list">
@@ -612,5 +1108,297 @@
       </ul>
     </div>
   </nav>
+
+  <!-- WebView overlay стили (чтобы открывать сайты внутри и видеть нижнее меню) -->
+  <style>
+    .webview{
+      position: fixed; left:0; right:0; top:0;
+      bottom: calc(var(--nav-h) + 12px + var(--safe-bottom));
+      z-index: 49; display: none; flex-direction: column;
+      backdrop-filter: blur(6px);
+    }
+    .webview--shown{ display:flex; }
+    .webview__bar{
+      display:flex; align-items:center; gap:8px;
+      padding: 10px 12px;
+      background: rgba(18,22,34,.85);
+      border-bottom: 1px solid var(--line);
+    }
+    .webview__title{ flex:1; min-width:0; color:#fff; opacity:.9; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .webview__btn{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:7px 10px; border-radius: 10px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06); color:#fff; font-size:13px; cursor:pointer;
+    }
+    .webview__btn:hover{ background: rgba(255,255,255,.12); }
+    .webview__frame{ position:relative; flex:1; min-height: 240px; background:#0b1020; }
+    .webview__iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; background:#0b1020; }
+    .webview__hint{
+      position:absolute; left:50%; top:50%; transform:translate(-50%, -50%);
+      width:min(560px, 92vw);
+      background: rgba(12,14,22,.78); border:1px solid var(--line); border-radius: 14px;
+      padding: 14px; color: #fff; text-align:center; box-shadow: 0 10px 30px rgba(0,0,0,.22);
+      display:none;
+    }
+    .webview__hint.show{ display:block; }
+    .webview__spinner{
+      position:absolute; left:50%; top:50%; transform:translate(-50%, -50%);
+      width:36px; height:36px; border-radius:50%;
+      border: 3px solid rgba(255,255,255,.25); border-top-color:#fff; animation: spin 1s linear infinite;
+    }
+    @keyframes spin{ to{ transform: translate(-50%,-50%) rotate(360deg) } }
+    @media (max-width: 900px){
+      .webview__btn{ padding:6px 9px; font-size:12.5px; }
+      .webview__title{ font-size:13px; }
+    }
+  </style>
+
+  <!-- WebView overlay HTML -->
+  <div id="webview" class="webview" aria-hidden="true">
+    <div class="webview__bar">
+      <div class="webview__title" id="webview-title">Открываю…</div>
+      <button class="webview__btn" id="webview-ext">Открыть снаружи</button>
+      <button class="webview__btn" id="webview-reload">Обновить</button>
+      <button class="webview__btn" id="webview-close">Закрыть</button>
+    </div>
+    <div class="webview__frame">
+      <div class="webview__spinner" id="webview-spin"></div>
+      <iframe id="webview-iframe" class="webview__iframe" src="about:blank" referrerpolicy="no-referrer"></iframe>
+      <div class="webview__hint" id="webview-hint">
+        <div style="margin-bottom:8px; font-weight:700;">Сайт мог запретить встраивание</div>
+        <div style="opacity:.9; margin-bottom:12px;">Некоторые ресурсы блокируют открытие внутри приложений (X‑Frame‑Options/CSP).</div>
+        <button class="webview__btn" id="webview-open-ext2">Открыть во внешней вкладке</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS: переключатели, нижнее меню, навигация из главной, WebView -->
+  <script>
+  (function(){
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const headerEl = document.querySelector('header');
+    const track = document.querySelector('.bottomnav__track');
+
+    // Fallback для браузеров без :has()
+    const hasHas = (window.CSS && CSS.supports && CSS.supports('selector(:has(*))'));
+    if (!hasHas) document.documentElement.classList.add('no-has');
+
+    function scrollTop() {
+      if (!headerEl) return;
+      headerEl.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block:'start'});
+    }
+    function bumpOnce() {
+      document.body.classList.remove('bump');
+      void document.body.offsetWidth;
+      document.body.classList.add('bump');
+      setTimeout(()=>document.body.classList.remove('bump'), 480);
+    }
+
+    // Переключатели карточек по всем группам
+    const GROUPS = ['courses','bots','books','films','listen','lexis','gram','talk','words'];
+    GROUPS.forEach(group=>{
+      const tabs = document.getElementById(group+'-tabs');
+      const wrap = document.getElementById(group+'-card');
+      if (!tabs || !wrap) return;
+
+      function setActive(key){
+        wrap.querySelectorAll('article').forEach(a=>{
+          a.classList.toggle('active', a.getAttribute('data-key') === key);
+        });
+        tabs.querySelectorAll('.mode-btn').forEach(b=>{
+          b.classList.toggle('active', b.getAttribute('data-key') === key);
+        });
+        try{ localStorage.setItem('sw-'+group, key); }catch(e){}
+      }
+
+      tabs.addEventListener('click', (e)=>{
+        const btn = e.target.closest('.mode-btn');
+        if (!btn) return;
+        setActive(btn.getAttribute('data-key'));
+      });
+
+      // стартовое состояние
+      let initial = null;
+      try{ initial = localStorage.getItem('sw-'+group); }catch(e){}
+      if (!initial) {
+        const first = wrap.querySelector('article[data-key]');
+        initial = first ? first.getAttribute('data-key') : null;
+      }
+      if (initial) setActive(initial);
+    });
+
+    // Нижнее меню
+    (function initBottomNav(){
+      const STORAGE_KEY = 'tab-active';
+      const ids = ['home','books','video','practice','speak'];
+      const radios = ids.map(id => document.getElementById(`tab-${id}`));
+
+      function setKnobPos(idx){
+        if (!hasHas && track) track.style.setProperty('--pos', idx);
+      }
+      function setOrigin(prevIdx, nextIdx){
+        const dir = nextIdx > prevIdx ? 'left' : 'right';
+        document.documentElement.style.setProperty('--knob-origin', dir);
+      }
+      function setHash(idx){ try{ history.replaceState(null,'', `#${ids[idx]}`); }catch(e){} }
+      function setTab(idx, doScroll=true, prevIdx=null){
+        if (!radios[idx]) return;
+        radios[idx].checked = true;
+        if (prevIdx !== null) setOrigin(prevIdx, idx);
+        setKnobPos(idx);
+        setHash(idx);
+        try{ localStorage.setItem(STORAGE_KEY, ids[idx]); }catch(e){}
+        bumpOnce();
+        if (doScroll) scrollTop();
+      }
+
+      // init from hash or LS
+      let initial = (location.hash || '').replace('#','');
+      if (!ids.includes(initial)) {
+        try{ initial = localStorage.getItem(STORAGE_KEY) || 'home'; }catch(e){ initial = 'home'; }
+      }
+      let currentIdx = ids.indexOf(initial);
+      if (currentIdx < 0) currentIdx = 0;
+      radios[currentIdx] && (radios[currentIdx].checked = true);
+      setKnobPos(currentIdx);
+      setHash(currentIdx);
+
+      radios.forEach((r, i)=>{
+        if (!r) return;
+        r.addEventListener('change', ()=>{
+          const prev = currentIdx;
+          currentIdx = i;
+          setTab(i, true, prev);
+        });
+      });
+
+      // Кнопки на главной (data-goto)
+      document.addEventListener('click', (e)=>{
+        const btn = e.target.closest('[data-goto]');
+        if (!btn) return;
+        e.preventDefault();
+        const goto = btn.getAttribute('data-goto'); // 'books', 'video', 'practice', 'speak' или 'home#courses'
+        if (!goto) return;
+
+        const [tab, anchor] = goto.split('#');
+        const idx = ids.indexOf(tab);
+        if (idx >= 0) {
+          const prev = currentIdx;
+          currentIdx = idx;
+          setTab(idx, true, prev);
+          if (anchor) {
+            setTimeout(()=>{
+              const target = document.getElementById(anchor);
+              target && target.scrollIntoView({behavior: reduce?'auto':'smooth', block:'start'});
+            }, 40);
+          }
+        } else if (!tab && anchor) {
+          const prev = currentIdx; currentIdx = 0;
+          setTab(0, true, prev);
+          setTimeout(()=>{
+            const target = document.getElementById(anchor);
+            target && target.scrollIntoView({behavior: reduce?'auto':'smooth', block:'start'});
+          }, 40);
+        }
+      });
+
+      // Якоря вида <a href="#...">
+      document.addEventListener('click', (e)=>{
+        const a = e.target.closest('a[href^="#"]');
+        if (!a) return;
+        const id = a.getAttribute('href').slice(1);
+        if (!id) return;
+        const target = document.getElementById(id);
+        if (!target) return;
+        e.preventDefault();
+        target.scrollIntoView({behavior: reduce ? 'auto':'smooth', block:'start'});
+      });
+    })();
+
+    // WebView (открытие внешних ссылок внутри страницы)
+    (function initInAppWebView(){
+      const web = document.getElementById('webview');
+      const iframe = document.getElementById('webview-iframe');
+      const title = document.getElementById('webview-title');
+      const btnClose = document.getElementById('webview-close');
+      const btnReload = document.getElementById('webview-reload');
+      const btnExt = document.getElementById('webview-ext');
+      const btnExt2 = document.getElementById('webview-open-ext2');
+      const hint = document.getElementById('webview-hint');
+      const spin = document.getElementById('webview-spin');
+
+      if (!web) return;
+
+      let currentUrl = null;
+      let loadTimer = null;
+
+      function getHost(u){
+        try { return new URL(u).hostname.replace(/^www\./,''); } catch(e){ return u; }
+      }
+      function show(){
+        web.classList.add('webview--shown');
+        web.setAttribute('aria-hidden','false');
+      }
+      function hide(){
+        web.classList.remove('webview--shown');
+        web.setAttribute('aria-hidden','true');
+        iframe.src = 'about:blank';
+        currentUrl = null;
+        spin.style.display = 'none';
+        hint.classList.remove('show');
+      }
+      function openInApp(url){
+        currentUrl = url;
+        title.textContent = getHost(url);
+        spin.style.display = 'block';
+        hint.classList.remove('show');
+        try { iframe.src = url; } catch(e){}
+        show();
+        clearTimeout(loadTimer);
+        loadTimer = setTimeout(()=>{ hint.classList.add('show'); spin.style.display = 'none'; }, 3000);
+      }
+
+      iframe.addEventListener('load', ()=>{ spin.style.display = 'none'; });
+      btnClose.addEventListener('click', hide);
+      btnReload.addEventListener('click', ()=>{ if (currentUrl) { spin.style.display='block'; try{ iframe.src = currentUrl; }catch(e){} } });
+      btnExt.addEventListener('click', ()=>{ if (currentUrl) window.open(currentUrl, '_blank', 'noopener,noreferrer'); });
+      btnExt2.addEventListener('click', ()=>{ if (currentUrl) window.open(currentUrl, '_blank', 'noopener,noreferrer'); });
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && web.classList.contains('webview--shown')) hide(); });
+
+      // Перехват кликов по .btn c внешними ссылками (кроме data-goto, якорей и исключений)
+      document.addEventListener('click', (e)=>{
+        const a = e.target.closest('a');
+        if (!a) return;
+
+        const href = a.getAttribute('href') || '';
+        const isAnchor = href.startsWith('#');
+        const isGoto = a.hasAttribute('data-goto');
+        const isBtn = a.classList.contains('btn');
+        const isExternalForced = a.dataset.external === '1';
+
+        if (!href || isAnchor || isGoto || !isBtn) return;
+
+        let host = '';
+        try { host = new URL(href).hostname.replace(/^www\./,''); }catch(e){}
+
+        const blocklist = new Set([
+          't.me','telegram.me',
+          'pay.cloudtips.ru','paypal.com','qiwi.com','yoomoney.ru',
+          'youtube.com','youtu.be'
+        ]);
+
+        if (isExternalForced || blocklist.has(host)) {
+          // пусть откроется во внешней вкладке
+          return;
+        }
+
+        e.preventDefault();
+        openInApp(href);
+      });
+    })();
+
+  })();
+  </script>
 </body>
 </html>
