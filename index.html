@@ -1188,6 +1188,27 @@
       });
     })();
   })();
+    // Открывать ВСЕ ссылки в этой же вкладке
+    (function openLinksInSameTab(){
+      // Снимаем target="_blank" у всех ссылок
+      document.querySelectorAll('a[target="_blank"]').forEach(a => a.removeAttribute('target'));
+
+      // Если где-то динамически появятся новые ссылки с target, снимем автоматически
+      const mo = new MutationObserver((mutations)=>{
+        for (const m of mutations) {
+          if (m.type === 'childList') {
+            m.addedNodes.forEach(n=>{
+              if (n.nodeType === 1) n.querySelectorAll?.('a[target="_blank"]').forEach(a=>a.removeAttribute('target'));
+            });
+          }
+          if (m.type === 'attributes' && m.target.matches?.('a[target="_blank"]')) {
+            m.target.removeAttribute('target');
+          }
+        }
+      });
+      mo.observe(document.body, {subtree:true, childList:true, attributes:true, attributeFilter:['target']});
+    })();
+  })();
   </script>
 </body>
 </html>
