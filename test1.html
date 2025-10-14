@@ -3,41 +3,43 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>To Be English — материалы и инструменты</title>
-  <meta name="theme-color" content="#0a0e1a"/>
+  <title>B‑eng — материалы и инструменты</title>
   <meta name="format-detection" content="telephone=no"/>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#0a0e1a"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
 
   <style>
     :root{
-      --bg-grad: radial-gradient(1100px 650px at 15% -10%, rgba(34,211,238,0.22), transparent 60%),
-                 radial-gradient(900px 600px at 100% 10%, rgba(16,185,129,0.18), transparent 60%),
-                 linear-gradient(180deg, #0b1020, #05070f);
+      /* Фон приглушённый (без зелёных «вспышек») */
+      --bg-grad:
+        radial-gradient(900px 520px at -25% -25%, rgba(34,211,238,0.10), transparent 60%),
+        radial-gradient(780px 520px at 125% -10%, rgba(16,185,129,0.08), transparent 60%),
+        linear-gradient(180deg, #0b1020 0%, #05070f 100%);
+
       --text: #eef1f7;
       --muted: #a9b3c2;
       --accent: #ff623b;
-      --card: rgba(255,255,255,.10);
-      --line: rgba(255,255,255,.18);
-      --line-soft: rgba(255,255,255,.12);
-      --glass: rgba(255,255,255,.10);
-      --glass-strong: rgba(255,255,255,.16);
+
+      /* Тёмное стекло */
+      --card: rgba(12,14,22,.72);
+      --line: rgba(255,255,255,.14);
+      --line-soft: rgba(255,255,255,.10);
+      --glass: rgba(18,22,34,.66);
+
       --safe-bottom: env(safe-area-inset-bottom, 0px);
 
+      /* Liquid Glass нижнего меню */
       --glass-surface: #cbd0d6;
-      --light: #fff;
-      --dark: #000;
-      --glass-reflex-dark: 2;
-      --glass-reflex-light: .35;
+      --light: #fff; --dark: #000;
+      --glass-reflex-dark: 2; --glass-reflex-light: .35;
       --saturation: 160%;
 
       --nav-h: 86px;
       --max: 1120px;
 
-      /* размеры фото — можно подстроить */
-      --mediaH: 160px;    /* макс. высота фото в карточках (desktop) */
-      --mediaH-m: 120px;  /* макс. высота фото в карточках (mobile)  */
-      --heroSize: 64px;   /* размер твоего фото (desktop)            */
-      --heroSize-m: 56px; /* размер твоего фото (mobile)             */
+      /* Размеры фото в карточках (как просил) */
+      --imgH: 450px;   /* десктоп */
+      --imgH-m: 390px; /* мобильный */
     }
 
     *{ box-sizing: border-box }
@@ -47,37 +49,41 @@
       font-family:"DM Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       background: var(--bg-grad);
       color: var(--text);
+      font-size: 17px;
+      line-height: 1.6;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
     }
     a{ color: var(--accent); text-decoration-color: color-mix(in srgb, currentColor, transparent 60%); }
     a:hover{ text-decoration-color: currentColor; }
 
+    /* Header */
     header{ position: sticky; top: 10px; z-index: 40; padding: 0 16px; }
     .header-bar{
       max-width: var(--max); margin: 0 auto;
       display:flex; align-items:center; justify-content:space-between; gap:10px;
-      padding:10px; border-radius: 18px;
+      padding:12px 16px; border-radius: 18px;
       background: var(--glass);
       border: 1px solid var(--line);
-      backdrop-filter: blur(16px);
+      backdrop-filter: blur(14px);
       box-shadow: 0 8px 40px rgba(0,0,0,.25);
     }
-    .brand{ display:flex; align-items:center; gap:10px; text-decoration: none; color:inherit; }
-    .brand-badge{
-      width:36px; height:36px; border-radius: 12px;
-      display:grid; place-items:center;
-      background: linear-gradient(135deg, rgba(34,211,238,.45), rgba(16,185,129,.40));
-      box-shadow: inset 0 0 14px rgba(255,255,255,.25);
-      border: 1px solid var(--line);
-      font-weight:700;
+    .brand{ text-decoration:none; color:inherit; font-weight:700; letter-spacing:.2px; font-size:18px; }
+    .top-nav{ display:flex; gap:10px; }
+    .top-link{
+      display:inline-flex; align-items:center;
+      padding:8px 12px; border-radius:12px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color:#fff; text-decoration:none;
+      font-size:14px;
     }
-    .brand span{ opacity:.85 }
+    .top-link:hover{ background: rgba(255,255,255,.10); }
 
-    main{ max-width: var(--max); margin:0 auto; padding: 14px 16px calc(var(--nav-h) + 48px + var(--safe-bottom)); }
-
+    /* Layout */
+    main{ max-width: var(--max); margin:0 auto; padding: 14px 16px calc(var(--nav-h) + 56px + var(--safe-bottom)); }
     .section{ margin: 18px 0 26px; }
-    .section h2{ margin: 10px 0 12px; font-size: 26px; }
+    .section h2{ margin: 6px 0 10px; font-size: 24px; }
     .lead{ color: var(--muted); margin: 8px 0 16px; }
 
     .grid{ display:grid; gap: 16px; grid-template-columns: repeat(12, 1fr); }
@@ -86,92 +92,90 @@
     .col-4 { grid-column: span 4; }
     @media (max-width: 900px){ .col-6,.col-4{ grid-column: 1 / -1; } }
 
+    /* Glass card */
     .glass{
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: 16px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 10px 30px rgba(0,0,0,.24);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0,0,0,.22);
       overflow:hidden;
     }
-    .pad{ padding: 14px; }
-    .glass h3{ margin: 4px 0 6px; font-size: 20px }
+    .pad{ padding: 16px; }
+    .glass h3{ margin: 2px 0 6px; font-size: 18px }
     .glass p { margin: 0 0 10px; color: var(--muted) }
 
+    /* Buttons */
     .btn{
       display:inline-flex; align-items:center; gap:8px;
-      padding:10px 14px; border-radius: 12px;
+      padding:9px 12px; border-radius: 12px;
       border: 1px solid var(--line);
       background: #fff; color: #000; text-decoration:none; font-weight:700;
       transition: filter .15s ease, transform .15s ease;
+      font-size:14px;
     }
     .btn:hover{ filter:brightness(0.96) }
     .btn:active{ transform: translateY(1px) }
-    .btn-ghost{
-      background: transparent; color: var(--text);
-      border-color: var(--line);
-    }
-    .rowBtns{ display:flex; flex-wrap:wrap; gap:10px }
+    .btn-ghost{ background: transparent; color: var(--text); border-color: var(--line); }
+    .rowBtns{ display:flex; flex-wrap:wrap; gap:8px }
 
-    .hr{ height:1px; background: var(--line-soft); margin: 18px 0 10px; border-radius: 1px; }
+    .hr{ height:1px; background: var(--line-soft); margin: 16px 0 10px; border-radius: 1px; }
     .small-note{ color: var(--muted); font-size: 13px; }
 
-    /* Переключатели (вкладочные кнопки) — вид, логика подключу в Часть 2 */
-    .mode-switch{ display:flex; flex-wrap:wrap; gap:8px; }
-    .mode-btn{
-      display:inline-flex; align-items:center; gap:8px;
-      padding: 9px 12px; border-radius: 12px;
-      border: 1px solid var(--line);
-      background: var(--glass);
-      color: #fff; opacity:.9;
-      user-select:none;
+    /* Теги и «иконки» (без внешних скриптов) */
+    .tag{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color:#fff; font-size:12.5px;
     }
-    .mode-btn.active{
-      background: #fff; color:#000; border-color: transparent;
-      box-shadow: 0 12px 30px rgba(255,255,255,.12);
+    .i-square{
+      width:12px; height:12px; display:inline-block; border-radius:3px;
+      background: linear-gradient(135deg, rgba(34,211,238,.7), rgba(16,185,129,.6));
+    }
+    .i-dot{
+      width:13px; height:13px; display:inline-block; border-radius:50%;
+      background: rgba(34,211,238,.22); border:1px solid rgba(34,211,238,.55);
+      position:relative; top:2px;
+    }
+    .i-dot:after{
+      content:''; position:absolute; left:3px; top:3px; width:5px; height:5px; border-radius:2px;
+      background: rgba(34,211,238,.95);
     }
 
-    /* Фото — целиком, не обрезаем, уменьшены */
+    /* Пилюли‑переключатели */
+    .mode-switch{ display:flex; flex-wrap:wrap; gap:6px; }
+    .mode-btn{
+      display:inline-flex; align-items:center; gap:6px;
+      padding: 7px 10px; border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color: #fff; opacity:.95; user-select:none; font-size:13px;
+    }
+    .mode-btn.active{ background: #fff; color:#000; border-color: transparent; box-shadow: 0 10px 24px rgba(255,255,255,.10); }
+
+    /* Фото-карточки (как «карусели»): без обрезки, ограничение по высоте */
     .media-frame{
       position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
-      padding: 8px;
+      border-radius: 14px;
       overflow: hidden;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.04));
+      display: inline-block; padding:6px;
     }
+    .media-fit{ position: static; display:block; line-height: 0; }
     .media-img{
-      display: block;
-      max-width: 100%;
-      height: auto;
-      max-height: var(--mediaH);
+      display: block; width: auto; height: auto;
+      max-width: 100%; max-height: var(--imgH);
       object-fit: contain;
     }
-    @media (max-width: 900px){
-      .media-img{ max-height: var(--mediaH-m); }
-    }
-
-    /* Твоя фотка — ещё компактнее */
-    .hero-left{ display:flex; align-items:center; justify-content:center; }
-    .hero-photo{
-      width: var(--heroSize);
-      height: var(--heroSize);
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      background: var(--glass);
-    }
-    @media (max-width:900px){
-      .hero-photo{ width: var(--heroSize-m); height: var(--heroSize-m); }
-    }
+    @media (max-width: 900px){ .media-img{ max-height: var(--imgH-m); } }
 
     /* Радио‑табы и панели */
     .tabs-input{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); clip-path: inset(100%); white-space:nowrap; }
-    .panel{ display:none; animation:panelIn 340ms cubic-bezier(.2,.7,0,1) both; }
-    @keyframes panelIn{ from{opacity:0; translate:0 6px} to{opacity:1; translate:0 0} }
+    .panel{ display:none; animation:panelIn 300ms ease-out both; }
+    @keyframes panelIn{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
     #tab-home:checked     ~ main .panel[data-panel="home"],
     #tab-books:checked    ~ main .panel[data-panel="books"],
     #tab-video:checked    ~ main .panel[data-panel="video"],
@@ -232,71 +236,183 @@
   <input class="tabs-input" type="radio" id="tab-practice" name="tab" value="practice">
   <input class="tabs-input" type="radio" id="tab-speak"    name="tab" value="speak">
 
+  <!-- Header -->
   <header>
     <div class="header-bar">
-      <a href="#" class="brand">
-        <div class="brand-badge">EN</div>
-        <span>To Be English</span>
-      </a>
-      <a href="#book-cta" onclick="document.getElementById('tab-home').checked=true" class="btn">Первый урок бесплатно</a>
+      <a class="brand" href="#">B‑eng</a>
+      <nav class="top-nav">
+        <a class="top-link" href="#author" onclick="document.getElementById('tab-home').checked=true">Об авторе</a>
+      </nav>
     </div>
   </header>
 
   <main>
     <!-- HOME -->
     <section class="panel" data-panel="home">
-      <div class="section">
+      <!-- Поддержать проект -->
+      <div class="section" id="support">
         <div class="glass pad">
-          <div class="grid" style="gap:14px;">
-            <div class="col-6 hero-left">
-              <div class="media-frame hero-photo">
-                <div class="media-fit">
-                  <!-- ТВОЁ МАЛЕНЬКОЕ ФОТО -->
-                  <img class="media-img"
-                       src="https://static.tildacdn.info/tild6137-3239-4731-b932-343437323234/__1.jpg"
-                       alt="Абдуррахим Бердиев — репетитор английского">
-                </div>
-              </div>
-            </div>
-            <div class="col-6" style="display:flex;flex-direction:column;gap:8px;">
-              <h2 style="margin:0;">Абдуррахим Бердиев</h2>
-              <p class="lead" style="margin-top:4px;">Репетитор английского. Готовлю к ЕГЭ/ОГЭ/IELTS/TOEFL. TEFL, уровень C2. 100+ учеников.</p>
-              <div class="rowBtns" id="book-cta">
-                <a class="btn" href="https://t.me/Berdiyev_eng" target="_blank" rel="noreferrer">Записаться в Telegram</a>
-                <a class="btn btn-ghost" href="mailto:abdurrahimberdiev@gmail.com?subject=Здравствуйте , хочу записаться на урок" target="_blank">Написать на Email</a>
-              </div>
-            </div>
+          <h2>Поддержать проект</h2>
+          <p class="lead">Если эта подборка экономит тебе время и помогает учиться — можно поддержать развитие B‑eng.</p>
+          <div class="rowBtns">
+            <a class="btn" href="https://pay.cloudtips.ru/p/8f56d7d3" target="_blank" rel="noreferrer">Поддержать</a>
+            <a class="btn btn-ghost" href="https://t.me/+NvMX2DrTa3w1NTVi" target="_blank" rel="noreferrer">Telegram‑канал</a>
           </div>
         </div>
       </div>
 
-      <!-- БЕСПЛАТНЫЕ КУРСЫ -->
+      <!-- О проекте + быстрые переходы -->
       <div class="section">
+        <div class="glass pad">
+          <h2>О проекте</h2>
+          <p class="lead">
+            B‑eng — быстрые ссылки на лучшие бесплатные сервисы: курсы, боты и материалы,
+            чтение, видео (фильмы/аудирование/лексика), грамматика и перевод предложений,
+            разговорная практика и изучение слов. Нажми на блок — откроется соответствующий раздел.
+          </p>
+
+          <div class="grid">
+            <div class="col-4">
+              <div class="glass pad">
+                <h3>Бесплатные курсы</h3>
+                <p>Плейлист‑курсы + курс «Английский с нуля»</p>
+                <ul class="small-note" style="margin:8px 0 10px; padding-left:18px;">
+                  <li>Подборка YouTube‑курсов, расписано «для чего»</li>
+                  <li>Старт с нуля на Lingust</li>
+                </ul>
+                <div class="rowBtns"><a class="btn" href="#courses" onclick="return false;">Смотреть</a></div>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="glass pad">
+                <h3>Боты и материалы</h3>
+                <p>Экзамены, репетитор GPT и ЕГЭ‑пак</p>
+                <ul class="small-note" style="margin:8px 0 10px; padding-left:18px;">
+                  <li>ЕГЭ/ОГЭ/IELTS/TOEFL — план, стратегии, проверка</li>
+                  <li>TO BE ENG GPT — бесплатный репетитор</li>
+                </ul>
+                <div class="rowBtns"><a class="btn" href="#bots" onclick="return false;">Открыть</a></div>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="glass pad">
+                <h3>Чтение</h3>
+                <p>Книги/новости с переводом по уровням</p>
+                <ul class="small-note" style="margin:8px 0 10px; padding-left:18px;">
+                  <li>2books, Linguasaur, AnyLang</li>
+                  <li>Новости с заданиями — Breaking News</li>
+                </ul>
+                <div class="rowBtns"><a class="btn" href="#" onclick="document.getElementById('tab-books').checked=true; return false;">Перейти</a></div>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="glass pad">
+                <h3>Видео</h3>
+                <p>Фильмы, аудирование, мини‑уроки лексики</p>
+                <ul class="small-note" style="margin:8px 0 10px; padding-left:18px;">
+                  <li>Inoriginal, Solarmovies, HDRezka, Zetflix</li>
+                  <li>Listen in English, iSLCollective, TubeQuizard</li>
+                  <li>TED‑Ed, 6 Minute English</li>
+                </ul>
+                <div class="rowBtns"><a class="btn" href="#" onclick="document.getElementById('tab-video').checked=true; return false;">Перейти</a></div>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="glass pad">
+                <h3>Грамматика</h3>
+                <p>Практика по темам + перевод предложений</p>
+                <ul class="small-note" style="margin:8px 0 10px; padding-left:18px;">
+                  <li>Test‑English — тренажёры по уровням</li>
+                  <li>Lingust (грамматика) — 148 уроков</li>
+                </ul>
+                <div class="rowBtns"><a class="btn" href="#" onclick="document.getElementById('tab-practice').checked=true; return false;">Перейти</a></div>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="glass pad">
+                <h3>Разговор и слова</h3>
+                <p>HelloTalk, Character.AI, NO WORD</p>
+                <ul class="small-note" style="margin:8px 0 10px; padding-left:18px;">
+                  <li>Разговор с людьми и с ИИ</li>
+                  <li>Слова по уровням и через ассоциации</li>
+                </ul>
+                <div class="rowBtns"><a class="btn" href="#" onclick="document.getElementById('tab-speak').checked=true; return false;">Перейти</a></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <!-- Об авторе — фото слева, текст справа, нормальные размеры -->
+          <div id="author" class="glass pad">
+            <h3>Об авторе</h3>
+            <div class="author-grid" style="display:grid; grid-template-columns: 320px 1fr; gap:18px; align-items: center;">
+              <div class="author-photo">
+                <div class="media-frame" style="padding:8px;">
+                  <div class="media-fit">
+                    <img class="media-img" style="max-height:260px"
+                         src="https://static.tildacdn.info/tild6137-3239-4731-b932-343437323234/__1.jpg"
+                         alt="Абдуррахим Бердиев"/>
+                  </div>
+                </div>
+              </div>
+              <div class="author-info">
+                <div class="rowBtns" style="gap:6px; margin-bottom:10px;">
+                  <span class="tag"><span class="i-square"></span> TEFL</span>
+                  <span class="tag"><span class="i-square"></span> Уровень C2</span>
+                  <span class="tag"><span class="i-square"></span> 100+ учеников</span>
+                  <span class="tag"><span class="i-square"></span> Автор B‑ENG</span>
+                </div>
+                <p style="margin:0 0 12px; color:var(--text);">
+                  Я — Абдуррахим Бердиев. Помогаю заговорить на английском, снимаю барьер и объясняю
+                  грамматику простыми схемами. Готовлю к ЕГЭ/ОГЭ и международным экзаменам (IELTS/TOEFL).
+                  На этой странице — всё, что реально работает и бесплатно.
+                </p>
+                <ul style="margin:0 0 12px; padding-left:18px; color:var(--text);">
+                  <li><span class="i-dot"></span> Разговорная практика и уверенность в речи</li>
+                  <li><span class="i-dot"></span> Грамматика без лишней теории</li>
+                  <li><span class="i-dot"></span> Экзамены: стратегии, Speaking/Writing, критерии</li>
+                </ul>
+                <div class="rowBtns">
+                  <a class="btn" href="https://t.me/Berdiyev_eng" target="_blank" rel="noreferrer">Бесплатный урок английского</a>
+                </div>
+              </div>
+            </div>
+            <style>
+              @media (max-width: 900px){
+                .author-grid{ grid-template-columns: 1fr; }
+              }
+            </style>
+          </div>
+        </div>
+      </div>
+
+      <!-- КУРСЫ -->
+      <div class="section" id="courses">
         <div class="glass pad">
           <div class="rowBtns" style="justify-content:space-between; flex-wrap:wrap;">
             <h3 style="margin:0">Бесплатные курсы</h3>
             <div id="courses-tabs" class="mode-switch">
-              <button class="mode-btn active">Плейлист‑курсы (TG)</button>
-              <button class="mode-btn">Lingust — с нуля</button>
+              <button class="mode-btn active" data-key="tg">Плейлист‑курсы (TG)</button>
+              <button class="mode-btn" data-key="ling">Lingust — с нуля</button>
             </div>
           </div>
           <div id="courses-card" style="margin-top:12px;">
-            <!-- ДЕФОЛТ: Плейлисты в ТГ -->
+            <!-- ДЕФОЛТ: TG -->
             <article class="glass pad">
               <div class="grid" style="gap:12px;">
-                <div class="col-6">
-                  <div class="media-frame">
-                    <img class="media-img"
-                         src="https://static.tildacdn.info/tild3534-3233-4463-a134-346339623162/7A7E2857-CCF4-42C5-A.jpeg"
-                         alt="Подборка плейлист‑курсов в Телеграм‑канале">
-                  </div>
-                </div>
-                <div class="col-6" style="display:flex; flex-direction:column; gap:8px;">
-                  <h3 style="margin-top:2px;">Подборка лучших плейлист‑курсов</h3>
-                  <p style="color:var(--text);opacity:.92;">Курсы на YouTube, расписано для чего каждый; всё бесплатно.</p>
-                  <div class="rowBtns" style="margin-top:6px;">
-                    <a class="btn" href="https://t.me/to_be_eng/190" target="_blank" rel="noreferrer">Открыть</a>
-                  </div>
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3534-3233-4463-a134-346339623162/7A7E2857-CCF4-42C5-A.jpeg" alt="Плейлист‑курсы в TG">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>Плейлист‑курсы в TG</h3>
+                  <p>Подборка YouTube‑курсов с пояснениями. Всё бесплатно.</p>
+                  <div class="rowBtns"><a class="btn" href="https://t.me/to_be_eng/190" target="_blank" rel="noreferrer">Открыть</a></div>
                 </div>
               </div>
             </article>
@@ -304,37 +420,31 @@
         </div>
       </div>
 
-      <!-- МОИ БОТЫ -->
+      <!-- БОТЫ -->
       <div class="section">
         <div class="glass pad">
           <div class="rowBtns" style="justify-content:space-between; flex-wrap:wrap;">
             <h3 style="margin:0">Мои боты на основе ChatGPT</h3>
             <div id="bots-tabs" class="mode-switch">
-              <button class="mode-btn active">ЕГЭ</button>
-              <button class="mode-btn">ОГЭ</button>
-              <button class="mode-btn">IELTS</button>
-              <button class="mode-btn">TOEFL</button>
-              <button class="mode-btn">ЕГЭ материалы</button>
-              <button class="mode-btn">Репетитор GPT</button>
+              <button class="mode-btn active" data-key="ege">ЕГЭ</button>
+              <button class="mode-btn" data-key="oge">ОГЭ</button>
+              <button class="mode-btn" data-key="ielts">IELTS</button>
+              <button class="mode-btn" data-key="toefl">TOEFL</button>
+              <button class="mode-btn" data-key="mat">ЕГЭ материалы</button>
+              <button class="mode-btn" data-key="free">Репетитор GPT</button>
             </div>
           </div>
           <div id="bots-card" style="margin-top:12px;">
-            <!-- ДЕФОЛТ: ЕГЭ -->
+            <!-- ДЕФОЛТ: EGE -->
             <article class="glass pad">
               <div class="grid" style="gap:12px;">
-                <div class="col-6">
-                  <div class="media-frame">
-                    <img class="media-img"
-                         src="https://static.tildacdn.info/tild6436-3766-4232-b064-626263353832/____.jpg"
-                         alt="EGE ASSISTANT — бот">
-                  </div>
-                </div>
-                <div class="col-6" style="display:flex; flex-direction:column; gap:8px;">
-                  <h3 style="margin-top:2px;">EGE ASSISTANT</h3>
-                  <p style="color:var(--text);opacity:.92;">Эксперт ЕГЭ: план, понятная грамматика, стратегии. Проверка Speaking/Writing. Цель — 80+.</p>
-                  <div class="rowBtns" style="margin-top:6px;">
-                    <a class="btn" href="https://t.me/EGE_ENGLISH_GPT_bot" target="_blank" rel="noreferrer">Попробовать</a>
-                  </div>
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild6436-3766-4232-b064-626263353832/____.jpg" alt="EGE ASSISTANT">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>EGE ASSISTANT</h3>
+                  <p>План, объяснения, стратегии; проверка Speaking/Writing. Цель — 80+.</p>
+                  <div class="rowBtns"><a class="btn" href="https://t.me/EGE_ENGLISH_GPT_bot" target="_blank" rel="noreferrer">Попробовать</a></div>
                 </div>
               </div>
             </article>
@@ -348,31 +458,25 @@
       <div class="section">
         <div class="glass pad">
           <div class="rowBtns" style="justify-content:space-between; flex-wrap:wrap;">
-            <h3 style="margin:0">Что читать</h3>
+            <h3 style="margin:0">Читать на английском</h3>
             <div id="books-tabs" class="mode-switch">
-              <button class="mode-btn active">2books.su</button>
-              <button class="mode-btn">Linguasaur</button>
-              <button class="mode-btn">AnyLang</button>
-              <button class="mode-btn">Breaking News</button>
+              <button class="mode-btn active" data-key="2books">2books.su</button>
+              <button class="mode-btn" data-key="ling">Linguasaur</button>
+              <button class="mode-btn" data-key="any">AnyLang</button>
+              <button class="mode-btn" data-key="bne">Breaking News</button>
             </div>
           </div>
           <div id="books-card" style="margin-top:12px;">
             <!-- ДЕФОЛТ: 2books -->
             <article class="glass pad">
               <div class="grid" style="gap:12px;">
-                <div class="col-6">
-                  <div class="media-frame">
-                    <img class="media-img"
-                         src="https://static.tildacdn.info/tild3539-6535-4239-b735-666530633965/1.jpg"
-                         alt="2books.su — книги в оригинале">
-                  </div>
-                </div>
-                <div class="col-6" style="display:flex; flex-direction:column; gap:8px;">
-                  <h3 style="margin-top:2px;">2books.su</h3>
-                  <p style="color:var(--text);opacity:.92;">Книги в оригинале и адаптированные + быстрый перевод фраз.</p>
-                  <div class="rowBtns" style="margin-top:6px;">
-                    <a class="btn" href="https://2books.su/" target="_blank" rel="noreferrer">Открыть</a>
-                  </div>
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3539-6535-4239-b735-666530633965/1.jpg" alt="2books.su">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>2books.su</h3>
+                  <p>Книги в оригинале и адаптированные + быстрый перевод фраз.</p>
+                  <div class="rowBtns"><a class="btn" href="https://2books.su/" target="_blank" rel="noreferrer">Открыть</a></div>
                 </div>
               </div>
             </article>
@@ -383,35 +487,29 @@
 
     <!-- VIDEO -->
     <section class="panel" data-panel="video">
-      <!-- ФИЛЬМЫ -->
+      <!-- Фильмы -->
       <div class="section">
         <div class="glass pad">
           <div class="rowBtns" style="justify-content:space-between; flex-wrap:wrap;">
             <h3 style="margin:0">Фильмы и сериалы на английском</h3>
             <div id="films-tabs" class="mode-switch">
-              <button class="mode-btn active">Inoriginal</button>
-              <button class="mode-btn">Solarmovies</button>
-              <button class="mode-btn">HDRezka</button>
-              <button class="mode-btn">Zetflix</button>
+              <button class="mode-btn active" data-key="inor">Inoriginal</button>
+              <button class="mode-btn" data-key="solar">Solarmovies</button>
+              <button class="mode-btn" data-key="hdr">HDRezka</button>
+              <button class="mode-btn" data-key="zet">Zetflix</button>
             </div>
           </div>
           <div id="films-card" style="margin-top:12px;">
             <!-- ДЕФОЛТ: Inoriginal -->
             <article class="glass pad">
               <div class="grid" style="gap:12px;">
-                <div class="col-6">
-                  <div class="media-frame">
-                    <img class="media-img"
-                         src="https://static.tildacdn.info/tild3336-3030-4964-b966-303862353932/10.jpg"
-                         alt="Inoriginal — фильмы на английском">
-                  </div>
-                </div>
-                <div class="col-6" style="display:flex; flex-direction:column; gap:8px;">
-                  <h3 style="margin-top:2px;">Inoriginal</h3>
-                  <p style="color:var(--text);opacity:.92;">Один из лучших: двойные субтитры EN/RU.</p>
-                  <div class="rowBtns" style="margin-top:6px;">
-                    <a class="btn" href="https://inoriginal.net/" target="_blank" rel="noreferrer">Открыть</a>
-                  </div>
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3336-3030-4964-b966-303862353932/10.jpg" alt="Inoriginal">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>Inoriginal</h3>
+                  <p>Один из лучших: двойные субтитры EN/RU.</p>
+                  <div class="rowBtns"><a class="btn" href="https://inoriginal.net/" target="_blank" rel="noreferrer">Открыть</a></div>
                 </div>
               </div>
             </article>
@@ -419,34 +517,28 @@
         </div>
       </div>
 
-      <!-- ПОНИМАТЬ НА СЛУХ -->
+      <!-- Понимать на слух -->
       <div class="section">
         <div class="glass pad">
           <div class="rowBtns" style="justify-content:space-between; flex-wrap:wrap;">
             <h3 style="margin:0">Научиться понимать на слух</h3>
             <div id="listen-tabs" class="mode-switch">
-              <button class="mode-btn active">Listen in English</button>
-              <button class="mode-btn">iSLCollective</button>
-              <button class="mode-btn">TubeQuizard</button>
+              <button class="mode-btn active" data-key="lie">Listen in English</button>
+              <button class="mode-btn" data-key="isl">iSLCollective</button>
+              <button class="mode-btn" data-key="tq">TubeQuizard</button>
             </div>
           </div>
           <div id="listen-card" style="margin-top:12px;">
             <!-- ДЕФОЛТ: Listen in English -->
             <article class="glass pad">
               <div class="grid" style="gap:12px;">
-                <div class="col-6">
-                  <div class="media-frame">
-                    <img class="media-img"
-                         src="https://static.tildacdn.info/tild3636-3261-4532-b231-626664646132/BA22E78D-3200-4109-8.jpeg"
-                         alt="Listen in English — аудирование">
-                  </div>
-                </div>
-                <div class="col-6" style="display:flex; flex-direction:column; gap:8px;">
-                  <h3 style="margin-top:2px;">Listen in English</h3>
-                  <p style="color:var(--text);opacity:.92;">Готовые уроки по уровням с аудированием и говорением.</p>
-                  <div class="rowBtns" style="margin-top:6px;">
-                    <a class="btn" href="https://listeninenglish.com/index.php" target="_blank" rel="noreferrer">Открыть</a>
-                  </div>
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3636-3261-4532-b231-626664646132/BA22E78D-3200-4109-8.jpeg" alt="Listen in English">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>Listen in English</h3>
+                  <p>Готовые уроки по уровням с аудированием и говорением.</p>
+                  <div class="rowBtns"><a class="btn" href="https://listeninenglish.com/index.php" target="_blank" rel="noreferrer">Открыть</a></div>
                 </div>
               </div>
             </article>
@@ -454,33 +546,27 @@
         </div>
       </div>
 
-      <!-- СЛОВАРНЫЙ ЗАПАС -->
+      <!-- Словарный запас -->
       <div class="section">
         <div class="glass pad">
           <div class="rowBtns" style="justify-content:space-between; flex-wrap:wrap;">
             <h3 style="margin:0">Словарный запас (мини‑уроки)</h3>
             <div id="lexis-tabs" class="mode-switch">
-              <button class="mode-btn active">TED‑Ed</button>
-              <button class="mode-btn">6 Minute English</button>
+              <button class="mode-btn active" data-key="ted">TED‑Ed</button>
+              <button class="mode-btn" data-key="bbc">6 Minute English</button>
             </div>
           </div>
           <div id="lexis-card" style="margin-top:12px;">
-            <!-- ДЕФОЛТ: TED-Ed -->
+            <!-- ДЕФОЛТ: TED‑Ed -->
             <article class="glass pad">
               <div class="grid" style="gap:12px;">
-                <div class="col-6">
-                  <div class="media-frame">
-                    <img class="media-img"
-                         src="https://static.tildacdn.info/tild6339-3537-4662-a130-303765373530/IMG_7745.PNG"
-                         alt="TED‑Ed — мини‑уроки">
-                  </div>
-                </div>
-                <div class="col-6" style="display:flex; flex-direction:column; gap:8px;">
-                  <h3 style="margin-top:2px;">TED‑Ed</h3>
-                  <p style="color:var(--text);opacity:.92;">Уроки по темам: лексика и аудирование.</p>
-                  <div class="rowBtns" style="margin-top:6px;">
-                    <a class="btn" href="https://ed.ted.com/lessons" target="_blank" rel="noreferrer">Открыть</a>
-                  </div>
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild6339-3537-4662-a130-303765373530/IMG_7745.PNG" alt="TED‑Ed">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>TED‑Ed</h3>
+                  <p>Короткие уроки с лексикой и аудированием.</p>
+                  <div class="rowBtns"><a class="btn" href="https://ed.ted.com/lessons" target="_blank" rel="noreferrer">Открыть</a></div>
                 </div>
               </div>
             </article>
@@ -491,32 +577,27 @@
 
     <!-- PRACTICE -->
     <section class="panel" data-panel="practice">
+      <!-- Грамматика -->
       <div class="section">
         <div class="glass pad">
           <div class="rowBtns" style="justify-content:space-between; flex-wrap:wrap;">
             <h3 style="margin:0">Практиковать грамматику</h3>
-            <div id="gram-tabs" class="mode-switch">
-              <button class="mode-btn active">Test‑English</button>
-              <button class="mode-btn">Lingust (грамматика)</button>
+          <div id="gram-tabs" class="mode-switch">
+              <button class="mode-btn active" data-key="test">Test‑English</button>
+              <button class="mode-btn" data-key="ling">Lingust (грамматика)</button>
             </div>
           </div>
           <div id="gram-card" style="margin-top:12px;">
-            <!-- ДЕФОЛТ: Test-English -->
+            <!-- ДЕФОЛТ: Test‑English -->
             <article class="glass pad">
               <div class="grid" style="gap:12px;">
-                <div class="col-6">
-                  <div class="media-frame">
-                    <img class="media-img"
-                         src="https://static.tildacdn.info/tild3131-3437-4330-a633-393162336665/4.jpg"
-                         alt="Test‑English — тренажёры грамматики">
-                  </div>
-                </div>
-                <div class="col-6" style="display:flex; flex-direction:column; gap:8px;">
-                  <h3 style="margin-top:2px;">Test‑English</h3>
-                  <p style="color:var(--text);opacity:.92;">Грамматика/лексика от A1 до B2 — лучшие тренажёры.</p>
-                  <div class="rowBtns" style="margin-top:6px;">
-                    <a class="btn" href="https://test-english.com/grammar-points/" target="_blank" rel="noreferrer">Открыть</a>
-                  </div>
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild3131-3437-4330-a633-393162336665/4.jpg" alt="Test‑English">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>Test‑English</h3>
+                  <p>Грамматика и лексика от A1 до B2 — лучшие тренажёры.</p>
+                  <div class="rowBtns"><a class="btn" href="https://test-english.com/grammar-points/" target="_blank" rel="noreferrer">Открыть</a></div>
                 </div>
               </div>
             </article>
@@ -524,46 +605,40 @@
         </div>
       </div>
 
+      <!-- Перевод предложений -->
       <div class="section">
         <div class="glass pad">
           <h3>Переводить предложения</h3>
-          <p class="small-note">Отрабатывай грамматику и лексику через перевод RU → EN.</p>
-          <div class="rowBtns" style="margin-top:6px;">
-            <a class="btn" href="https://berdiyev-english.github.io/resources/collect.html" target="_blank" rel="noreferrer">Открыть тренажёр</a>
-          </div>
+          <p class="small-note">RU → EN: отработка грамматики и слов через перевод.</p>
+          <div class="rowBtns"><a class="btn" href="https://berdiyev-english.github.io/resources/collect.html" target="_blank" rel="noreferrer">Открыть тренажёр</a></div>
         </div>
       </div>
     </section>
 
     <!-- SPEAK -->
     <section class="panel" data-panel="speak">
+      <!-- Разговорная практика -->
       <div class="section">
         <div class="glass pad">
           <div class="rowBtns" style="justify-content:space-between; flex-wrap:wrap;">
             <h3 style="margin:0">Разговорная практика</h3>
             <div id="talk-tabs" class="mode-switch">
-              <button class="mode-btn active">HelloTalk</button>
-              <button class="mode-btn">Character.AI</button>
-              <button class="mode-btn">TO BE ENG GPT</button>
+              <button class="mode-btn active" data-key="hello">HelloTalk</button>
+              <button class="mode-btn" data-key="char">Character.AI</button>
+              <button class="mode-btn" data-key="gpt">TO BE ENG GPT</button>
             </div>
           </div>
           <div id="talk-card" style="margin-top:12px;">
             <!-- ДЕФОЛТ: HelloTalk -->
             <article class="glass pad">
               <div class="grid" style="gap:12px;">
-                <div class="col-6">
-                  <div class="media-frame">
-                    <img class="media-img"
-                         src="https://static.tildacdn.info/tild6631-3338-4435-b966-313430333161/_____2.jpg"
-                         alt="HelloTalk — разговорная практика с носителями">
-                  </div>
-                </div>
-                <div class="col-6" style="display:flex; flex-direction:column; gap:8px;">
-                  <h3 style="margin-top:2px;">HelloTalk</h3>
-                  <p style="color:var(--text);opacity:.92;">Общение с носителями со всего мира.</p>
-                  <div class="rowBtns" style="margin-top:6px;">
-                    <a class="btn" href="https://www.hellotalk.com/ru" target="_blank" rel="noreferrer">Открыть</a>
-                  </div>
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild6631-3338-4435-b966-313430333161/_____2.jpg" alt="HelloTalk">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>HelloTalk</h3>
+                  <p>Общение с носителями со всего мира.</p>
+                  <div class="rowBtns"><a class="btn" href="https://www.hellotalk.com/ru" target="_blank" rel="noreferrer">Открыть</a></div>
                 </div>
               </div>
             </article>
@@ -571,32 +646,27 @@
         </div>
       </div>
 
+      <!-- Учить слова -->
       <div class="section">
         <div class="glass pad">
           <div class="rowBtns" style="justify-content:space-between; flex-wrap:wrap;">
             <h3 style="margin:0">Учить слова</h3>
             <div id="words-tabs" class="mode-switch">
-              <button class="mode-btn active">NO WORD</button>
-              <button class="mode-btn">EnglSpace</button>
+              <button class="mode-btn active" data-key="noword">NO WORD</button>
+              <button class="mode-btn" data-key="mnemo">EnglSpace</button>
             </div>
           </div>
           <div id="words-card" style="margin-top:12px;">
             <!-- ДЕФОЛТ: NO WORD -->
             <article class="glass pad">
               <div class="grid" style="gap:12px;">
-                <div class="col-6">
-                  <div class="media-frame">
-                    <img class="media-img"
-                         src="https://static.tildacdn.info/tild6534-6633-4438-a530-336663633635/D310B21D-4308-4034-8.jpeg"
-                         alt="NO WORD — учить слова в Telegram">
-                  </div>
-                </div>
-                <div class="col-6" style="display:flex; flex-direction:column; gap:8px;">
-                  <h3 style="margin-top:2px;">NO WORD (Telegram)</h3>
-                  <p style="color:var(--text);opacity:.92;">Учите слова прямо в Telegram, по уровням.</p>
-                  <div class="rowBtns" style="margin-top:6px;">
-                    <a class="btn" href="https://t.me/noword_eng_bot" target="_blank" rel="noreferrer">Открыть</a>
-                  </div>
+                <div class="col-6"><div class="media-frame"><div class="media-fit">
+                  <img class="media-img" src="https://static.tildacdn.info/tild6534-6633-4438-a530-336663633635/D310B21D-4308-4034-8.jpeg" alt="NO WORD">
+                </div></div></div>
+                <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
+                  <h3>NO WORD (Telegram)</h3>
+                  <p>Учите слова прямо в Telegram, по уровням.</p>
+                  <div class="rowBtns"><a class="btn" href="https://t.me/noword_eng_bot" target="_blank" rel="noreferrer">Открыть</a></div>
                 </div>
               </div>
             </article>
@@ -606,7 +676,7 @@
     </section>
   </main>
 
-  <!-- Нижнее меню (Liquid Glass) -->
+  <!-- Нижнее меню -->
   <nav class="bottomnav" role="tablist" aria-label="Нижнее меню">
     <div class="bottomnav__track">
       <ul class="bottomnav__list">
@@ -628,5 +698,6 @@
       </ul>
     </div>
   </nav>
+  <script> /* ============ Helpers ============ */ function scrollToTop() { const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; const header = document.querySelector('header'); if (header) header.scrollIntoView({behavior: reduce?'auto':'smooth', block:'start'}); else window.scrollTo({top:0, behavior: reduce?'auto':'smooth'}); } function setActiveBtn(tabsWrap, key) { tabsWrap.querySelectorAll('.mode-btn').forEach(b=>{ const active = b.getAttribute('data-key') === key; b.classList.toggle('active', active); b.setAttribute('aria-pressed', active ? 'true' : 'false'); }); } function renderCard(container, item){ const cta = item.cta || 'Открыть'; container.innerHTML = ` <article class="glass pad"> <div class="grid" style="gap:12px;"> <div class="col-6"> <div class="media-frame"><div class="media-fit"> <img class="media-img" src="${item.img}" alt="${item.title}"> </div></div> </div> <div class="col-6" style="display:flex; flex-direction:column; gap:6px;"> <h3>${item.title}</h3> <p style="color:var(--text);opacity:.92;">${item.desc}</p> <div class="rowBtns"> <a class="btn" href="${item.link}" target="_blank" rel="noreferrer">${cta}</a> </div> </div> </div> </article> `; } /* ============ Datasets ============ */ const DATA = { courses: { def: 'tg', items: { tg: { title:'Плейлист‑курсы в TG', desc:'Подборка YouTube‑курсов с пояснениями. Всё бесплатно.', img:'https://static.tildacdn.info/tild3534-3233-4463-a134-346339623162/7A7E2857-CCF4-42C5-A.jpeg', link:'https://t.me/to_be_eng/190' }, ling: { title:'Lingust — Английский с нуля', desc:'Пошаговый курс: объяснения + практика.', img:'https://static.tildacdn.info/tild3662-6262-4237-b766-646237396666/52B5C22F-AAA2-4AF7-8.jpeg', link:'https://lingust.ru/english/english-lessons' } } }, bots: { def: 'ege', items: { ege: { title:'EGE ASSISTANT', desc:'План, объяснения, стратегии; проверка Speaking/Writing. Цель — 80+.', img:'https://static.tildacdn.info/tild6436-3766-4232-b064-626263353832/____.jpg', link:'https://t.me/EGE_ENGLISH_GPT_bot', cta:'Попробовать' }, oge: { title:'OGE HELPER', desc:'План, алгоритмы заданий, понятная грамматика, проверка. Цель — «5».', img:'https://static.tildacdn.info/tild3932-6233-4638-a231-613534383636/12.jpg', link:'https://t.me/OGE_ENG_HELPER_BOT', cta:'Попробовать' }, ielts:{ title:'IELTS ЭКСПЕРТ', desc:'Academic/General: стратегия, критерии, проверка Speaking/Writing.', img:'https://static.tildacdn.info/tild3532-3932-4635-a261-306563383261/11.jpg', link:'https://t.me/IELTS_berdiyev_bot', cta:'Попробовать' }, toefl:{ title:'TOEFL iBT ЭКСПЕРТ', desc:'План, практика, критерии; проверка Speaking/Writing.', img:'https://static.tildacdn.info/tild3936-3366-4461-a139-656230353061/10.jpg', link:'https://t.me/TOBEENG_TOEFL_IBT_BOT', cta:'Попробовать' }, mat: { title:'ЕГЭ МАТЕРИАЛЫ', desc:'Лексика, грамматика, шаблоны и тренажёры — всё под рукой в TG.', img:'https://static.tildacdn.info/tild6439-6435-4862-b137-346266376233/9.jpg', link:'https://t.me/tobeeng_ege_bot', cta:'Открыть' }, free: { title:'TO BE ENG GPT', desc:'Персональный помощник: план, задания, объяснения и speaking‑практика.', img:'https://static.tildacdn.info/tild3566-3038-4238-b863-343131373138/_____1.jpg', link:'https://t.me/Tobeeng_GPT_bot', cta:'Попробовать' } } }, books: { def:'2books', items:{ '2books':{ title:'2books.su', desc:'Книги в оригинале и адаптированные + быстрый перевод фраз.', img:'https://static.tildacdn.info/tild3539-6535-4239-b735-666530633965/1.jpg', link:'https://2books.su/' }, 'ling': { title:'Linguasaur', desc:'Книги по уровням, заметки и перевод внутри.', img:'https://static.tildacdn.info/tild6263-3964-4535-b234-303234656665/3.png', link:'https://linguasaur.com/ru/en/books' }, 'any': { title:'AnyLang', desc:'Чтение, карточки слов и перевод — в одном месте.', img:'https://static.tildacdn.info/tild3564-3631-4036-b636-623266636266/2.png', link:'https://anylang.net/ru/books/en' }, 'bne': { title:'Breaking News English', desc:'Новости с заданиями, лексикой и грамматикой.', img:'https://static.tildacdn.info/tild3161-3861-4234-b362-613030653564/2.jpg', link:'https://breakingnewsenglish.com/' } } }, films: { def:'inor', items:{ inor:{ title:'Inoriginal', desc:'Один из лучших: двойные субтитры EN/RU.', img:'https://static.tildacdn.info/tild3336-3030-4964-b966-303862353932/10.jpg', link:'https://inoriginal.net/' }, solar:{ title:'Solarmovies', desc:'Кино без рекламы; русские субтитры есть не всегда.', img:'https://static.tildacdn.info/tild3036-3665-4436-b131-396638313261/ADB9F47D-E5AA-479B-A.jpeg', link:'https://solarmovies.ms/home' }, hdr: { title:'HDRezka', desc:'Запасной вариант: переключи озвучку на EN.', img:'https://static.tildacdn.info/tild3639-6237-4435-b338-373633663331/IMG_7903.PNG', link:'https://hdrezka.fans/' }, zet: { title:'Zetflix', desc:'Ещё один запасной ресурс.', img:'https://static.tildacdn.info/tild3430-6262-4238-b332-343464626162/11.jpg', link:'https://go.zetflix-online.lol/' } } }, listen: { def:'lie', items:{ lie:{ title:'Listen in English', desc:'Готовые уроки по уровням с аудированием и говорением.', img:'https://static.tildacdn.info/tild3636-3261-4532-b231-626664646132/BA22E78D-3200-4109-8.jpeg', link:'https://listeninenglish.com/index.php' }, isl:{ title:'iSLCollective (видео)', desc:'Видео‑уроки по фильмам, сериалам и темам.', img:'https://static.tildacdn.info/tild3836-3837-4331-b162-623335363239/12.jpg', link:'https://en.islcollective.com/english-esl-video-lessons/search' }, tq: { title:'TubeQuizard', desc:'Тренажёр слуха: вставляй пропуски из видео.', img:'https://static.tildacdn.info/tild3039-3833-4530-b061-626633623263/EBAAF637-7242-46C9-8.jpeg', link:'http://www.tubequizard.com/' } } }, lexis: { def:'ted', items:{ ted:{ title:'TED‑Ed', desc:'Короткие уроки по темам: лексика и аудирование.', img:'https://static.tildacdn.info/tild6339-3537-4662-a130-303765373530/IMG_7745.PNG', link:'https://ed.ted.com/lessons' }, bbc:{ title:'6 Minute English', desc:'Уроки от BBC: для начинающих и средних.', img:'https://static.tildacdn.info/tild3864-3339-4639-b030-653330343666/IMG_7746.PNG', link:'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english' } } }, gram: { def:'test', items:{ test:{ title:'Test‑English', desc:'Грамматика и лексика от A1 до B2 — лучшие тренажёры.', img:'https://static.tildacdn.info/tild3131-3437-4330-a633-393162336665/4.jpg', link:'https://test-english.com/grammar-points/' }, ling:{ title:'Lingust — грамматика', desc:'148 уроков с объяснениями и упражнениями.', img:'https://static.tildacdn.info/tild3062-6233-4431-b363-353163363163/0D4BE37D-2FBF-4950-8.jpeg', link:'https://lingust.ru/english/grammar' } } }, talk: { def:'hello', items:{ hello:{ title:'HelloTalk', desc:'Общение с носителями со всего мира.', img:'https://static.tildacdn.info/tild6631-3338-4435-b966-313430333161/_____2.jpg', link:'https://www.hellotalk.com/ru' }, char: { title:'Character.AI', desc:'Разговор с ИИ на английском, создавай своих персонажей.', img:'https://static.tildacdn.info/tild6435-6666-4139-a237-396664643764/_____3.jpg', link:'https://character.ai/' }, gpt: { title:'TO BE ENG GPT', desc:'Поговорит голосом на английском, поправит ошибки.', img:'https://static.tildacdn.info/tild6139-6638-4834-b766-373131303463/_____1.jpg', link:'https://t.me/Tobeeng_GPT_bot' } } }, words: { def:'noword', items:{ noword:{ title:'NO WORD (Telegram)', desc:'Учите слова прямо в Telegram, по уровням.', img:'https://static.tildacdn.info/tild6534-6633-4438-a530-336663633635/D310B21D-4308-4034-8.jpeg', link:'https://t.me/noword_eng_bot' }, mnemo: { title:'EnglSpace (ассоциации)', desc:'Слова через ассоциации (более 16 методик).', img:'https://static.tildacdn.info/tild3462-3164-4432-b633-316131343833/BEE2697D-A7E6-43D6-9.jpeg', link:'https://t.me/English_Mnemo_Bot' } } } }; /* ============ Switchers init ============ */ function initSwitcher(tabsId, cardId, groupKey){ const tabs = document.getElementById(tabsId); const card = document.getElementById(cardId); const group = DATA[groupKey]; if (!tabs || !card || !group) return; function setActive(key, skipSave){ const item = group.items[key] || group.items[group.def]; setActiveBtn(tabs, key); renderCard(card, item); if (!skipSave) { try { localStorage.setItem('sw-'+groupKey, key); } catch(e){} } } tabs.addEventListener('click', (e)=>{ const btn = e.target.closest('.mode-btn'); if (!btn) return; const key = btn.getAttribute('data-key'); if (!key) return; setActive(key); }); let initial = group.def; try { initial = localStorage.getItem('sw-'+groupKey) || initial; } catch(e){} setActive(initial, true); } window.addEventListener('DOMContentLoaded', () => { initSwitcher('courses-tabs', 'courses-card', 'courses'); initSwitcher('bots-tabs', 'bots-card', 'bots'); initSwitcher('books-tabs', 'books-card', 'books'); initSwitcher('films-tabs', 'films-card', 'films'); initSwitcher('listen-tabs', 'listen-card', 'listen'); initSwitcher('lexis-tabs', 'lexis-card', 'lexis'); initSwitcher('gram-tabs', 'gram-card', 'gram'); initSwitcher('talk-tabs', 'talk-card', 'talk'); initSwitcher('words-tabs', 'words-card', 'words'); }); /* ============ Bottom nav persistence + knob fallback ============ */ (function(){ const ids = ['home','books','video','practice','speak']; const radios = ids.map(id => document.getElementById('tab-'+id)); const track = document.querySelector('.bottomnav__track'); const STORAGE_KEY = 'tab-active'; // Use CSS var for knob position always const style = document.createElement('style'); style.textContent = `.bottomnav__track::after{ left: calc(6px + (100%/5 - 12px) * var(--pos, 0)) !important; }`; document.head.appendChild(style); function setPos(idx){ if (track) track.style.setProperty('--pos', idx); } function idxOfChecked(){ return radios.findIndex(r => r && r.checked); } // Init from hash/localStorage let initial = (location.hash || '').replace('#',''); try { initial = localStorage.getItem(STORAGE_KEY) || initial; } catch(e){} let i = ids.indexOf(initial); if (i < 0) i = idxOfChecked(); if (i < 0) i = 0; if (radios[i]) radios[i].checked = true; setPos(i); radios.forEach((r, idx)=>{ if (!r) return; r.addEventListener('change', ()=>{ if (!r.checked) return; try { localStorage.setItem(STORAGE_KEY, ids[idx]); } catch(e){} setPos(idx); history.replaceState(null, '', '#'+ids[idx]); scrollToTop(); }); }); })(); </script>
 </body>
 </html>
