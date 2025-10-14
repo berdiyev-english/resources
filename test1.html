@@ -7,9 +7,9 @@
 <meta name="apple-mobile-web-app-title" content="Материалы для Английского">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="apple-touch-icon" href="/resources/icon-192.png">
-   <meta charset="utf-8"/>
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>B‑eng — материалы и инструменты</title>
+  <title>B‑eng — материалы для английского</title>
   <meta name="format-detection" content="telephone=no"/>
   <meta name="theme-color" content="#0a0e1a"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
@@ -34,12 +34,13 @@
       --safe-bottom: env(safe-area-inset-bottom, 0px);
 
       /* Нижнее меню — регулируется тут */
-      --nav-h: 84px;        /* высота всего меню (80–92px) */
+      --nav-h: 84px;        /* высота меню */
       --items: 5;           /* пунктов меню */
       --knob-xpad: 8px;     /* горизонтальный отступ бегунка от краёв трека */
-      --knob-ypad: 6px;     /* ВЫСОТА бегунка: 0 = максимально высокий, 10 = ниже */
-      --knob-scale: 0.94;   /* ШИРИНА бегунка: 1 = по ширине ячейки, 0.9 = чуть уже */
+      --knob-ypad: 6px;     /* ВЫСОТА бегунка: 0 = максимально высокий */
+      --knob-scale: 0.94;   /* ШИРИНА бегунка: 1 = ширина ячейки */
       --knob-origin: right; /* направление “пружинки” */
+      --knobR: 16px;        /* радиус бегунка и рамки активной иконки */
 
       --glass-surface: #cbd0d6;
       --light: #fff; --dark: #000;
@@ -197,7 +198,7 @@
     .cards[data-group] > article{ display:none; }
     .cards[data-group] > article.active{ display:block; }
 
-    /* Нижнее меню — Liquid Glass, высокая “подсветка” */
+    /* ===== Нижнее меню — Liquid Glass, высокая подсветка, выравнивание рамки ===== */
     .bottomnav{
       position: fixed;
       left:50%; bottom: calc(6px + var(--safe-bottom)); translate: -50% 0; z-index: 50;
@@ -213,20 +214,23 @@
         inset 0 0 3px 0px color-mix(in srgb, var(--dark) calc(var(--glass-reflex-dark)*8%), transparent),
         0px 6px 16px 0px rgba(0,0,0,.25);
       display:flex; align-items:center;
+
+      /* ВАЖНО: вычисления ширины/высоты бегунка доступны и треку, и рамке иконки */
+      --cellW: calc((100% - var(--knob-xpad)*2)/var(--items));
+      --knobW: calc(var(--cellW) * var(--knob-scale));
+      --knobH: calc(100% - var(--knob-ypad)*2);
+      --knobOffset: calc((var(--cellW) - var(--knobW)) / 2);
     }
     .bottomnav__track{
       position:relative; flex:1; height:100%; border-radius:16px;
-      --cellW: calc((100% - var(--knob-xpad)*2)/var(--items));
-      --knobW: calc(var(--cellW) * var(--knob-scale));
-      --knobOffset: calc((var(--cellW) - var(--knobW)) / 2);
     }
     .bottomnav__track::after{
-      content:""; position:absolute;
+      content:""; position:absolute; z-index: 0;
       top: var(--knob-ypad);
-      height: calc(100% - var(--knob-ypad)*2);  /* Высокий бегунок */
+      height: var(--knobH);
       left: calc(var(--knob-xpad) + var(--knobOffset));
       width: var(--knobW);
-      border-radius: 16px;
+      border-radius: var(--knobR);
       background: color-mix(in srgb, var(--glass-surface) 36%, transparent);
       box-shadow:
         inset 0 0 0 1px color-mix(in srgb, var(--light) 10%, transparent),
@@ -253,6 +257,7 @@
       height:100%;
       display:grid; grid-template-columns: repeat(var(--items), 1fr);
       align-items: center;
+      position: relative; z-index: 1; /* значки поверх бегунка */
     }
     .bottomnav__btn{
       position:relative;
@@ -261,11 +266,16 @@
     }
     .bottomnav__btn svg{ width:28px; height:28px; display:block; }
 
-    /* Активная иконка — обводка вокруг */
+    /* Активная иконка — РАМКА ТОЧНО РАЗМЕРОМ КАК БЕГУНОК */
     .bottomnav__btn::after{
-      content:""; position:absolute; width: 44px; height: 44px;
-      border-radius: 12px; border:1px solid rgba(255,255,255,.22);
-      opacity: 0; transition: opacity .2s ease;
+      content:""; position:absolute;
+      width: var(--knobW); height: var(--knobH);
+      top: var(--knob-ypad); left: 50%; transform: translateX(-50%);
+      border-radius: var(--knobR);
+      border:1px solid rgba(255,255,255,.24);
+      opacity: 0; transition: opacity .18s ease;
+      pointer-events: none;
+      box-sizing: border-box;
     }
     body:has(#tab-home:checked)     .bottomnav__btn[for="tab-home"]::after,
     body:has(#tab-books:checked)    .bottomnav__btn[for="tab-books"]::after,
@@ -273,9 +283,23 @@
     body:has(#tab-practice:checked) .bottomnav__btn[for="tab-practice"]::after,
     body:has(#tab-speak:checked)    .bottomnav__btn[for="tab-speak"]::after{ opacity: 1; }
 
-    /* Fallback без :has() — JS задаёт var(--pos) */
+    /* Fallback без :has() — JS задаёт var(--pos) для бегунка */
     .no-has .bottomnav__track::after{
       left: calc( var(--knob-xpad) + var(--cellW) * var(--pos, 0) + var(--knobOffset));
+    }
+
+    /* ===== Об авторе — аккуратно (фото слева, текст справа) ===== */
+    .author-grid{
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .author-photo .media-img{ max-height: 320px; }
+    @media (max-width: 900px){
+      body{ font-size:16px; }
+      .author-grid{ grid-template-columns: 1fr; }
+      .author-photo .media-img{ max-height: 260px; }
     }
   </style>
 </head>
@@ -313,7 +337,7 @@
         </div>
       </div>
 
-      <!-- О проекте -->
+      <!-- О проекте + быстрые переходы -->
       <div class="section">
         <div class="glass pad">
           <h2>О проекте</h2>
@@ -412,20 +436,20 @@
 
           <div class="hr"></div>
 
-          <!-- Об авторе -->
+          <!-- Об авторе — аккуратно -->
           <div id="author" class="glass pad">
             <h3>Об авторе</h3>
-            <div class="grid" style="align-items:center;">
-              <div class="col-4">
+            <div class="author-grid">
+              <div class="author-photo">
                 <div class="media-frame" style="padding:8px;">
                   <div class="media-fit">
-                    <img class="media-img" style="max-height:260px"
+                    <img class="media-img"
                          src="https://static.tildacdn.info/tild6137-3239-4731-b932-343437323234/__1.jpg"
-                         alt="Абдуррахим Бердиев"/>
+                         alt="Абдуррахим Бердиев">
                   </div>
                 </div>
               </div>
-              <div class="col-8">
+              <div class="author-text">
                 <div class="rowBtns" style="gap:6px; margin-bottom:10px;">
                   <span class="tag"><span class="i-square"></span> TEFL</span>
                   <span class="tag"><span class="i-square"></span> Уровень C2</span>
@@ -484,7 +508,9 @@
               <div class="grid" style="gap:12px;">
                 <div class="col-6">
                   <div class="media-frame"><div class="media-fit">
-                    <img class="media-img" src="https://static.tildacdn.info/tild3662-6262-4237-b766-646237396666/52B5C22F-AAA2-4AF7-8.jpeg" alt="Lingust — с нуля">
+                    <img class="media-img"
+                         src="https://static.tildacdn.info/tild3662-6262-4237-b766-646237396666/52B5C22F-AAA2-4AF7-8.jpeg"
+                         alt="Lingust — с нуля">
                   </div></div>
                 </div>
                 <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
@@ -628,7 +654,7 @@
             <article class="glass pad" data-key="ling">
               <div class="grid" style="gap:12px;">
                 <div class="col-6"><div class="media-frame"><div class="media-fit">
-                  <img class="media-img" src="https://static.tildacdn.info/tild6263-3964-4535-b234-303234656665/3.png" alt="Linguasaur">
+                  <img class="media-img" src="https://optim.tildacdn.pub/tild6263-3964-4535-b234-303234656665/-/format/webp/3.png.webp" alt="Linguasaur">
                 </div></div></div>
                 <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
                   <h3>Linguasaur</h3>
@@ -779,7 +805,7 @@
             <article class="glass pad" data-key="tq">
               <div class="grid" style="gap:12px;">
                 <div class="col-6"><div class="media-frame"><div class="media-fit">
-                  <img class="media-img" src="https://static.tildacdn.info/tild3039-3833-4530-b061-626633623263/EBAAF637-7242-46C9-8.jpeg" alt="TubeQuizard">
+                  <img class="media-img" src="http://www.tubequizard.com/static/images/logo.png" alt="TubeQuizard">
                 </div></div></div>
                 <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
                   <h3>TubeQuizard</h3>
@@ -862,7 +888,11 @@
             <article class="glass pad" data-key="ling">
               <div class="grid" style="gap:12px;">
                 <div class="col-6"><div class="media-frame"><div class="media-fit">
-                  <img class="media-img" src="https://static.tildacdn.info/tild3062-6233-4431-b363-353163363163/0D4BE37D-3200-4109-8.jpeg" alt="Lingust — грамматика">
+                  <!-- Основной источник + fallback при ошибке -->
+                  <img class="media-img"
+                       src="https://optim.tildacdn.pub/tild3062-6233-4431-b363-353163363163/-/format/webp/0D4BE37D-2FBF-4950-8.jpeg.webp"
+                       alt="Lingust — грамматика"
+                       onerror="this.onerror=null; this.src='https://lingust.ru/english/img/ru_logo.png';">
                 </div></div></div>
                 <div class="col-6" style="display:flex; flex-direction:column; gap:6px;">
                   <h3>Lingust — грамматика</h3>
@@ -1044,11 +1074,9 @@
       if (!tabs || !wrap) return;
 
       function setActive(key){
-        // статьи
         wrap.querySelectorAll('article').forEach(a=>{
           a.classList.toggle('active', a.getAttribute('data-key') === key);
         });
-        // кнопки
         tabs.querySelectorAll('.mode-btn').forEach(b=>{
           b.classList.toggle('active', b.getAttribute('data-key') === key);
         });
@@ -1121,15 +1149,16 @@
         const btn = e.target.closest('[data-goto]');
         if (!btn) return;
         e.preventDefault();
-        const goto = btn.getAttribute('data-goto'); // варианты: 'books', 'video', 'practice', 'speak' или 'home#courses'
+        const goto = btn.getAttribute('data-goto'); // 'books', 'video', 'practice', 'speak' или 'home#courses'
         if (!goto) return;
 
-        const [tab, anchor] = goto.split('#'); // anchor может быть courses/bots
-        const idx = ids.indexOf(tab);
-        if (idx >= 0) {
+        const [tab, anchor] = goto.split('#');
+        const ids = ['home','books','video','practice','speak'];
+        const i = ids.indexOf(tab);
+        if (i >= 0) {
           const prev = currentIdx;
-          currentIdx = idx;
-          setTab(idx, true, prev);
+          currentIdx = i;
+          setTab(i, true, prev);
           if (anchor) {
             setTimeout(()=>{
               const target = document.getElementById(anchor);
@@ -1137,7 +1166,6 @@
             }, 40);
           }
         } else if (!tab && anchor) {
-          // если вдруг указали просто #anchor в home
           const prev = currentIdx; currentIdx = 0;
           setTab(0, true, prev);
           setTimeout(()=>{
@@ -1147,7 +1175,7 @@
         }
       });
 
-      // Якоря вида <a href="#courses"> и т.п.
+      // Якоря вида <a href="#...">
       document.addEventListener('click', (e)=>{
         const a = e.target.closest('a[href^="#"]');
         if (!a) return;
