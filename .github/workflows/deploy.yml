@@ -2,7 +2,8 @@ name: Deploy Vite App
 
 on:
   push:
-    branches: ["main", "master"] # Сработает при обновлении кода
+    branches: ["main", "master"]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -26,7 +27,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build
         run: npm run build
