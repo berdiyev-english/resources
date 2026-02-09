@@ -1,3 +1,4 @@
+import { InstallPrompt } from './InstallPrompt';
 import { useState, useEffect } from 'react';
 import { 
   Home, PenTool, Heart, Menu, X, ChevronDown, ExternalLink, GraduationCap, Bot, Book, Film, CheckCircle, Mic
@@ -454,6 +455,7 @@ export function App() {
       </main>
 
       <BottomNav activeTab={activeTab} onTabChange={handleNavigate} />
+      <InstallPrompt />
     </div>
   );
 }
