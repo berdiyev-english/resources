@@ -113,10 +113,10 @@ const Header = ({ onNavigate }: any) => {
             
             {/* ЛОГОТИП — ИСПРАВЛЕННЫЙ ПУТЬ */}
             <img 
-              src={`${import.meta.env.BASE_URL}icophot/web-app-manifest-192x192.png`}
-              alt="BEMAT Logo" 
+              src="./icophot/web-app-manifest-192x192.png" 
+              alt="Logo" 
               className="w-10 h-10 rounded-lg object-cover bg-slate-100" 
-            />
+              />
 
             BEMAT
           </button>
