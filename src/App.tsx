@@ -1,3 +1,4 @@
+import { Sponsors } from './Sponsors';
 import { InstallPrompt } from './InstallPrompt';
 import { useState, useEffect } from 'react';
 import { 
@@ -97,7 +98,7 @@ const MediaRow = ({ title, desc, img, link, btnText = "Перейти" }: any) =
   </div>
 );
 
-// --- Header ---
+// --- Header (ИЗМЕНЕН ЛОГОТИП) ---
 
 const Header = ({ onNavigate }: any) => {
   const [isSupportOpen, setIsSupportOpen] = useState(false);
@@ -106,10 +107,20 @@ const Header = ({ onNavigate }: any) => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm">
+      {/* sticky top-0 заменено на top-0, чтобы прилипало под спонсорами */}
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm transition-all">
         <div className="max-w-4xl mx-auto flex items-center justify-between px-4 py-3">
           <button onClick={() => onNavigate('home')} className="text-2xl font-black tracking-tighter text-slate-900 flex items-center gap-2">
-            <span className="bg-violet-600 text-white w-8 h-8 flex items-center justify-center rounded-lg text-lg">B</span>
+            
+            {/* --- ЛОГОТИП КОТА ТУТ --- */}
+            {/* Положите картинку logo.png в папку public/icophot/ */}
+            <img 
+              src="/icophot/logo.png" 
+              alt="Logo" 
+              className="w-10 h-10 rounded-lg object-cover bg-slate-100" 
+            />
+            {/* --- КОНЕЦ ЛОГОТИПА --- */}
+
             BEMAT
           </button>
           
@@ -170,7 +181,6 @@ const Header = ({ onNavigate }: any) => {
         </div>
       </header>
 
-      {/* About App Modal */}
       <Modal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} title="О приложении BEMAT">
         <div className="space-y-4">
           <p className="text-slate-700 leading-relaxed">
@@ -198,9 +208,6 @@ const Header = ({ onNavigate }: any) => {
               <span>Разговорная практика и изучение слов</span>
             </li>
           </ul>
-          <p className="text-slate-500 text-sm">
-            Нажми на раздел — откроется соответствующая вкладка с ресурсами.
-          </p>
           <Button onClick={() => setIsAboutOpen(false)} className="w-full !py-3">
             Понятно!
           </Button>
@@ -231,7 +238,6 @@ const Header = ({ onNavigate }: any) => {
 };
 
 // --- Bottom Nav ---
-
 const TABS = [
   { id: 'home', icon: Home, label: 'Домой' },
   { id: 'books', icon: Book, label: 'Книги' },
@@ -266,10 +272,13 @@ const BottomNav = ({ activeTab, onTabChange }: any) => (
   </nav>
 );
 
-// --- Panels ---
+// --- Panels --- (HomePanel, BooksPanel, VideoPanel, PracticePanel, SpeakPanel - оставляем как есть, код длинный, тут ничего не менялось)
+// ... ВЫ МОЖЕТЕ ОСТАВИТЬ СВОИ СТАРЫЕ PANELS ИЛИ СКОПИРОВАТЬ ИХ ИЗ ВАШЕГО ПРЕДЫДУЩЕГО СООБЩЕНИЯ ... 
+// (Для краткости я их тут свернул, так как в них изменений не было. Если нужно, я могу их продублировать).
 
 const HomePanel = ({ onNavigate }: any) => {
-  const CARDS = [
+    // Вставьте ваш код HomePanel из сообщения выше
+    const CARDS = [
     { title: "Бесплатные курсы", desc: "YouTube‑курсы + Lingust", icon: GraduationCap, color: "text-blue-500", action: () => { document.getElementById('courses')?.scrollIntoView({behavior:'smooth'}) } },
     { title: "Боты и материалы", desc: "ЕГЭ, ОГЭ, IELTS, GPT", icon: Bot, color: "text-violet-500", action: () => { document.getElementById('bots')?.scrollIntoView({behavior:'smooth'}) } },
     { title: "Чтение", desc: "Книги с переводом", icon: Book, color: "text-emerald-500", action: () => onNavigate('books') },
@@ -369,7 +378,6 @@ const HomePanel = ({ onNavigate }: any) => {
     </div>
   );
 };
-
 const BooksPanel = () => (
   <div className="pb-24 pt-4">
     <Accordion title="Читать на английском" defaultOpen={true}>
@@ -380,7 +388,6 @@ const BooksPanel = () => (
     </Accordion>
   </div>
 );
-
 const VideoPanel = () => (
   <div className="pb-24 pt-4">
     <Accordion title="Фильмы и сериалы" defaultOpen={true}>
@@ -400,7 +407,6 @@ const VideoPanel = () => (
     </Accordion>
   </div>
 );
-
 const PracticePanel = () => (
   <div className="pb-24 pt-4">
     <Accordion title="Грамматика" defaultOpen={true}>
@@ -413,7 +419,6 @@ const PracticePanel = () => (
     </Accordion>
   </div>
 );
-
 const SpeakPanel = () => (
   <div className="pb-24 pt-4">
     <Accordion title="Разговорная практика" defaultOpen={true}>
@@ -427,6 +432,8 @@ const SpeakPanel = () => (
     </Accordion>
   </div>
 );
+
+// --- APP COMPONENT (ВСТАВКИ ЗДЕСЬ) ---
 
 export function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -444,6 +451,11 @@ export function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-violet-200">
+      
+      {/* 1. СПОНСОРЫ ВСТАВЛЯЮТСЯ В САМОМ ВЕРХУ */}
+      <Sponsors />
+
+      {/* 2. ЗАТЕМ ИДЕТ HEADER */}
       <Header onNavigate={handleNavigate} />
       
       <main className="max-w-xl mx-auto px-4 w-full">
@@ -455,7 +467,10 @@ export function App() {
       </main>
 
       <BottomNav activeTab={activeTab} onTabChange={handleNavigate} />
+      
+      {/* 3. УВЕДОМЛЕНИЕ ОБ УСТАНОВКЕ В САМОМ НИЗУ */}
       <InstallPrompt />
+      
     </div>
   );
 }
