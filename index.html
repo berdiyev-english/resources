@@ -1,19 +1,40 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>BEMAT — материалы для английского</title>
-    
-    <!-- PWA Settings -->
-    <link rel="manifest" href="/manifest.json" />
+
+    <!-- 1. ИКОНКИ И MANIFEST (Ваши файлы) -->
+    <link rel="icon" type="image/png" href="/icophot/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/icophot/tavicon.svg" />
+    <link rel="shortcut icon" href="/icophot/tavicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icophot/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="BEMAT" />
+    <link rel="manifest" href="/icophot/site.webmanifest" />
+
+    <!-- Настройки для iOS PWA -->
     <meta name="theme-color" content="#ffffff" />
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="BEMAT">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/197/197374.png">
 
+    <!-- Шрифты -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+    
+    <!-- 2. Скрипт для уведомлений OneSignal -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(function(OneSignal) {
+        OneSignal.init({
+          appId: "ВАШ-ID-ОТ-ONESIGNAL", // <-- СМ. ИНСТРУКЦИЮ НИЖЕ
+          safari_web_id: "web.onesignal.auto.xxxxx",
+          notifyButton: {
+            enable: true,
+          },
+        });
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>
