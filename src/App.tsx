@@ -112,7 +112,6 @@ const Header = ({ onNavigate }: any) => {
         <div className="max-w-4xl mx-auto flex items-center justify-between px-4 py-3">
           <button onClick={() => onNavigate('home')} className="text-2xl font-black tracking-tighter text-slate-900 flex items-center gap-2">
             
-            {/* ЛОГОТИП — ИСПРАВЛЕННЫЙ ПУТЬ */}
 <img 
   src={myLogo}  // <-- Используем переменную, а не путь текстом
   alt="Logo" 
