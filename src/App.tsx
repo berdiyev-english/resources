@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import myLogo from './logo.png'; 
 import { Sponsors } from './Sponsors';
 import { InstallPrompt } from './InstallPrompt';
 import { 
