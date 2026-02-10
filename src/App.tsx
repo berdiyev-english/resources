@@ -113,7 +113,7 @@ const Header = ({ onNavigate }: any) => {
           <button onClick={() => onNavigate('home')} className="text-2xl font-black tracking-tighter text-slate-900 flex items-center gap-2">
             
 <img 
-  src={myLogo}  // <-- Используем переменную, а не путь текстом
+  src=./logo.png  // <-- Используем переменную, а не путь текстом
   alt="Logo" 
   className="w-10 h-10 rounded-lg object-cover bg-slate-100" 
 />
