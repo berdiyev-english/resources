@@ -107,14 +107,14 @@ const Header = ({ onNavigate }: any) => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm transition-all">
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm">
         <div className="max-w-4xl mx-auto flex items-center justify-between px-4 py-3">
           <button onClick={() => onNavigate('home')} className="text-2xl font-black tracking-tighter text-slate-900 flex items-center gap-2">
             
-            {/* ИСПРАВЛЕННЫЙ ПУТЬ К ЛОГО (без слэша в начале) */}
+            {/* ЛОГОТИП — ИСПРАВЛЕННЫЙ ПУТЬ */}
             <img 
-              src="icophot/web-app-manifest-192x192.png" 
-              alt="Logo" 
+              src={`${import.meta.env.BASE_URL}icophot/web-app-manifest-192x192.png`}
+              alt="BEMAT Logo" 
               className="w-10 h-10 rounded-lg object-cover bg-slate-100" 
             />
 
@@ -148,7 +148,7 @@ const Header = ({ onNavigate }: any) => {
                       { l: 'TOEFL Expert', u: 'https://t.me/TOBEENG_TOEFL_IBT_BOT', d: 'Стратегии' },
                       { l: 'TO BE ENG GPT', u: 'https://t.me/Tobeeng_GPT_bot', d: 'Репетитор' },
                     ].map((b) => (
-                      <a key={b.l} href={b.u} className="flex items-center justify-between px-3 py-3 rounded-xl hover:bg-violet-50 group border border-transparent hover:border-violet-100 transition-colors">
+                      <a key={b.l} href={b.u} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-3 rounded-xl hover:bg-violet-50 group border border-transparent hover:border-violet-100 transition-colors">
                         <div>
                           <div className="font-bold text-slate-800 text-sm group-hover:text-violet-700">{b.l}</div>
                           <div className="text-xs text-slate-500">{b.d}</div>
@@ -164,7 +164,9 @@ const Header = ({ onNavigate }: any) => {
                       ℹ️ О приложении
                     </button>
                     <a 
-                      href="https://t.me/Berdiyev_eng" 
+                      href="https://t.me/Berdiyev_eng"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       style={{ backgroundColor: '#7c3aed', color: '#ffffff' }}
                       className="flex items-center justify-center gap-2 px-3 py-3 rounded-xl font-bold text-sm shadow-md"
                     >
@@ -212,6 +214,7 @@ const Header = ({ onNavigate }: any) => {
         </div>
       </Modal>
 
+      {/* Support Modal */}
       <Modal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} title="Поддержать проект">
         <div className="text-center">
           <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-sm">
@@ -271,7 +274,7 @@ const BottomNav = ({ activeTab, onTabChange }: any) => (
   </nav>
 );
 
-// --- Panels (ПОЛНЫЙ КОД) ---
+// --- Panels ---
 
 const HomePanel = ({ onNavigate }: any) => {
   const CARDS = [
@@ -330,7 +333,7 @@ const HomePanel = ({ onNavigate }: any) => {
         <MediaRow title="TO BE ENG GPT" desc="Персональный помощник: план, задания." img="https://static.tildacdn.info/tild3566-3038-4238-b863-343131373138/_____1.jpg" link="https://t.me/Tobeeng_GPT_bot" btnText="Попробовать" />
       </div>
 
-      {/* Author - BOTTOM */}
+      {/* Author */}
       <div className="mt-12 pt-8 border-t border-slate-200">
         <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-lg shadow-slate-100/50">
           <div className="flex flex-col md:flex-row gap-6 items-start">
