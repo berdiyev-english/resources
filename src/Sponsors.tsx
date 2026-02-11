@@ -6,24 +6,16 @@ import { ExternalLink } from 'lucide-react';
 const SPONSORS_DATA = [
   {
     id: 1,
-    name: 'SkyEng',
-    // Если картинка лежит в папке public/icophot, пишите путь через точку:
-    logo: './icophot/skyeng.png', // <-- ЗАМЕНИТЕ НА СВОЕ НАЗВАНИЕ ФАЙЛА
-    url: 'https://skyeng.ru',
+    name: 'Bewords',
+    logo: 'https://bemat.ru/bewordswords.jpg', // <-- ЗАМЕНИТЕ НА СВОЕ НАЗВАНИЕ ФАЙЛА
+    url: 'https://bewords.ru',
   },
   {
     id: 2,
-    name: 'Ваш Спонсор',
+    name: 'Боб-Английский с ИИ',
     // Можно использовать прямую ссылку из интернета (это всегда работает):
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Duolingo_logo_2019.svg/2560px-Duolingo_logo_2019.svg.png',
-    url: 'https://duolingo.com',
-  },
-  {
-    id: 3,
-    name: 'Моя компания',
-    // Пример с еще одним файлом из папки:
-    logo: './icophot/my-sponsor.png', 
-    url: '#',
+    logo: 'https://bemat.ru/bobai.jpg',
+    url: 'https://t.me/Tobeeng_GPT_bot',
   }
 ];
 
