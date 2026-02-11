@@ -13,7 +13,7 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// --- UI Components ---
+// --- UI Components --
 
 const Button = ({ children, className, variant = 'primary', href, onClick, ...props }: any) => {
   const baseStyles = "inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-none no-underline cursor-pointer select-none active:scale-95";
