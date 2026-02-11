@@ -157,11 +157,11 @@ const Header = ({ onNavigate }: any) => {
                   <div className="absolute right-0 top-12 w-72 bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 z-50 flex flex-col gap-1">
                     <div className="px-3 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider">AI Помощники</div>
                     {[
-                      { l: 'EGE Assistant', u: 'https://t.me/EGE_ENGLISH_GPT_bot', d: '80+ баллов' },
-                      { l: 'OGE Helper', u: 'https://t.me/OGE_ENG_HELPER_BOT', d: 'Сдать на 5' },
-                      { l: 'IELTS Expert', u: 'https://t.me/IELTS_berdiyev_bot', d: 'Band 7+' },
-                      { l: 'TOEFL Expert', u: 'https://t.me/TOBEENG_TOEFL_IBT_BOT', d: 'Стратегии' },
-                      { l: 'TO BE ENG GPT', u: 'https://t.me/Tobeeng_GPT_bot', d: 'Репетитор' },
+                      { l: 'EGE Assistant', u: 'https://t.me/EGE_ENGLISH_GPT_bot', d: 'Подготовит на 80 + баллов' },
+                      { l: 'OGE Helper', u: 'https://t.me/OGE_ENG_HELPER_BOT', d: 'Сдайте ОГЭ на 5' },
+                      { l: 'IELTS Expert', u: 'https://t.me/IELTS_berdiyev_bot', d: 'IELTS легко' },
+                      { l: 'TOEFL Expert', u: 'https://t.me/TOBEENG_TOEFL_IBT_BOT', d: 'TOEFL 100 +' },
+                      { l: 'TO BE ENG GPT', u: 'https://t.me/Tobeeng_GPT_bot', d: 'Ваш личный репетитор' },
                     ].map((b) => (
                       <a key={b.l} href={b.u} className="flex items-center justify-between px-3 py-3 rounded-xl hover:bg-violet-50 group border border-transparent hover:border-violet-100 transition-colors">
                         <div>
@@ -179,7 +179,7 @@ const Header = ({ onNavigate }: any) => {
                       ℹ️ О приложении
                     </button>
                     <a 
-                      href="https://t.me/Berdiyev_eng" 
+                      href="https:berdiyev-eng.ru" 
                       style={{ backgroundColor: '#7c3aed', color: '#ffffff' }}
                       className="flex items-center justify-center gap-2 px-3 py-3 rounded-xl font-bold text-sm shadow-md"
                     >
@@ -300,12 +300,12 @@ const BottomNav = ({ activeTab, onTabChange }: any) => (
 
 const HomePanel = ({ onNavigate }: any) => {
   const CARDS = [
-    { title: "Бесплатные курсы", desc: "YouTube‑курсы + Lingust", icon: GraduationCap, color: "text-blue-500", action: () => { document.getElementById('courses')?.scrollIntoView({behavior:'smooth'}) } },
-    { title: "Боты и материалы", desc: "ЕГЭ, ОГЭ, IELTS, GPT", icon: Bot, color: "text-violet-500", action: () => { document.getElementById('bots')?.scrollIntoView({behavior:'smooth'}) } },
-    { title: "Чтение", desc: "Книги с переводом", icon: Book, color: "text-emerald-500", action: () => onNavigate('books') },
-    { title: "Видео", desc: "Фильмы и аудирование", icon: Film, color: "text-rose-500", action: () => onNavigate('video') },
-    { title: "Грамматика", desc: "Тренажёры и тесты", icon: PenTool, color: "text-amber-500", action: () => onNavigate('practice') },
-    { title: "Разговор", desc: "HelloTalk, AI, Слова", icon: Mic, color: "text-cyan-500", action: () => onNavigate('speak') },
+    { title: "Бесплатные курсы", desc: "Бесплатные курсы по английскому в одном месте", icon: GraduationCap, color: "text-blue-500", action: () => { document.getElementById('courses')?.scrollIntoView({behavior:'smooth'}) } },
+    { title: "Боты и материалы", desc: "Боты которые подготовят вас к экзаменам и научат говорить на английском", icon: Bot, color: "text-violet-500", action: () => { document.getElementById('bots')?.scrollIntoView({behavior:'smooth'}) } },
+    { title: "Чтение", desc: "Читайте Ккниги с переводом", icon: Book, color: "text-emerald-500", action: () => onNavigate('books') },
+    { title: "Видео", desc: "Смотрите фильмы и прокачивайте аудирование", icon: Film, color: "text-rose-500", action: () => onNavigate('video') },
+    { title: "Грамматика", desc: "Более 150 уроков грамматики", icon: PenTool, color: "text-amber-500", action: () => onNavigate('practice') },
+    { title: "Разговор", desc: "Поговорите с реальными людми на английском", icon: Mic, color: "text-cyan-500", action: () => onNavigate('speak') },
   ];
 
   return (
@@ -337,8 +337,8 @@ const HomePanel = ({ onNavigate }: any) => {
           <GraduationCap className="text-violet-600" />
           <h2 className="text-xl font-bold text-slate-900">Бесплатные курсы</h2>
         </div>
-        <MediaRow title="Плейлист‑курсы в TG" desc="Подборка YouTube‑курсов с пояснениями. Всё бесплатно." img="https://static.tildacdn.info/tild3534-3233-4463-a134-346339623162/7A7E2857-CCF4-42C5-A.jpeg" link="https://t.me/to_be_eng/190" btnText="Открыть" />
-        <MediaRow title="Lingust — с нуля" desc="Пошаговый курс для старта: объяснения + практика." img="https://static.tildacdn.info/tild3662-6262-4237-b766-646237396666/52B5C22F-AAA2-4AF7-8.jpeg" link="https://lingust.ru/english/english-lessons" btnText="Открыть" />
+        <MediaRow title="Плейлист‑курсы в TG" desc="Подборка курсов под каждый уровень. Всё бесплатно." img="https://static.tildacdn.info/tild3534-3233-4463-a134-346339623162/7A7E2857-CCF4-42C5-A.jpeg" link="https://t.me/to_be_eng/190" btnText="Открыть" />
+        <MediaRow title="Lingust — с нуля" desc="Пошаговый курс с нуля: объяснения + практика." img="https://static.tildacdn.info/tild3662-6262-4237-b766-646237396666/52B5C22F-AAA2-4AF7-8.jpeg" link="https://lingust.ru/english/english-lessons" btnText="Открыть" />
       </div>
 
       {/* Bots Section */}
@@ -347,12 +347,12 @@ const HomePanel = ({ onNavigate }: any) => {
           <Bot className="text-violet-600" />
           <h2 className="text-xl font-bold text-slate-900">Боты и материалы</h2>
         </div>
-        <MediaRow title="EGE ASSISTANT" desc="План, объяснения, стратегии; проверка Speaking." img="https://static.tildacdn.info/tild6436-3766-4232-b064-626263353832/____.jpg" link="https://t.me/EGE_ENGLISH_GPT_bot" btnText="Попробовать" />
-        <MediaRow title="OGE HELPER" desc="План подготовки, алгоритмы заданий, проверка." img="https://static.tildacdn.info/tild3932-6233-4638-a231-613534383636/12.jpg" link="https://t.me/OGE_ENG_HELPER_BOT" btnText="Попробовать" />
+        <MediaRow title="ЕГЭ Английский с ИИ" desc="Ваш личный эксперт ЕГЭ составит : План, объяснения, стратегии; проверка заданий и Speaking. Получите 80+ баллов" img="https://bemat.ru/egeai.jpg" link="https://t.me/EGE_ENGLISH_GPT_bot" btnText="Попробовать" />
+        <MediaRow title="ОГЭ Английский с ИИ" desc="Ваш личный эксперт ОГЭ составит : План, объяснения, стратегии; проверка заданий и Speaking. Получите 5 баллов" img="https://bemat.ru/ogeai.jpg" link="https://t.me/OGE_ENG_HELPER_BOT" btnText="Попробовать" />
         <MediaRow title="IELTS эксперт" desc="Academic/General: стратегия, критерии." img="https://static.tildacdn.info/tild3532-3932-4635-a261-306563383261/11.jpg" link="https://t.me/IELTS_berdiyev_bot" btnText="Попробовать" />
         <MediaRow title="TOEFL iBT эксперт" desc="План, практика, разбор критериев." img="https://static.tildacdn.info/tild3936-3366-4461-a139-656230353061/10.jpg" link="https://t.me/TOBEENG_TOEFL_IBT_BOT" btnText="Попробовать" />
-        <MediaRow title="ЕГЭ материалы" desc="Лексика, грамматика, шаблоны, тренажёры." img="https://static.tildacdn.info/tild6439-6435-4862-b137-346266376233/9.jpg" link="https://t.me/tobeeng_ege_bot" btnText="Открыть" />
-        <MediaRow title="TO BE ENG GPT" desc="Персональный помощник: план, задания." img="https://static.tildacdn.info/tild3566-3038-4238-b863-343131373138/_____1.jpg" link="https://t.me/Tobeeng_GPT_bot" btnText="Попробовать" />
+        <MediaRow title="ЕГЭ материалы" desc="Подборка материалов для подготовки к ЕГЭ : Лексика, грамматика, шаблоны, тренажёры и тп." img="https://bemat.ru/egemat.jpg" link="https://t.me/tobeeng_ege_bot" btnText="Открыть" />
+        <MediaRow title="Боб - Английский с ИИ" desc="Ваш личный репетитор прямо у вас в телефоне. Поможет заговорить за 3 месяца" img="https://bemat.ru/bobai.jpg" link="https://t.me/Tobeeng_GPT_bot" btnText="Попробовать" />
       </div>
 
       {/* Author */}
@@ -389,7 +389,7 @@ const HomePanel = ({ onNavigate }: any) => {
                   <span>Экзамены: стратегии, Speaking/Writing</span>
                 </li>
               </ul>
-              <Button href="https://t.me/Berdiyev_eng" className="w-full !py-3 !bg-slate-900 !text-white text-base shadow-xl">
+              <Button href="https:berdiyev-eng.ru" className="w-full !py-3 !bg-slate-900 !text-white text-base shadow-xl">
                 Бесплатный урок английского
               </Button>
             </div>
@@ -415,14 +415,13 @@ const VideoPanel = () => (
   <div className="pb-24 pt-4">
     <Accordion title="Фильмы и сериалы" defaultOpen={true}>
       <MediaRow title="Inoriginal" desc="Один из лучших: двойные субтитры EN/RU." img="https://static.tildacdn.info/tild3336-3030-4964-b966-303862353932/10.jpg" link="https://inoriginal.net/" />
-      <MediaRow title="Solarmovies" desc="Кино без рекламы; русские субтитры не всегда." img="https://static.tildacdn.info/tild3036-3665-4436-b131-396638313261/ADB9F47D-E5AA-479B-A.jpeg" link="https://solarmovies.ms/home" />
+      <MediaRow title="Solarmovies" desc="Кино без рекламы; русские субтитры есть не всегда." img="https://static.tildacdn.info/tild3036-3665-4436-b131-396638313261/ADB9F47D-E5AA-479B-A.jpeg" link="https://solarmovies.ms/home" />
       <MediaRow title="HDRezka" desc="Запасной вариант: переключи озвучку на EN." img="https://static.tildacdn.info/tild3639-6237-4435-b338-373633663331/IMG_7903.PNG" link="https://hdrezka.fans/" />
       <MediaRow title="Zetflix" desc="Ещё один запасной ресурс." img="https://static.tildacdn.info/tild3430-6262-4238-b332-343464626162/11.jpg" link="https://go.zetflix-online.lol/" />
     </Accordion>
     <Accordion title="Аудирование">
       <MediaRow title="Listen in English" desc="Готовые уроки по уровням с аудированием." img="https://static.tildacdn.info/tild3636-3261-4532-b231-626664646132/BA22E78D-3200-4109-8.jpeg" link="https://listeninenglish.com/index.php" />
       <MediaRow title="iSLCollective (видео)" desc="Видео‑уроки по фильмам, сериалам." img="https://static.tildacdn.info/tild3836-3837-4331-b162-623335363239/12.jpg" link="https://en.islcollective.com/english-esl-video-lessons/search" />
-      <MediaRow title="TubeQuizard" desc="Тренажёр слуха: вставляй пропуски." img="http://www.tubequizard.com/static/images/logo.png" link="http://www.tubequizard.com/" />
     </Accordion>
     <Accordion title="Лексика">
       <MediaRow title="TED‑Ed" desc="Короткие уроки с лексикой." img="https://static.tildacdn.info/tild6339-3537-4662-a130-303765373530/IMG_7745.PNG" link="https://ed.ted.com/lessons" />
@@ -434,12 +433,12 @@ const VideoPanel = () => (
 const PracticePanel = () => (
   <div className="pb-24 pt-4">
     <Accordion title="Грамматика" defaultOpen={true}>
-      <MediaRow title="Bewords.ru" desc="Более 150 уроков грамматики." img="https://bewords.ru/images/logo.png" link="https://bewords.ru/" btnText="Открыть" />
+      <MediaRow title="Bewords.ru" desc="Более 150 уроков грамматики." img="https://bemat.ru/bewordsgram.jpg" link="https://bewords.ru/" btnText="Открыть" />
       <MediaRow title="Test‑English" desc="Грамматика и лексика от A1 до B2." img="https://static.tildacdn.info/tild3131-3437-4330-a633-393162336665/4.jpg" link="https://test-english.com/grammar-points/" />
       <MediaRow title="Lingust — грамматика" desc="148 уроков с объяснениями." img="https://optim.tildacdn.pub/tild3062-6233-4431-b363-353163363163/-/format/webp/0D4BE37D-2FBF-4950-8.jpeg.webp" link="https://lingust.ru/english/grammar" />
     </Accordion>
     <Accordion title="Перевод предложений">
-      <MediaRow title="RU → EN тренажёр" desc="Отработка грамматики через перевод." img="https://static.tildacdn.info/tild6435-3633-4265-b966-313030633165/photo.PNG" link="https://berdiyev-english.github.io/resources/collect.html" btnText="Открыть тренажёр" />
+      <MediaRow title="RU → EN тренажёр" desc="Отработка грамматики через перевод." img="https://static.tildacdn.info/tild6435-3633-4265-b966-313030633165/photo.PNG" link="https://bemat.ru/collect.html" btnText="Открыть тренажёр" />
     </Accordion>
   </div>
 );
@@ -447,12 +446,12 @@ const PracticePanel = () => (
 const SpeakPanel = () => (
   <div className="pb-24 pt-4">
     <Accordion title="Разговорная практика" defaultOpen={true}>
+      <MediaRow title="Боб - Английский с ИИ" desc="Поговорит с вами голосом, поправит ваши ошибки." img="https://bemat.ru/bobai.jpg" link="https://t.me/Tobeeng_GPT_bot" btnText="Попробовать" />
       <MediaRow title="HelloTalk" desc="Общение с носителями со всего мира." img="https://static.tildacdn.info/tild6631-3338-4435-b966-313430333161/_____2.jpg" link="https://www.hellotalk.com/ru" />
       <MediaRow title="Character.AI" desc="Бесплатный разговор с ИИ (EN)." img="https://static.tildacdn.info/tild6435-6666-4139-a237-396664643764/_____3.jpg" link="https://character.ai/" />
-      <MediaRow title="TO BE ENG GPT" desc="Поговорит голосом, поправит ошибки." img="https://static.tildacdn.info/tild6139-6638-4834-b766-373131303463/_____1.jpg" link="https://t.me/Tobeeng_GPT_bot" btnText="Попробовать" />
     </Accordion>
     <Accordion title="Учить слова">
-      <MediaRow title="Bewords" desc="Учите слова прямо на сайте." img="https://bewords.ru/images/logo.png" link="https://bewords.ru/" />
+      <MediaRow title="Bewords" desc="Учите слова прямо на сайте." img="https://bemat.ru/bewordswords.jpg" link="https://bewords.ru/" />
       <MediaRow title="EnglSpace" desc="Слова через ассоциации." img="https://static.tildacdn.info/tild3462-3164-4432-b633-316131343833/BEE2697D-A7E6-43D6-9.jpeg" link="https://t.me/English_Mnemo_Bot" />
     </Accordion>
   </div>
