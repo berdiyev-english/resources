@@ -179,7 +179,7 @@ const Header = ({ onNavigate }: any) => {
                       ℹ️ О приложении
                     </button>
                     <a 
-                      href="https://berdiyev-eng.ru/" 
+                      href="https://berdiyev-eng.ru" 
                       style={{ backgroundColor: '#7c3aed', color: '#ffffff' }}
                       className="flex items-center justify-center gap-2 px-3 py-3 rounded-xl font-bold text-sm shadow-md"
                     >
@@ -389,7 +389,7 @@ const HomePanel = ({ onNavigate }: any) => {
                   <span>Экзамены: стратегии, Speaking/Writing</span>
                 </li>
               </ul>
-              <Button href="https://berdiyev-eng.ru/" className="w-full !py-3 !bg-slate-900 !text-white text-base shadow-xl">
+              <Button href="https://berdiyev-eng.ru" className="w-full !py-3 !bg-slate-900 !text-white text-base shadow-xl">
                 Бесплатный урок английского
               </Button>
             </div>
