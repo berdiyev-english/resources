@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 — BEMAT</title>
+    
+    <!-- Шрифты как в приложении -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind (чтобы стили работали без сборки) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        violet: {
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white rounded-[2rem] shadow-2xl shadow-slate-200 border border-slate-100 p-8 md:p-12 max-w-md w-full text-center relative overflow-hidden">
+        
+        <!-- Декоративные пятна на фоне -->
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-violet-100 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+        <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-blue-100 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+
+        <!-- Иконка -->
+        <div class="w-20 h-20 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-4xl border border-slate-100 shadow-sm relative z-10">
+            🧐
+        </div>
+
+        <!-- Заголовок -->
+        <h1 class="text-6xl font-black text-slate-900 mb-2 tracking-tighter relative z-10">404</h1>
+        
+        <!-- Оригинальная надпись -->
+        <h2 class="text-xl font-bold text-slate-800 mb-4 relative z-10">
+            London is the capital of Great Britain...
+        </h2>
+        
+        <p class="text-slate-500 mb-8 leading-relaxed relative z-10">
+            ...а вот этой страницы на карте нет.<br>
+            Даже уровень C2 не поможет её найти.<br>
+            Возможно, она прогуляла урок?
+        </p>
+
+        <!-- Кнопка Домой -->
+        <a href="/" class="relative z-10 inline-flex items-center justify-center w-full py-3.5 px-6 bg-violet-600 text-white font-bold rounded-xl hover:bg-violet-700 transition-transform active:scale-95 shadow-lg shadow-violet-200 no-underline">
+            Вернуться на главную
+        </a>
+
+    </div>
+
+</body>
+</html>
