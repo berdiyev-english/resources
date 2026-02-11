@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import myLogo from './logo.PNG'; 
+import logo from './logo.png'; 
 import { Sponsors } from './Sponsors';
 import { InstallPrompt } from './InstallPrompt';
 import { 
@@ -113,8 +113,8 @@ const Header = ({ onNavigate }: any) => {
           <button onClick={() => onNavigate('home')} className="text-2xl font-black tracking-tighter text-slate-900 flex items-center gap-2">
             
 <img 
-  src=./logo.png  // <-- Используем переменную, а не путь текстом
-  alt="Logo" 
+  src={logo}   // ВАЖНО: фигурные скобки, без кавычек, слово logo
+  alt="BEMAT Logo" 
   className="w-10 h-10 rounded-lg object-cover bg-slate-100" 
 />
             BEMAT
