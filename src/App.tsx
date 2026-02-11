@@ -157,11 +157,11 @@ const Header = ({ onNavigate }: any) => {
                   <div className="absolute right-0 top-12 w-72 bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 z-50 flex flex-col gap-1">
                     <div className="px-3 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider">AI Помощники</div>
                     {[
-                      { l: 'EGE Assistant', u: 'https://t.me/EGE_ENGLISH_GPT_bot', d: 'Подготовит на 80 + баллов' },
-                      { l: 'OGE Helper', u: 'https://t.me/OGE_ENG_HELPER_BOT', d: 'Сдайте ОГЭ на 5' },
+                      { l: 'ЕГЭ Английский с ИИ', u: 'https://t.me/EGE_ENGLISH_GPT_bot', d: 'Подготовит на 80 + баллов' },
+                      { l: 'ОГЭ Английский с ИИ', u: 'https://t.me/OGE_ENG_HELPER_BOT', d: 'Сдайте ОГЭ на 5' },
                       { l: 'IELTS Expert', u: 'https://t.me/IELTS_berdiyev_bot', d: 'IELTS легко' },
                       { l: 'TOEFL Expert', u: 'https://t.me/TOBEENG_TOEFL_IBT_BOT', d: 'TOEFL 100 +' },
-                      { l: 'TO BE ENG GPT', u: 'https://t.me/Tobeeng_GPT_bot', d: 'Ваш личный репетитор' },
+                      { l: 'Боб - Английский с ИИ', u: 'https://t.me/Tobeeng_GPT_bot', d: 'Научит говорить на английском за 3 месяца' },
                     ].map((b) => (
                       <a key={b.l} href={b.u} className="flex items-center justify-between px-3 py-3 rounded-xl hover:bg-violet-50 group border border-transparent hover:border-violet-100 transition-colors">
                         <div>
@@ -179,7 +179,7 @@ const Header = ({ onNavigate }: any) => {
                       ℹ️ О приложении
                     </button>
                     <a 
-                      href="https:berdiyev-eng.ru" 
+                      href="https://berdiyev-eng.ru/" 
                       style={{ backgroundColor: '#7c3aed', color: '#ffffff' }}
                       className="flex items-center justify-center gap-2 px-3 py-3 rounded-xl font-bold text-sm shadow-md"
                     >
@@ -389,7 +389,7 @@ const HomePanel = ({ onNavigate }: any) => {
                   <span>Экзамены: стратегии, Speaking/Writing</span>
                 </li>
               </ul>
-              <Button href="https:berdiyev-eng.ru" className="w-full !py-3 !bg-slate-900 !text-white text-base shadow-xl">
+              <Button href="https://berdiyev-eng.ru/" className="w-full !py-3 !bg-slate-900 !text-white text-base shadow-xl">
                 Бесплатный урок английского
               </Button>
             </div>
