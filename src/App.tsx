@@ -3,7 +3,7 @@ import logo from './logo.png';
 import { Sponsors } from './Sponsors';
 import { InstallPrompt } from './InstallPrompt';
 import { 
-  Home, PenTool, Heart, Menu, X, ChevronDown, ExternalLink, GraduationCap, Bot, Book, Film, CheckCircle, Mic
+  Home, PenTool, Heart, Menu, X, ChevronDown, ExternalLink, GraduationCap, Bot, Book, Film, CheckCircle, Mic, Gift
 } from 'lucide-react';
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -83,15 +83,27 @@ const Accordion = ({ title, children, defaultOpen = false }: any) => {
 };
 
 const MediaRow = ({ title, desc, img, link, btnText = "Перейти" }: any) => (
-  <div className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded-xl border border-slate-100 shadow-sm mb-3 last:mb-0 hover:border-violet-200 transition-colors">
-    <div className="w-full sm:w-32 aspect-video sm:aspect-square flex-shrink-0 bg-slate-100 rounded-lg overflow-hidden relative">
-      <img src={img} alt={title} className="w-full h-full object-cover" onError={(e: any) => { e.target.src = 'https://via.placeholder.com/150?text=IMAGE'; }} />
+  <div className="flex flex-row gap-3 sm:gap-4 p-3 sm:p-4 bg-white rounded-xl border border-slate-100 shadow-sm mb-3 last:mb-0 hover:border-violet-200 transition-colors items-start sm:items-center">
+    
+    {/* Картинка: фиксированный размер, всегда слева, не обрезается */}
+    <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 bg-slate-50 rounded-lg overflow-hidden relative border border-slate-100">
+      <img 
+        src={img} 
+        alt={title} 
+        className="w-full h-full object-cover" 
+        onError={(e: any) => { e.target.src = 'https://via.placeholder.com/150?text=IMAGE'; }} 
+      />
     </div>
-    <div className="flex-1 flex flex-col justify-center">
-      <h4 className="text-lg font-bold text-slate-900 leading-tight mb-1.5">{title}</h4>
-      <p className="text-slate-500 text-sm leading-relaxed mb-4">{desc}</p>
+
+    {/* Контент: справа от картинки */}
+    <div className="flex-1 flex flex-col justify-between h-24 sm:h-32 py-0.5">
       <div>
-        <Button href={link} className="w-full sm:w-auto !py-2 !bg-violet-600 !text-white !shadow-none hover:!bg-violet-700">
+        <h4 className="text-base sm:text-lg font-bold text-slate-900 leading-tight mb-1 line-clamp-2">{title}</h4>
+        <p className="text-xs sm:text-sm text-slate-500 leading-snug mb-2 line-clamp-2">{desc}</p>
+      </div>
+      
+      <div>
+        <Button href={link} className="py-1.5 px-4 text-xs sm:text-sm !bg-violet-600 !text-white shadow-sm hover:!bg-violet-700 w-auto">
           {btnText}
         </Button>
       </div>
@@ -108,25 +120,29 @@ const Header = ({ onNavigate }: any) => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm">
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm transition-all">
         <div className="max-w-4xl mx-auto flex items-center justify-between px-4 py-3">
           <button onClick={() => onNavigate('home')} className="text-2xl font-black tracking-tighter text-slate-900 flex items-center gap-2">
             
-<img 
-  src={logo}   // ВАЖНО: фигурные скобки, без кавычек, слово logo
-  alt="BEMAT Logo" 
-  className="w-10 h-10 rounded-lg object-cover bg-slate-100" 
-/>
+            {/* Твой Логотип (убедись что import logo from './logo.png' есть вверху файла) */}
+            <img 
+               src={logo}  
+               alt="BEMAT" 
+               className="w-10 h-10 rounded-lg object-cover bg-slate-100" 
+            />
+
             BEMAT
           </button>
           
           <div className="flex items-center gap-3">
+            {/* Кнопка Доната - теперь ПОДАРОК (выглядит понятнее) */}
             <button 
               onClick={() => setIsSupportOpen(true)}
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-red-50 text-red-500 hover:bg-red-100 active:scale-95 transition-transform"
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-amber-50 text-amber-500 hover:bg-amber-100 active:scale-95 transition-transform border border-amber-100"
             >
-              <Heart size={22} className="fill-current" />
+              <Gift size={22} />
             </button>
+
             <div className="relative">
               <button 
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -147,7 +163,7 @@ const Header = ({ onNavigate }: any) => {
                       { l: 'TOEFL Expert', u: 'https://t.me/TOBEENG_TOEFL_IBT_BOT', d: 'Стратегии' },
                       { l: 'TO BE ENG GPT', u: 'https://t.me/Tobeeng_GPT_bot', d: 'Репетитор' },
                     ].map((b) => (
-                      <a key={b.l} href={b.u} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-3 rounded-xl hover:bg-violet-50 group border border-transparent hover:border-violet-100 transition-colors">
+                      <a key={b.l} href={b.u} className="flex items-center justify-between px-3 py-3 rounded-xl hover:bg-violet-50 group border border-transparent hover:border-violet-100 transition-colors">
                         <div>
                           <div className="font-bold text-slate-800 text-sm group-hover:text-violet-700">{b.l}</div>
                           <div className="text-xs text-slate-500">{b.d}</div>
@@ -163,9 +179,7 @@ const Header = ({ onNavigate }: any) => {
                       ℹ️ О приложении
                     </button>
                     <a 
-                      href="https://t.me/Berdiyev_eng"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href="https://t.me/Berdiyev_eng" 
                       style={{ backgroundColor: '#7c3aed', color: '#ffffff' }}
                       className="flex items-center justify-center gap-2 px-3 py-3 rounded-xl font-bold text-sm shadow-md"
                     >
@@ -213,22 +227,31 @@ const Header = ({ onNavigate }: any) => {
         </div>
       </Modal>
 
-      {/* Support Modal */}
-      <Modal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} title="Поддержать проект">
+      {/* НОВОЕ КРАСИВОЕ ОКНО ПОДДЕРЖКИ */}
+      <Modal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} title="Вклад в развитие">
         <div className="text-center">
-          <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-sm">
-            <Heart size={40} className="text-red-500 fill-red-500" />
+          {/* Градиентный фон для иконки */}
+          <div className="w-24 h-24 bg-gradient-to-tr from-amber-200 to-yellow-400 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-amber-200/50">
+            <Heart size={44} className="text-white fill-white animate-pulse" />
           </div>
-          <p className="text-slate-800 text-lg font-medium mb-6 leading-relaxed">
-            Это очень нужно и важно, иначе проекту хана... 🥺 <br/>
-            <span className="text-sm text-slate-500 font-normal mt-2 block">Поддержите развитие BEMAT любой суммой.</span>
+          
+          <h4 className="text-xl font-bold text-slate-900 mb-2">
+            BEMAT живет благодаря вам ❤️
+          </h4>
+          
+          <p className="text-slate-600 mb-6 leading-relaxed text-sm">
+            Я делаю этот проект бесплатным, чтобы каждый мог учить английский. 
+            Ваша поддержка помогает оплачивать серверы, улучшать ботов и добавлять новые материалы.
+            <br/><br/>
+            Даже стоимость одной чашки кофе — это огромный вклад в будущее проекта!
           </p>
+          
           <div className="space-y-3">
-            <Button href="https://pay.cloudtips.ru/p/8f56d7d3" className="w-full !py-3 !text-base !bg-slate-900 !text-white shadow-xl shadow-slate-200">
-              Поддержать рублем
+            <Button href="https://pay.cloudtips.ru/p/8f56d7d3" className="w-full !py-3.5 !text-base !bg-slate-900 !text-white shadow-xl shadow-slate-200 hover:scale-[1.02] transition-transform">
+              Поддержать проект
             </Button>
-            <Button variant="ghost" href="https://t.me/+NvMX2DrTa3w1NTVi" className="w-full">
-              Telegram‑канал
+            <Button variant="ghost" href="https://t.me/+NvMX2DrTa3w1NTVi" className="w-full !text-slate-500">
+              Просто подписаться на канал
             </Button>
           </div>
         </div>
