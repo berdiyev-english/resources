@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import logo from './logo.png';
+import catHungry from './cathungry.png';
+import catFedImg from './catfed.png';
 import { Sponsors } from './Sponsors';
 import { InstallPrompt } from './InstallPrompt';
 import {
   Home, PenTool, Heart, Menu, X, ChevronDown, ExternalLink,
   GraduationCap, Bot, Book, Film, CheckCircle, Mic, Gift,
-  Flame, Bell, Settings, Trophy, ArrowRight, CheckCircle2
+  Flame, Bell, Settings, Trophy, ArrowRight, CheckCircle2, Edit3
 } from 'lucide-react';
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -26,44 +28,55 @@ interface UserState {
   completedTasks: string[];
   notificationsEnabled: boolean;
   isOnboarded: boolean;
+  catFed: boolean;
 }
 
-// --- ЗАДАНИЯ ПОД ЦЕЛИ ---
-const DAILY_TASKS: Record<UserGoal, { id: string; title: string; link: string; isExternal: boolean }[]> = {
+const GOAL_OPTIONS: { id: UserGoal; label: string; icon: string }[] = [
+  { id: 'ege', label: 'Сдать ЕГЭ', icon: '🔥' },
+  { id: 'oge', label: 'Сдать ОГЭ', icon: '🎓' },
+  { id: 'ielts', label: 'Сдать IELTS', icon: '🌍' },
+  { id: 'toefl', label: 'Сдать TOEFL', icon: '🇺🇸' },
+  { id: 'speak', label: 'Говорить свободно', icon: '🗣' },
+  { id: 'fun', label: 'Для себя / Фильмы', icon: '🍿' },
+];
+
+const GOAL_LABELS: Record<UserGoal, string> = {
+  ege: '🔥 ЕГЭ', oge: '🎓 ОГЭ', ielts: '🌍 IELTS',
+  toefl: '🇺🇸 TOEFL', speak: '🗣 Разговор', fun: '🍿 Для себя',
+};
+
+// --- ЗАДАНИЯ С ВРЕМЕНЕМ (~15 мин/день) ---
+const DAILY_TASKS: Record<UserGoal, { id: string; title: string; time: number; link: string; isExternal: boolean }[]> = {
   ege: [
-    { id: 't1', title: 'Решить вариант ЕГЭ', link: 'https://en-ege.sdamgia.ru/', isExternal: true },
-    { id: 't2', title: 'Повторить грамматику', link: 'https://bewords.ru/', isExternal: true },
-    { id: 't3', title: 'Материалы и шаблоны ЕГЭ', link: '#bots', isExternal: false },
-    { id: 't4', title: 'Учить 10 слов', link: 'https://bewords.ru/', isExternal: true },
+    { id: 'ege_1', title: 'Решить 5 заданий ЕГЭ', time: 7, link: 'https://en-ege.sdamgia.ru/', isExternal: true },
+    { id: 'ege_2', title: 'Повторить грамматику', time: 5, link: 'https://bewords.ru/', isExternal: true },
+    { id: 'ege_3', title: 'Выучить 5 слов', time: 3, link: 'https://bewords.ru/', isExternal: true },
   ],
   oge: [
-    { id: 't1', title: 'Решить вариант ОГЭ', link: 'https://en-oge.sdamgia.ru/', isExternal: true },
-    { id: 't2', title: 'Учить слова (Bewords)', link: 'https://bewords.ru/', isExternal: true },
-    { id: 't3', title: 'Бот-помощник ОГЭ', link: '#bots', isExternal: false },
-    { id: 't5', title: 'Повторить грамматику', link: 'https://bewords.ru/', isExternal: true },
+    { id: 'oge_1', title: 'Решить 5 заданий ОГЭ', time: 7, link: 'https://en-oge.sdamgia.ru/', isExternal: true },
+    { id: 'oge_2', title: 'Повторить грамматику', time: 5, link: 'https://bewords.ru/', isExternal: true },
+    { id: 'oge_3', title: 'Выучить 5 слов', time: 3, link: 'https://bewords.ru/', isExternal: true },
   ],
   ielts: [
-    { id: 't1', title: 'IELTS бот — практика', link: 'https://t.me/IELTS_berdiyev_bot', isExternal: true },
-    { id: 't2', title: 'Учить академическую лексику', link: 'https://bewords.ru/', isExternal: true },
-    { id: 't3', title: 'Разговор с ИИ Бобом', link: 'https://t.me/Tobeeng_GPT_bot', isExternal: true },
-    { id: 't4', title: 'Повторить грамматику', link: 'https://bewords.ru/', isExternal: true },
+    { id: 'ielts_1', title: 'IELTS бот — 1 задание', time: 7, link: 'https://t.me/IELTS_berdiyev_bot', isExternal: true },
+    { id: 'ielts_2', title: 'Выучить 5 академич. слов', time: 3, link: 'https://bewords.ru/', isExternal: true },
+    { id: 'ielts_3', title: 'Послушать BBC 6 min', time: 6, link: 'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english', isExternal: true },
   ],
   toefl: [
-    { id: 't1', title: 'TOEFL бот — практика', link: 'https://t.me/TOBEENG_TOEFL_IBT_BOT', isExternal: true },
-    { id: 't2', title: 'Учить академическую лексику', link: 'https://bewords.ru/', isExternal: true },
-    { id: 't3', title: 'Разговор с ИИ Бобом', link: 'https://t.me/Tobeeng_GPT_bot', isExternal: true },
-    { id: 't4', title: 'Аудирование (BBC)', link: 'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english', isExternal: true },
+    { id: 'toefl_1', title: 'TOEFL бот — 1 задание', time: 7, link: 'https://t.me/TOBEENG_TOEFL_IBT_BOT', isExternal: true },
+    { id: 'toefl_2', title: 'Выучить 5 академич. слов', time: 3, link: 'https://bewords.ru/', isExternal: true },
+    { id: 'toefl_3', title: 'Аудирование BBC (6 мин)', time: 6, link: 'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english', isExternal: true },
   ],
   speak: [
-    { id: 't1', title: 'Разговор с ИИ Бобом', link: 'https://t.me/Tobeeng_GPT_bot', isExternal: true },
-    { id: 't2', title: 'Учить 10 слов (Bewords)', link: 'https://bewords.ru/', isExternal: true },
-    { id: 't3', title: 'Повторить грамматику', link: 'https://bewords.ru/', isExternal: true },
+    { id: 'speak_1', title: 'Поговорить с ИИ Бобом', time: 5, link: 'https://t.me/Tobeeng_GPT_bot', isExternal: true },
+    { id: 'speak_2', title: 'Выучить 10 слов', time: 5, link: 'https://bewords.ru/', isExternal: true },
+    { id: 'speak_3', title: 'Повторить грамматику', time: 5, link: 'https://bewords.ru/', isExternal: true },
   ],
   fun: [
-    { id: 't1', title: 'Посмотреть видео/сериал', link: '#video', isExternal: false },
-    { id: 't2', title: 'Прочитать главу книги', link: '#books', isExternal: false },
-    { id: 't3', title: 'Учить 10 слов', link: 'https://bewords.ru/', isExternal: true },
-  ]
+    { id: 'fun_1', title: 'Посмотреть видео на EN', time: 5, link: '#video', isExternal: false },
+    { id: 'fun_2', title: 'Прочитать отрывок книги', time: 5, link: '#books', isExternal: false },
+    { id: 'fun_3', title: 'Выучить 5 слов', time: 5, link: 'https://bewords.ru/', isExternal: true },
+  ],
 };
 
 // --- UI COMPONENTS ---
@@ -78,14 +91,11 @@ const Button = ({ children, className, variant = 'primary', href, onClick, ...pr
   const Comp = href ? 'a' : 'button';
   return (
     <Comp
-      href={href}
-      onClick={onClick}
+      href={href} onClick={onClick}
       className={cn(baseStyles, variants[variant] || variants.primary, className)}
       {...(href ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       {...props}
-    >
-      {children}
-    </Comp>
+    >{children}</Comp>
   );
 };
 
@@ -96,9 +106,9 @@ const Modal = ({ isOpen, onClose, title, children }: any) => {
   }, [isOpen]);
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-fade-in">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-[#fafaf9] rounded-[2rem] shadow-2xl p-6 border border-white">
+      <div className="relative w-full max-w-md bg-[#fafaf9] rounded-[2rem] shadow-2xl p-6 border border-white max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold text-stone-900">{title}</h3>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-stone-200 text-stone-500"><X size={20} /></button>
@@ -114,9 +124,9 @@ const Accordion = ({ title, children, defaultOpen = false }: any) => {
   return (
     <div className="mb-4 last:mb-0">
       <div className="bg-white border border-stone-100 rounded-2xl overflow-hidden shadow-sm">
-        <button onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between p-4 bg-white hover:bg-stone-50 transition-none text-left">
+        <button onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between p-4 bg-white hover:bg-stone-50 text-left">
           <span className="text-lg font-bold text-stone-900">{title}</span>
-          <div className={cn("p-1.5 rounded-full bg-stone-100 text-stone-500 transition-none", isOpen && "bg-violet-100 text-violet-600")}>
+          <div className={cn("p-1.5 rounded-full bg-stone-100 text-stone-500", isOpen && "bg-violet-100 text-violet-600")}>
             <ChevronDown size={20} className={cn("transition-transform duration-200", isOpen && "rotate-180")} />
           </div>
         </button>
@@ -128,7 +138,7 @@ const Accordion = ({ title, children, defaultOpen = false }: any) => {
 
 const MediaRow = ({ title, desc, img, link, btnText = "Перейти" }: any) => (
   <div className="flex flex-row gap-3 sm:gap-4 p-3 sm:p-4 bg-white rounded-2xl border border-stone-100 shadow-sm mb-3 last:mb-0 hover:border-violet-200 transition-colors items-start sm:items-center">
-    <div className="w-20 h-20 sm:w-28 sm:h-28 flex-shrink-0 bg-stone-50 rounded-xl overflow-hidden relative border border-stone-100">
+    <div className="w-20 h-20 sm:w-28 sm:h-28 flex-shrink-0 bg-stone-50 rounded-xl overflow-hidden border border-stone-100">
       <img src={img} alt={title} className="w-full h-full object-cover" onError={(e: any) => { e.target.src = 'https://via.placeholder.com/150?text=IMG'; }} />
     </div>
     <div className="flex-1 flex flex-col justify-between min-h-[5rem] py-0.5">
@@ -137,9 +147,7 @@ const MediaRow = ({ title, desc, img, link, btnText = "Перейти" }: any) =
         <p className="text-xs text-stone-500 leading-snug mb-2 line-clamp-2">{desc}</p>
       </div>
       <div>
-        <Button href={link} className="py-1.5 px-4 text-xs !bg-violet-600 !text-white shadow-sm hover:!bg-violet-700 w-auto rounded-lg">
-          {btnText}
-        </Button>
+        <Button href={link} className="py-1.5 px-4 text-xs !bg-violet-600 !text-white shadow-sm hover:!bg-violet-700 w-auto rounded-lg">{btnText}</Button>
       </div>
     </div>
   </div>
@@ -154,7 +162,7 @@ const Onboarding = ({ onComplete }: { onComplete: (name: string, goal: UserGoal)
 
   return (
     <div className="fixed inset-0 z-[60] bg-[#fafaf9] flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
-      <div className="w-28 h-28 rounded-full overflow-hidden mb-6 shadow-xl border-4 border-white animate-pulse">
+      <div className="w-28 h-28 rounded-full overflow-hidden mb-6 shadow-xl border-4 border-white">
         <img src={logo} alt="Bob" className="w-full h-full object-cover" />
       </div>
 
@@ -162,20 +170,8 @@ const Onboarding = ({ onComplete }: { onComplete: (name: string, goal: UserGoal)
         <div className="w-full max-w-sm">
           <h1 className="text-3xl font-black text-stone-800 mb-2">Привет! Я Боб 🐱</h1>
           <p className="text-stone-600 mb-8 text-lg">Помогу тебе выучить английский. Как тебя зовут?</p>
-          <input
-            type="text"
-            placeholder="Твое имя..."
-            className="w-full p-4 rounded-2xl bg-white border border-stone-200 text-lg focus:outline-none focus:ring-2 focus:ring-violet-500 mb-4 shadow-sm"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <button
-            disabled={!name.trim()}
-            onClick={() => setStep(2)}
-            className="w-full py-4 bg-violet-600 text-white font-bold rounded-2xl disabled:opacity-50 hover:scale-[1.02] transition-transform shadow-lg shadow-violet-200"
-          >
-            Дальше
-          </button>
+          <input type="text" placeholder="Твоё имя..." className="w-full p-4 rounded-2xl bg-white border border-stone-200 text-lg focus:outline-none focus:ring-2 focus:ring-violet-500 mb-4 shadow-sm" value={name} onChange={(e) => setName(e.target.value)} />
+          <button disabled={!name.trim()} onClick={() => setStep(2)} className="w-full py-4 bg-violet-600 text-white font-bold rounded-2xl disabled:opacity-50 hover:scale-[1.02] transition-transform shadow-lg shadow-violet-200">Дальше</button>
         </div>
       )}
 
@@ -184,35 +180,180 @@ const Onboarding = ({ onComplete }: { onComplete: (name: string, goal: UserGoal)
           <h2 className="text-2xl font-bold text-stone-800 mb-2">{name}, какая у тебя цель?</h2>
           <p className="text-stone-500 mb-6">Я составлю план занятий для тебя.</p>
           <div className="space-y-3 mb-8">
-            {[
-              { id: 'ege', label: 'Сдать ЕГЭ', icon: '🔥' },
-              { id: 'oge', label: 'Сдать ОГЭ', icon: '🎓' },
-              { id: 'ielts', label: 'Сдать IELTS', icon: '🌍' },
-              { id: 'toefl', label: 'Сдать TOEFL', icon: '🇺🇸' },
-              { id: 'speak', label: 'Говорить свободно', icon: '🗣' },
-              { id: 'fun', label: 'Для себя / Фильмы', icon: '🍿' },
-            ].map((opt) => (
-              <button
-                key={opt.id}
-                onClick={() => setGoal(opt.id as UserGoal)}
-                className={cn(
-                  "w-full p-4 rounded-2xl flex items-center gap-3 border-2 transition-all text-left",
+            {GOAL_OPTIONS.map((opt) => (
+              <button key={opt.id} onClick={() => setGoal(opt.id)}
+                className={cn("w-full p-4 rounded-2xl flex items-center gap-3 border-2 transition-all text-left",
                   goal === opt.id ? "border-violet-600 bg-violet-50" : "border-white bg-white shadow-sm"
-                )}
-              >
+                )}>
                 <span className="text-2xl">{opt.icon}</span>
                 <span className="font-bold text-stone-800">{opt.label}</span>
               </button>
             ))}
           </div>
-          <button
-            onClick={() => onComplete(name, goal)}
-            className="w-full py-4 bg-violet-600 text-white font-bold rounded-2xl hover:scale-[1.02] transition-transform shadow-lg shadow-violet-200"
-          >
-            Создать план 🚀
-          </button>
+          <button onClick={() => onComplete(name, goal)} className="w-full py-4 bg-violet-600 text-white font-bold rounded-2xl hover:scale-[1.02] transition-transform shadow-lg shadow-violet-200">Создать план 🚀</button>
         </div>
       )}
+    </div>
+  );
+};
+
+// --- ПОПАП КОРМЁЖКИ БОБА ---
+
+const CatFeedPopup = ({ isOpen, onClose, user, tasks }: { isOpen: boolean; onClose: () => void; user: UserState; tasks: any[] }) => {
+  if (!isOpen) return null;
+
+  const doneCount = user.completedTasks.length;
+  const totalCount = tasks.length;
+  const feedProgress = user.catFed ? 100 : Math.round((doneCount / totalCount) * 100);
+  const isFed = user.catFed;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-sm bg-[#fafaf9] rounded-[2rem] shadow-2xl p-6 border border-white text-center">
+        <button onClick={onClose} className="absolute top-4 right-4 p-2 rounded-full hover:bg-stone-200 text-stone-400"><X size={20} /></button>
+
+        {/* Кот */}
+        <div className={cn("w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 shadow-lg transition-all duration-700", isFed ? "border-green-300 shadow-green-100" : "border-orange-300 shadow-orange-100")}>
+          <img src={isFed ? catFedImg : catHungry} alt="Bob" className="w-full h-full object-cover" />
+        </div>
+
+        {isFed ? (
+          <>
+            <div className="text-4xl mb-2">🎉</div>
+            <h3 className="text-xl font-black text-stone-900 mb-1">Боб сыт и счастлив!</h3>
+            <p className="text-stone-500 text-sm mb-6">Спасибо что покормил! Приходи завтра 😸</p>
+          </>
+        ) : (
+          <>
+            <div className="text-4xl mb-2">😿</div>
+            <h3 className="text-xl font-black text-stone-900 mb-1">Боб голодный!</h3>
+            <p className="text-stone-500 text-sm mb-2">Выполни все задания, чтобы покормить Боба</p>
+            <p className="text-xs text-stone-400 mb-6">Осталось: {totalCount - doneCount} {totalCount - doneCount === 1 ? 'задание' : 'задания'}</p>
+          </>
+        )}
+
+        {/* Шкала корма */}
+        <div className="mb-2">
+          <div className="flex items-center justify-between text-xs font-bold text-stone-500 mb-1.5">
+            <span>🍽️ Миска с кормом</span>
+            <span>{feedProgress}%</span>
+          </div>
+          <div className="h-4 bg-stone-100 rounded-full overflow-hidden border border-stone-200">
+            <div
+              className={cn("h-full rounded-full transition-all duration-1000", isFed ? "bg-gradient-to-r from-green-400 to-emerald-500" : "bg-gradient-to-r from-orange-300 to-amber-400")}
+              style={{ width: `${feedProgress}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Список заданий в попапе */}
+        <div className="mt-4 space-y-2 text-left">
+          {tasks.map((task: any) => {
+            const isDone = user.completedTasks.includes(task.id);
+            return (
+              <div key={task.id} className={cn("flex items-center gap-2 text-xs p-2 rounded-lg", isDone ? "text-stone-400 bg-stone-50" : "text-stone-700 bg-white border border-stone-100")}>
+                <span>{isDone ? '✅' : '⬜'}</span>
+                <span className={cn("flex-1", isDone && "line-through")}>{task.title}</span>
+                <span className="text-stone-400">{task.time} мин</span>
+              </div>
+            );
+          })}
+        </div>
+
+        <button onClick={onClose} className="mt-6 w-full py-3 bg-violet-600 text-white font-bold rounded-2xl hover:bg-violet-700 transition-colors shadow-lg shadow-violet-200">
+          {isFed ? 'Отлично! 😸' : 'Пойду заниматься!'}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// --- ПОПАП ПРОФИЛЯ (ИЗМЕНИТЬ ИМЯ + ЦЕЛЬ) ---
+
+const ProfileModal = ({ isOpen, onClose, user, onSave }: { isOpen: boolean; onClose: () => void; user: UserState; onSave: (name: string, goal: UserGoal) => void }) => {
+  const [editName, setEditName] = useState(user.name);
+  const [selectedGoal, setSelectedGoal] = useState<UserGoal>(user.goal);
+
+  // Синхронизация при открытии
+  useEffect(() => {
+    if (isOpen) {
+      setEditName(user.name);
+      setSelectedGoal(user.goal);
+    }
+  }, [isOpen, user]);
+
+  const handleSave = () => {
+    if (!editName.trim()) return;
+    onSave(editName.trim(), selectedGoal);
+    onClose();
+  };
+
+  const goalChanged = selectedGoal !== user.goal;
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-md bg-[#fafaf9] rounded-[2rem] shadow-2xl p-6 border border-white max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-bold text-stone-900">Твой профиль</h3>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-stone-200 text-stone-500"><X size={20} /></button>
+        </div>
+
+        {/* Аватарка */}
+        <div className="flex justify-center mb-6">
+          <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-lg">
+            <img src={logo} alt="Bob" className="w-full h-full object-cover" />
+          </div>
+        </div>
+
+        {/* Имя */}
+        <div className="mb-6">
+          <label className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2 block">Имя</label>
+          <input
+            type="text" value={editName} onChange={(e) => setEditName(e.target.value)}
+            className="w-full p-3.5 rounded-xl bg-white border border-stone-200 text-base font-bold focus:outline-none focus:ring-2 focus:ring-violet-500 shadow-sm"
+            placeholder="Твоё имя..."
+          />
+        </div>
+
+        {/* Цель */}
+        <div className="mb-6">
+          <label className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2 block">Цель</label>
+          <div className="space-y-2">
+            {GOAL_OPTIONS.map((opt) => (
+              <button key={opt.id} onClick={() => setSelectedGoal(opt.id)}
+                className={cn("w-full p-3.5 rounded-xl flex items-center gap-3 border-2 transition-all text-left",
+                  selectedGoal === opt.id ? "border-violet-600 bg-violet-50" : "border-stone-100 bg-white",
+                  user.goal === opt.id && selectedGoal !== opt.id && "border-stone-200 bg-stone-50"
+                )}>
+                <span className="text-xl">{opt.icon}</span>
+                <span className="font-bold text-stone-800 flex-1 text-sm">{opt.label}</span>
+                {selectedGoal === opt.id && (
+                  <CheckCircle2 className="w-5 h-5 text-violet-600 fill-violet-100" />
+                )}
+                {user.goal === opt.id && selectedGoal !== opt.id && (
+                  <span className="text-[10px] text-stone-400 font-bold">текущая</span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Предупреждение при смене цели */}
+        {goalChanged && (
+          <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700 font-medium">
+            ⚠️ При смене цели план на сегодня сбросится, но стрик сохранится!
+          </div>
+        )}
+
+        <button onClick={handleSave} disabled={!editName.trim()}
+          className="w-full py-3.5 bg-violet-600 text-white font-bold rounded-2xl hover:bg-violet-700 transition-colors shadow-lg shadow-violet-200 disabled:opacity-50">
+          Сохранить
+        </button>
+      </div>
     </div>
   );
 };
@@ -221,23 +362,32 @@ const Onboarding = ({ onComplete }: { onComplete: (name: string, goal: UserGoal)
 
 const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpdateUser: (u: UserState) => void; onNavigate: (tab: string) => void }) => {
   const tasks = DAILY_TASKS[user.goal] || DAILY_TASKS.fun;
-  const progress = tasks.length > 0 ? Math.round((user.completedTasks.length / tasks.length) * 100) : 0;
+  const doneCount = user.completedTasks.length;
+  const progress = tasks.length > 0 ? Math.round((doneCount / tasks.length) * 100) : 0;
+  const totalTime = tasks.reduce((sum, t) => sum + t.time, 0);
+  const doneTime = tasks.filter(t => user.completedTasks.includes(t.id)).reduce((sum, t) => sum + t.time, 0);
+
+  const [showCatPopup, setShowCatPopup] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const toggleTask = (taskId: string) => {
     const isCompleted = user.completedTasks.includes(taskId);
     const newCompleted = isCompleted
       ? user.completedTasks.filter((id) => id !== taskId)
       : [...user.completedTasks, taskId];
-    onUpdateUser({ ...user, completedTasks: newCompleted });
-  };
 
-  const requestNotification = async () => {
-    if (!("Notification" in window)) { alert("Твой браузер не поддерживает уведомления"); return; }
-    const permission = await Notification.requestPermission();
-    if (permission === "granted") {
-      onUpdateUser({ ...user, notificationsEnabled: true });
-      new Notification("Привет от Боба! 🐱", { body: "Я буду напоминать тебе заниматься английским!", icon: logo });
+    const allDone = newCompleted.length >= tasks.length;
+
+    // Авто-показ попапа кормёжки при первом завершении всех задач
+    if (allDone && !user.catFed) {
+      setTimeout(() => setShowCatPopup(true), 500);
     }
+
+    onUpdateUser({
+      ...user,
+      completedTasks: newCompleted,
+      catFed: user.catFed || allDone,
+    });
   };
 
   const handleTaskLink = (e: React.MouseEvent, task: any) => {
@@ -246,11 +396,9 @@ const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpda
       window.open(task.link, '_blank');
     } else {
       const hash = task.link.replace('#', '');
-      // Если это название вкладки
       if (['home', 'books', 'video', 'practice', 'speak'].includes(hash)) {
         onNavigate(hash);
       } else {
-        // Переход на home и скролл к секции
         onNavigate('home');
         setTimeout(() => {
           document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' });
@@ -259,22 +407,42 @@ const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpda
     }
   };
 
-  const goalLabels: Record<UserGoal, string> = {
-    ege: '🔥 ЕГЭ',
-    oge: '🎓 ОГЭ',
-    ielts: '🌍 IELTS',
-    toefl: '🇺🇸 TOEFL',
-    speak: '🗣 Разговор',
-    fun: '🍿 Для себя',
+  const requestNotification = async () => {
+    if (!("Notification" in window)) { alert("Браузер не поддерживает уведомления"); return; }
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") {
+      onUpdateUser({ ...user, notificationsEnabled: true });
+      new Notification("Привет от Боба! 🐱", { body: "Буду напоминать заниматься английским!", icon: logo });
+    }
   };
 
+  const handleProfileSave = (name: string, goal: UserGoal) => {
+    const goalChanged = goal !== user.goal;
+    onUpdateUser({
+      ...user,
+      name,
+      goal,
+      completedTasks: goalChanged ? [] : user.completedTasks,
+      catFed: goalChanged ? false : user.catFed,
+    });
+  };
+
+  const isCatFed = user.catFed;
+  const feedProgress = isCatFed ? 100 : progress;
+
   return (
-    <div className="pb-24 pt-4 px-4 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Приветствие */}
+    <div className="pb-24 pt-4 px-4 space-y-5">
+
+      {/* Приветствие + кнопка редактирования */}
       <div className="flex justify-between items-center">
-        <div>
+        <div className="flex-1">
           <p className="text-stone-500 text-xs font-bold uppercase tracking-wider">Личный кабинет</p>
-          <h1 className="text-2xl font-black text-stone-800">Привет, {user.name} 👋</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-black text-stone-800">Привет, {user.name} 👋</h1>
+            <button onClick={() => setShowProfileModal(true)} className="p-1.5 rounded-full hover:bg-stone-100 text-stone-400 hover:text-violet-600 transition-colors">
+              <Edit3 size={16} />
+            </button>
+          </div>
         </div>
         <div className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full shadow-sm border border-stone-100">
           <Flame className={cn("w-5 h-5", user.streak > 0 ? "text-orange-500 fill-orange-500" : "text-stone-300")} />
@@ -283,9 +451,43 @@ const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpda
       </div>
 
       {/* Цель */}
-      <div className="bg-violet-50 rounded-2xl px-4 py-3 border border-violet-100 flex items-center gap-3">
-        <Trophy className="w-5 h-5 text-violet-600" />
-        <span className="text-sm font-bold text-violet-800">Твоя цель: {goalLabels[user.goal]}</span>
+      <div className="flex items-center gap-3">
+        <div className="bg-violet-50 rounded-2xl px-4 py-2.5 border border-violet-100 flex items-center gap-2 flex-1">
+          <Trophy className="w-4 h-4 text-violet-600" />
+          <span className="text-sm font-bold text-violet-800">{GOAL_LABELS[user.goal]}</span>
+        </div>
+        <button onClick={() => setShowProfileModal(true)} className="px-4 py-2.5 rounded-2xl bg-white border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50 transition-colors">
+          Изменить
+        </button>
+      </div>
+
+      {/* Карточка Боба (кормёжка) */}
+      <div
+        onClick={() => setShowCatPopup(true)}
+        className={cn(
+          "rounded-[2rem] p-5 shadow-sm border cursor-pointer transition-all hover:shadow-md",
+          isCatFed ? "bg-gradient-to-r from-green-50 to-emerald-50 border-green-200" : "bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200"
+        )}
+      >
+        <div className="flex items-center gap-4">
+          <div className={cn("w-16 h-16 rounded-full overflow-hidden border-3 shadow-md shrink-0", isCatFed ? "border-green-300" : "border-orange-300")}>
+            <img src={isCatFed ? catFedImg : catHungry} alt="Bob" className="w-full h-full object-cover" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-bold text-stone-900 text-base mb-0.5">
+              {isCatFed ? 'Боб сыт! 😸' : 'Боб голодный! 😿'}
+            </h3>
+            <p className="text-xs text-stone-500 mb-2">
+              {isCatFed ? 'Спасибо что покормил! Приходи завтра' : 'Выполни задания чтобы покормить'}
+            </p>
+            <div className="h-2.5 bg-white/70 rounded-full overflow-hidden">
+              <div
+                className={cn("h-full rounded-full transition-all duration-700", isCatFed ? "bg-gradient-to-r from-green-400 to-emerald-500" : "bg-gradient-to-r from-orange-300 to-amber-400")}
+                style={{ width: `${feedProgress}%` }}
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* План на сегодня */}
@@ -293,13 +495,11 @@ const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpda
         <div className="absolute top-0 left-0 w-full h-1.5 bg-stone-100">
           <div className="h-full bg-violet-500 transition-all duration-500 rounded-r-full" style={{ width: `${progress}%` }} />
         </div>
-        <div className="flex justify-between items-start mb-6 mt-2">
+
+        <div className="flex justify-between items-start mb-5 mt-2">
           <div>
-            <h2 className="text-xl font-bold text-stone-900">План на сегодня</h2>
-            <p className="text-stone-500 text-sm">Выполнено: {progress}%</p>
-          </div>
-          <div className="w-12 h-12 rounded-full bg-violet-50 flex items-center justify-center text-2xl animate-bounce">
-            {progress === 100 ? '🎉' : '🐱'}
+            <h2 className="text-lg font-bold text-stone-900">План на сегодня</h2>
+            <p className="text-stone-500 text-xs">~{totalTime} мин · Выполнено: {doneTime}/{totalTime} мин ({progress}%)</p>
           </div>
         </div>
 
@@ -307,20 +507,21 @@ const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpda
           {tasks.map((task) => {
             const isDone = user.completedTasks.includes(task.id);
             return (
-              <div
-                key={task.id}
-                className={cn(
-                  "flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer",
+              <div key={task.id}
+                className={cn("flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer",
                   isDone ? "bg-stone-50 border-transparent opacity-60" : "bg-white border-stone-100 hover:border-violet-200 shadow-sm"
                 )}
-                onClick={() => toggleTask(task.id)}
-              >
-                <div className={cn("w-6 h-6 rounded-full flex items-center justify-center border transition-colors shrink-0", isDone ? "bg-violet-500 border-violet-500" : "border-stone-300")}>
+                onClick={() => toggleTask(task.id)}>
+                <div className={cn("w-6 h-6 rounded-full flex items-center justify-center border transition-colors shrink-0",
+                  isDone ? "bg-violet-500 border-violet-500" : "border-stone-300")}>
                   {isDone && <CheckCircle2 className="w-4 h-4 text-white" />}
                 </div>
-                <span className={cn("flex-1 font-bold text-sm text-stone-700", isDone && "line-through text-stone-400")}>{task.title}</span>
+                <div className="flex-1 min-w-0">
+                  <span className={cn("font-bold text-sm text-stone-700 block", isDone && "line-through text-stone-400")}>{task.title}</span>
+                  <span className="text-[11px] text-stone-400">~{task.time} мин</span>
+                </div>
                 {!isDone && (
-                  <button onClick={(e) => handleTaskLink(e, task)} className="p-2 text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-lg">
+                  <button onClick={(e) => handleTaskLink(e, task)} className="p-2 text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-lg shrink-0">
                     <ArrowRight size={16} />
                   </button>
                 )}
@@ -331,28 +532,28 @@ const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpda
 
         {progress === 100 && (
           <div className="mt-4 p-3 bg-green-50 text-green-700 rounded-xl text-sm font-bold text-center">
-            Отличная работа! Боб гордится тобой 😸
+            Все задания выполнены! Боб покормлен 😸🎉
           </div>
         )}
       </div>
 
       {/* Уведомления */}
       {!user.notificationsEnabled && (
-        <div className="bg-gradient-to-r from-violet-600 to-indigo-600 rounded-[2rem] p-6 text-white shadow-lg relative overflow-hidden">
+        <div className="bg-gradient-to-r from-violet-600 to-indigo-600 rounded-[2rem] p-5 text-white shadow-lg relative overflow-hidden">
           <div className="relative z-10">
-            <h3 className="font-bold text-lg mb-1">Напоминалки</h3>
-            <p className="text-violet-100 text-sm mb-4">Боб напомнит тебе позаниматься, чтобы не потерять стрик.</p>
-            <button onClick={requestNotification} className="px-5 py-2.5 bg-white text-violet-700 font-bold rounded-xl text-sm hover:bg-opacity-90 transition-colors flex items-center gap-2">
+            <h3 className="font-bold text-base mb-1">Напоминалки</h3>
+            <p className="text-violet-100 text-xs mb-3">Боб напомнит тебе позаниматься, чтобы не потерять стрик.</p>
+            <button onClick={requestNotification} className="px-4 py-2 bg-white text-violet-700 font-bold rounded-xl text-sm flex items-center gap-2">
               <Bell size={16} /> Включить
             </button>
           </div>
-          <div className="absolute right-[-10px] bottom-[-20px] text-8xl opacity-20 rotate-12">🔔</div>
+          <div className="absolute right-[-10px] bottom-[-20px] text-7xl opacity-20 rotate-12">🔔</div>
         </div>
       )}
 
       {/* Библиотека */}
       <div>
-        <h3 className="font-bold text-stone-800 mb-4 px-1">Библиотека материалов</h3>
+        <h3 className="font-bold text-stone-800 mb-3 px-1">Библиотека материалов</h3>
         <div className="grid grid-cols-2 gap-3">
           <MenuCard icon={Home} label="Вся подборка" color="bg-slate-100 text-slate-700" onClick={() => onNavigate('home')} />
           <MenuCard icon={Book} label="Книги" color="bg-emerald-100 text-emerald-700" onClick={() => onNavigate('books')} />
@@ -362,6 +563,10 @@ const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpda
           <MenuCard icon={Bot} label="AI Боты" color="bg-violet-100 text-violet-700" onClick={() => { onNavigate('home'); setTimeout(() => document.getElementById('bots')?.scrollIntoView({ behavior: 'smooth' }), 300); }} />
         </div>
       </div>
+
+      {/* Попапы */}
+      <CatFeedPopup isOpen={showCatPopup} onClose={() => setShowCatPopup(false)} user={user} tasks={tasks} />
+      <ProfileModal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} user={user} onSave={handleProfileSave} />
     </div>
   );
 };
@@ -376,6 +581,7 @@ const MenuCard = ({ icon: Icon, label, color, onClick }: any) => (
 );
 
 // --- HEADER ---
+
 const Header = ({ onNavigate, onOpenSettings }: any) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
@@ -389,16 +595,10 @@ const Header = ({ onNavigate, onOpenSettings }: any) => {
           <span className="font-black text-xl tracking-tight text-stone-800">BEMAT</span>
         </button>
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => setIsSupportOpen(true)}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-amber-50 text-amber-500 border border-amber-100"
-          >
+          <button onClick={() => setIsSupportOpen(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-amber-50 text-amber-500 border border-amber-100">
             <Gift size={20} />
           </button>
-          <button
-            onClick={() => setIsMenuOpen(true)}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-900 text-white"
-          >
+          <button onClick={() => setIsMenuOpen(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-900 text-white">
             <Menu size={20} />
           </button>
         </div>
@@ -407,12 +607,11 @@ const Header = ({ onNavigate, onOpenSettings }: any) => {
       {/* Боковое меню */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-50 bg-stone-900/20 backdrop-blur-sm flex justify-end" onClick={() => setIsMenuOpen(false)}>
-          <div className="w-80 h-full bg-[#fafaf9] p-6 shadow-2xl animate-in slide-in-from-right duration-300 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="w-80 h-full bg-[#fafaf9] p-6 shadow-2xl overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
               <h3 className="font-bold text-xl text-stone-900">Меню</h3>
               <button onClick={() => setIsMenuOpen(false)} className="p-2 bg-stone-100 rounded-full"><X size={20} /></button>
             </div>
-
             <div className="space-y-2 mb-6">
               <div className="px-2 py-1 text-xs font-bold text-stone-400 uppercase tracking-wider">AI Помощники</div>
               {[
@@ -420,73 +619,42 @@ const Header = ({ onNavigate, onOpenSettings }: any) => {
                 { l: 'ОГЭ Английский с ИИ', u: 'https://t.me/OGE_ENG_HELPER_BOT', d: 'Сдайте ОГЭ на 5' },
                 { l: 'IELTS Expert', u: 'https://t.me/IELTS_berdiyev_bot', d: 'IELTS легко' },
                 { l: 'TOEFL Expert', u: 'https://t.me/TOBEENG_TOEFL_IBT_BOT', d: 'TOEFL 100+' },
-                { l: 'Боб - Английский с ИИ', u: 'https://t.me/Tobeeng_GPT_bot', d: 'Научит говорить за 3 месяца' },
+                { l: 'Боб — Английский с ИИ', u: 'https://t.me/Tobeeng_GPT_bot', d: 'Научит говорить за 3 месяца' },
               ].map((b) => (
                 <a key={b.l} href={b.u} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-3 rounded-xl hover:bg-violet-50 group border border-transparent hover:border-violet-100 transition-colors">
-                  <div>
-                    <div className="font-bold text-stone-800 text-sm group-hover:text-violet-700">{b.l}</div>
-                    <div className="text-xs text-stone-500">{b.d}</div>
-                  </div>
+                  <div><div className="font-bold text-stone-800 text-sm group-hover:text-violet-700">{b.l}</div><div className="text-xs text-stone-500">{b.d}</div></div>
                   <ExternalLink size={16} className="text-stone-300 group-hover:text-violet-500 shrink-0" />
                 </a>
               ))}
             </div>
-
             <div className="h-px bg-stone-200 my-4" />
-
             <div className="space-y-3">
-              <button
-                onClick={() => { setIsMenuOpen(false); setIsAboutOpen(true); }}
-                className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border border-stone-100 font-bold text-stone-700 text-sm"
-              >
-                ℹ️ О приложении
-              </button>
-              <button
-                onClick={() => { setIsMenuOpen(false); onOpenSettings(); }}
-                className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border border-stone-100 font-bold text-stone-700 text-sm"
-              >
-                <Settings size={18} /> Сбросить прогресс
-              </button>
-              <a href="https://berdiyev-eng.ru" target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-violet-600 text-white font-bold text-sm">
-                <Gift size={18} /> Бесплатный урок
-              </a>
+              <button onClick={() => { setIsMenuOpen(false); setIsAboutOpen(true); }} className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border border-stone-100 font-bold text-stone-700 text-sm">ℹ️ О приложении</button>
+              <button onClick={() => { setIsMenuOpen(false); onOpenSettings(); }} className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border border-stone-100 font-bold text-stone-700 text-sm"><Settings size={18} /> Сбросить прогресс</button>
+              <a href="https://berdiyev-eng.ru" target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-violet-600 text-white font-bold text-sm"><Gift size={18} /> Бесплатный урок</a>
             </div>
           </div>
         </div>
       )}
 
-      {/* О приложении */}
       <Modal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} title="О приложении BEMAT">
         <div className="space-y-4">
-          <p className="text-stone-700 leading-relaxed">
-            <strong>BEMAT</strong> — это быстрые ссылки на лучшие бесплатные сервисы для изучения английского языка.
-          </p>
+          <p className="text-stone-700 leading-relaxed"><strong>BEMAT</strong> — быстрые ссылки на лучшие бесплатные сервисы для изучения английского.</p>
           <ul className="space-y-2 text-sm text-stone-600">
-            {[
-              'Курсы и боты для подготовки к экзаменам',
-              'Чтение книг и новостей с переводом',
-              'Видео: фильмы, аудирование, лексика',
-              'Грамматика и перевод предложений',
-              'Разговорная практика и изучение слов',
-            ].map((t) => (
-              <li key={t} className="flex items-start gap-2">
-                <span className="text-violet-500">•</span><span>{t}</span>
-              </li>
+            {['Курсы и боты для подготовки к экзаменам', 'Чтение книг и новостей с переводом', 'Видео: фильмы, аудирование, лексика', 'Грамматика и перевод предложений', 'Разговорная практика и изучение слов'].map(t => (
+              <li key={t} className="flex items-start gap-2"><span className="text-violet-500">•</span><span>{t}</span></li>
             ))}
           </ul>
           <Button onClick={() => setIsAboutOpen(false)} className="w-full !py-3">Понятно!</Button>
         </div>
       </Modal>
 
-      {/* Поддержка */}
       <Modal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} title="Поддержать проект">
         <div className="text-center">
           <div className="w-20 h-20 bg-gradient-to-tr from-amber-200 to-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <Heart size={40} className="text-white fill-white animate-pulse" />
+            <Heart size={40} className="text-white fill-white" />
           </div>
-          <p className="text-stone-600 mb-6 text-sm">
-            BEMAT — бесплатный проект. Ваша поддержка помогает Бобу кушать и развивать приложение!
-          </p>
+          <p className="text-stone-600 mb-6 text-sm">BEMAT — бесплатный проект. Ваша поддержка помогает Бобу кушать и развивать приложение!</p>
           <div className="space-y-3">
             <Button href="https://pay.cloudtips.ru/p/8f56d7d3" className="w-full !py-3">Поддержать</Button>
             <Button variant="ghost" href="https://t.me/+NvMX2DrTa3w1NTVi" className="w-full">Telegram канал</Button>
@@ -497,66 +665,48 @@ const Header = ({ onNavigate, onOpenSettings }: any) => {
   );
 };
 
-// --- ПАНЕЛИ (ВСЕ РЕСУРСЫ) ---
+// --- ПАНЕЛИ КОНТЕНТА ---
 
 const HomePanel = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
   const CARDS = [
-    { title: "Бесплатные курсы", desc: "Бесплатные курсы по английскому в одном месте", icon: GraduationCap, color: "text-blue-500", action: () => { document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' }); } },
-    { title: "Боты и материалы", desc: "Боты которые подготовят вас к экзаменам и научат говорить на английском", icon: Bot, color: "text-violet-500", action: () => { document.getElementById('bots')?.scrollIntoView({ behavior: 'smooth' }); } },
+    { title: "Бесплатные курсы", desc: "Бесплатные курсы по английскому в одном месте", icon: GraduationCap, color: "text-blue-500", action: () => document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' }) },
+    { title: "Боты и материалы", desc: "Боты для экзаменов и разговорной практики", icon: Bot, color: "text-violet-500", action: () => document.getElementById('bots')?.scrollIntoView({ behavior: 'smooth' }) },
     { title: "Чтение", desc: "Читайте книги с переводом", icon: Book, color: "text-emerald-500", action: () => onNavigate('books') },
-    { title: "Видео", desc: "Смотрите фильмы и прокачивайте аудирование", icon: Film, color: "text-rose-500", action: () => onNavigate('video') },
+    { title: "Видео", desc: "Фильмы и аудирование", icon: Film, color: "text-rose-500", action: () => onNavigate('video') },
     { title: "Грамматика", desc: "Более 150 уроков грамматики", icon: PenTool, color: "text-amber-500", action: () => onNavigate('practice') },
-    { title: "Разговор", desc: "Поговорите с реальными людьми на английском", icon: Mic, color: "text-cyan-500", action: () => onNavigate('speak') },
+    { title: "Разговор", desc: "Практика с реальными людьми", icon: Mic, color: "text-cyan-500", action: () => onNavigate('speak') },
   ];
-
   return (
     <div className="pb-24 space-y-8 pt-4 px-4">
-      {/* Карточки */}
       <div className="grid grid-cols-2 gap-3">
-        {CARDS.map((c) => (
+        {CARDS.map(c => (
           <div key={c.title} className="bg-white p-4 rounded-2xl border border-stone-100 shadow-sm hover:shadow-md transition-shadow flex flex-col items-start gap-3">
-            <div className={cn("p-2.5 rounded-xl bg-stone-50", c.color)}>
-              <c.icon size={28} />
-            </div>
+            <div className={cn("p-2.5 rounded-xl bg-stone-50", c.color)}><c.icon size={28} /></div>
             <div className="flex-1">
               <h3 className="font-bold text-stone-900 text-sm leading-tight mb-1">{c.title}</h3>
               <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">{c.desc}</p>
             </div>
-            <button
-              onClick={c.action}
-              className="mt-2 w-full py-2.5 bg-violet-600 text-white rounded-xl text-xs font-bold hover:bg-violet-700 shadow-sm shadow-violet-200 active:scale-95 transition-transform"
-            >
-              Перейти
-            </button>
+            <button onClick={c.action} className="mt-2 w-full py-2.5 bg-violet-600 text-white rounded-xl text-xs font-bold hover:bg-violet-700 shadow-sm shadow-violet-200 active:scale-95 transition-transform">Перейти</button>
           </div>
         ))}
       </div>
 
-      {/* Курсы */}
       <div id="courses" className="scroll-mt-24">
-        <div className="flex items-center gap-2 mb-4 px-1">
-          <GraduationCap className="text-violet-600" />
-          <h2 className="text-xl font-bold text-stone-900">Бесплатные курсы</h2>
-        </div>
+        <div className="flex items-center gap-2 mb-4 px-1"><GraduationCap className="text-violet-600" /><h2 className="text-xl font-bold text-stone-900">Бесплатные курсы</h2></div>
         <MediaRow title="Плейлист‑курсы в TG" desc="Подборка курсов под каждый уровень. Всё бесплатно." img="https://static.tildacdn.info/tild3534-3233-4463-a134-346339623162/7A7E2857-CCF4-42C5-A.jpeg" link="https://t.me/to_be_eng/190" btnText="Открыть" />
         <MediaRow title="Lingust — с нуля" desc="Пошаговый курс с нуля: объяснения + практика." img="https://static.tildacdn.info/tild3662-6262-4237-b766-646237396666/52B5C22F-AAA2-4AF7-8.jpeg" link="https://lingust.ru/english/english-lessons" btnText="Открыть" />
       </div>
 
-      {/* Боты */}
       <div id="bots" className="scroll-mt-24">
-        <div className="flex items-center gap-2 mb-4 px-1">
-          <Bot className="text-violet-600" />
-          <h2 className="text-xl font-bold text-stone-900">Боты и материалы</h2>
-        </div>
-        <MediaRow title="ЕГЭ Английский с ИИ" desc="Ваш личный эксперт ЕГЭ: план, объяснения, стратегии, проверка заданий и Speaking. Получите 80+ баллов" img="https://bemat.ru/egeai.jpg" link="https://t.me/EGE_ENGLISH_GPT_bot" btnText="Попробовать" />
-        <MediaRow title="ОГЭ Английский с ИИ" desc="Ваш личный эксперт ОГЭ: план, объяснения, стратегии, проверка заданий и Speaking. Получите 5 баллов" img="https://bemat.ru/ogeai.jpg" link="https://t.me/OGE_ENG_HELPER_BOT" btnText="Попробовать" />
+        <div className="flex items-center gap-2 mb-4 px-1"><Bot className="text-violet-600" /><h2 className="text-xl font-bold text-stone-900">Боты и материалы</h2></div>
+        <MediaRow title="ЕГЭ Английский с ИИ" desc="План, объяснения, стратегии, проверка заданий и Speaking. 80+ баллов" img="https://bemat.ru/egeai.jpg" link="https://t.me/EGE_ENGLISH_GPT_bot" btnText="Попробовать" />
+        <MediaRow title="ОГЭ Английский с ИИ" desc="План, объяснения, стратегии, проверка заданий и Speaking." img="https://bemat.ru/ogeai.jpg" link="https://t.me/OGE_ENG_HELPER_BOT" btnText="Попробовать" />
         <MediaRow title="IELTS эксперт" desc="Academic/General: стратегия, критерии." img="https://static.tildacdn.info/tild3532-3932-4635-a261-306563383261/11.jpg" link="https://t.me/IELTS_berdiyev_bot" btnText="Попробовать" />
         <MediaRow title="TOEFL iBT эксперт" desc="План, практика, разбор критериев." img="https://static.tildacdn.info/tild3936-3366-4461-a139-656230353061/10.jpg" link="https://t.me/TOBEENG_TOEFL_IBT_BOT" btnText="Попробовать" />
-        <MediaRow title="ЕГЭ материалы" desc="Подборка материалов для подготовки к ЕГЭ: лексика, грамматика, шаблоны, тренажёры." img="https://bemat.ru/egemat.jpg" link="https://t.me/tobeeng_ege_bot" btnText="Открыть" />
-        <MediaRow title="Боб — Английский с ИИ" desc="Ваш личный репетитор прямо у вас в телефоне. Поможет заговорить за 3 месяца" img="https://bemat.ru/bobai.jpg" link="https://t.me/Tobeeng_GPT_bot" btnText="Попробовать" />
+        <MediaRow title="ЕГЭ материалы" desc="Лексика, грамматика, шаблоны, тренажёры." img="https://bemat.ru/egemat.jpg" link="https://t.me/tobeeng_ege_bot" btnText="Открыть" />
+        <MediaRow title="Боб — Английский с ИИ" desc="Личный репетитор в телефоне. Заговори за 3 месяца" img="https://bemat.ru/bobai.jpg" link="https://t.me/Tobeeng_GPT_bot" btnText="Попробовать" />
       </div>
 
-      {/* Автор */}
       <div className="mt-12 pt-8 border-t border-stone-200">
         <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-lg shadow-stone-100/50">
           <div className="flex flex-col md:flex-row gap-6 items-start">
@@ -570,18 +720,13 @@ const HomePanel = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
                 ))}
               </div>
               <h3 className="text-2xl font-black text-stone-900 mb-3">Об авторе</h3>
-              <p className="text-stone-600 leading-relaxed mb-4">
-                Я — Абдуррахим Бердиев. Помогаю заговорить на английском, снимаю барьер и объясняю
-                грамматику простыми схемами. Готовлю к ЕГЭ/ОГЭ и международным экзаменам (IELTS/TOEFL).
-              </p>
+              <p className="text-stone-600 leading-relaxed mb-4">Я — Абдуррахим Бердиев. Помогаю заговорить на английском, снимаю барьер и объясняю грамматику простыми схемами. Готовлю к ЕГЭ/ОГЭ и международным экзаменам (IELTS/TOEFL).</p>
               <ul className="space-y-2 mb-6 text-sm text-stone-600">
                 <li className="flex items-center gap-2"><CheckCircle size={16} className="text-emerald-500 flex-shrink-0" /><span>Разговорная практика и уверенность в речи</span></li>
                 <li className="flex items-center gap-2"><CheckCircle size={16} className="text-emerald-500 flex-shrink-0" /><span>Грамматика без лишней теории</span></li>
                 <li className="flex items-center gap-2"><CheckCircle size={16} className="text-emerald-500 flex-shrink-0" /><span>Экзамены: стратегии, Speaking/Writing</span></li>
               </ul>
-              <Button href="https://berdiyev-eng.ru" className="w-full !py-3 !bg-stone-900 !text-white text-base shadow-xl">
-                Бесплатный урок английского
-              </Button>
+              <Button href="https://berdiyev-eng.ru" className="w-full !py-3 !bg-stone-900 !text-white text-base shadow-xl">Бесплатный урок английского</Button>
             </div>
           </div>
         </div>
@@ -604,13 +749,13 @@ const BooksPanel = () => (
 const VideoPanel = () => (
   <div className="pb-24 pt-4 px-4">
     <Accordion title="Фильмы и сериалы" defaultOpen={true}>
-      <MediaRow title="Inoriginal" desc="Один из лучших: двойные субтитры EN/RU." img="https://static.tildacdn.info/tild3336-3030-4964-b966-303862353932/10.jpg" link="https://inoriginal.net/" />
-      <MediaRow title="Solarmovies" desc="Кино без рекламы; русские субтитры есть не всегда." img="https://static.tildacdn.info/tild3036-3665-4436-b131-396638313261/ADB9F47D-E5AA-479B-A.jpeg" link="https://solarmovies.ms/home" />
-      <MediaRow title="HDRezka" desc="Запасной вариант: переключи озвучку на EN." img="https://static.tildacdn.info/tild3639-6237-4435-b338-373633663331/IMG_7903.PNG" link="https://hdrezka.fans/" />
-      <MediaRow title="Zetflix" desc="Ещё один запасной ресурс." img="https://static.tildacdn.info/tild3430-6262-4238-b332-343464626162/11.jpg" link="https://go.zetflix-online.lol/" />
+      <MediaRow title="Inoriginal" desc="Двойные субтитры EN/RU." img="https://static.tildacdn.info/tild3336-3030-4964-b966-303862353932/10.jpg" link="https://inoriginal.net/" />
+      <MediaRow title="Solarmovies" desc="Кино без рекламы." img="https://static.tildacdn.info/tild3036-3665-4436-b131-396638313261/ADB9F47D-E5AA-479B-A.jpeg" link="https://solarmovies.ms/home" />
+      <MediaRow title="HDRezka" desc="Переключи озвучку на EN." img="https://static.tildacdn.info/tild3639-6237-4435-b338-373633663331/IMG_7903.PNG" link="https://hdrezka.fans/" />
+      <MediaRow title="Zetflix" desc="Запасной ресурс." img="https://static.tildacdn.info/tild3430-6262-4238-b332-343464626162/11.jpg" link="https://go.zetflix-online.lol/" />
     </Accordion>
     <Accordion title="Аудирование">
-      <MediaRow title="Listen in English" desc="Готовые уроки по уровням с аудированием." img="https://static.tildacdn.info/tild3636-3261-4532-b231-626664646132/BA22E78D-3200-4109-8.jpeg" link="https://listeninenglish.com/index.php" />
+      <MediaRow title="Listen in English" desc="Уроки по уровням с аудированием." img="https://static.tildacdn.info/tild3636-3261-4532-b231-626664646132/BA22E78D-3200-4109-8.jpeg" link="https://listeninenglish.com/index.php" />
       <MediaRow title="iSLCollective (видео)" desc="Видео‑уроки по фильмам, сериалам." img="https://static.tildacdn.info/tild3836-3837-4331-b162-623335363239/12.jpg" link="https://en.islcollective.com/english-esl-video-lessons/search" />
     </Accordion>
     <Accordion title="Лексика">
@@ -636,7 +781,7 @@ const PracticePanel = () => (
 const SpeakPanel = () => (
   <div className="pb-24 pt-4 px-4">
     <Accordion title="Разговорная практика" defaultOpen={true}>
-      <MediaRow title="Боб — Английский с ИИ" desc="Поговорит с вами голосом, поправит ваши ошибки." img="https://bemat.ru/bobai.jpg" link="https://t.me/Tobeeng_GPT_bot" btnText="Попробовать" />
+      <MediaRow title="Боб — Английский с ИИ" desc="Поговорит с вами голосом, поправит ошибки." img="https://bemat.ru/bobai.jpg" link="https://t.me/Tobeeng_GPT_bot" btnText="Попробовать" />
       <MediaRow title="HelloTalk" desc="Общение с носителями со всего мира." img="https://static.tildacdn.info/tild6631-3338-4435-b966-313430333161/_____2.jpg" link="https://www.hellotalk.com/ru" />
       <MediaRow title="Character.AI" desc="Бесплатный разговор с ИИ (EN)." img="https://static.tildacdn.info/tild6435-6666-4139-a237-396664643764/_____3.jpg" link="https://character.ai/" />
     </Accordion>
@@ -663,9 +808,8 @@ export function App() {
   const [user, setUser] = useState<UserState | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
-  // Загрузка юзера
   useEffect(() => {
-    const saved = localStorage.getItem('bemat_user_v2');
+    const saved = localStorage.getItem('bemat_user_v3');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -673,20 +817,22 @@ export function App() {
         const today = new Date();
         const diff = Math.floor((today.getTime() - last.getTime()) / (1000 * 60 * 60 * 24));
 
-        let newStreak = parsed.streak;
-        let newCompleted = parsed.completedTasks;
+        let newStreak = parsed.streak || 1;
+        let newCompleted = parsed.completedTasks || [];
+        let newCatFed = parsed.catFed || false;
 
         if (today.toDateString() !== last.toDateString()) {
           newCompleted = [];
+          newCatFed = false;
           if (diff <= 1) newStreak += 1;
           else newStreak = 1;
         }
 
-        const updated = { ...parsed, streak: newStreak, lastVisit: today.toISOString(), completedTasks: newCompleted };
+        const updated = { ...parsed, streak: newStreak, lastVisit: today.toISOString(), completedTasks: newCompleted, catFed: newCatFed };
         setUser(updated);
-        localStorage.setItem('bemat_user_v2', JSON.stringify(updated));
+        localStorage.setItem('bemat_user_v3', JSON.stringify(updated));
       } catch {
-        localStorage.removeItem('bemat_user_v2');
+        localStorage.removeItem('bemat_user_v3');
       }
     }
   }, []);
@@ -694,19 +840,19 @@ export function App() {
   const handleOnboarding = (name: string, goal: UserGoal) => {
     const newUser: UserState = {
       name, goal, streak: 1, lastVisit: new Date().toISOString(),
-      completedTasks: [], notificationsEnabled: false, isOnboarded: true
+      completedTasks: [], notificationsEnabled: false, isOnboarded: true, catFed: false,
     };
     setUser(newUser);
-    localStorage.setItem('bemat_user_v2', JSON.stringify(newUser));
+    localStorage.setItem('bemat_user_v3', JSON.stringify(newUser));
   };
 
   const updateUser = (u: UserState) => {
     setUser(u);
-    localStorage.setItem('bemat_user_v2', JSON.stringify(u));
+    localStorage.setItem('bemat_user_v3', JSON.stringify(u));
   };
 
   const resetProgress = () => {
-    localStorage.removeItem('bemat_user_v2');
+    localStorage.removeItem('bemat_user_v3');
     setUser(null);
     setShowResetConfirm(false);
     setActiveTab('dashboard');
@@ -717,12 +863,17 @@ export function App() {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
   };
 
-  // Онбординг
-  if (!user) {
-    return <Onboarding onComplete={handleOnboarding} />;
-  }
+  if (!user) return <Onboarding onComplete={handleOnboarding} />;
 
   const handleBack = () => setActiveTab('dashboard');
+
+  const BackButton = () => (
+    <div className="px-4 pt-4">
+      <button onClick={handleBack} className="flex items-center gap-2 text-stone-500 font-bold mb-2 hover:text-violet-600 transition-colors">
+        <ArrowRight className="rotate-180" size={18} /> Назад
+      </button>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-[#fafaf9] font-sans text-stone-900 pb-20 selection:bg-violet-200">
@@ -730,68 +881,15 @@ export function App() {
       <Header onNavigate={handleNavigate} onOpenSettings={() => setShowResetConfirm(true)} />
 
       <main className="max-w-xl mx-auto w-full">
-        {activeTab === 'dashboard' && (
-          <Dashboard user={user} onUpdateUser={updateUser} onNavigate={handleNavigate} />
-        )}
-
-        {activeTab === 'home' && (
-          <div>
-            <div className="px-4 pt-4">
-              <button onClick={handleBack} className="flex items-center gap-2 text-stone-500 font-bold mb-2 hover:text-violet-600 transition-colors">
-                <ArrowRight className="rotate-180" size={18} /> Назад
-              </button>
-            </div>
-            <HomePanel onNavigate={handleNavigate} />
-          </div>
-        )}
-
-        {activeTab === 'books' && (
-          <div>
-            <div className="px-4 pt-4">
-              <button onClick={handleBack} className="flex items-center gap-2 text-stone-500 font-bold mb-2 hover:text-violet-600 transition-colors">
-                <ArrowRight className="rotate-180" size={18} /> Назад
-              </button>
-            </div>
-            <BooksPanel />
-          </div>
-        )}
-
-        {activeTab === 'video' && (
-          <div>
-            <div className="px-4 pt-4">
-              <button onClick={handleBack} className="flex items-center gap-2 text-stone-500 font-bold mb-2 hover:text-violet-600 transition-colors">
-                <ArrowRight className="rotate-180" size={18} /> Назад
-              </button>
-            </div>
-            <VideoPanel />
-          </div>
-        )}
-
-        {activeTab === 'practice' && (
-          <div>
-            <div className="px-4 pt-4">
-              <button onClick={handleBack} className="flex items-center gap-2 text-stone-500 font-bold mb-2 hover:text-violet-600 transition-colors">
-                <ArrowRight className="rotate-180" size={18} /> Назад
-              </button>
-            </div>
-            <PracticePanel />
-          </div>
-        )}
-
-        {activeTab === 'speak' && (
-          <div>
-            <div className="px-4 pt-4">
-              <button onClick={handleBack} className="flex items-center gap-2 text-stone-500 font-bold mb-2 hover:text-violet-600 transition-colors">
-                <ArrowRight className="rotate-180" size={18} /> Назад
-              </button>
-            </div>
-            <SpeakPanel />
-          </div>
-        )}
+        {activeTab === 'dashboard' && <Dashboard user={user} onUpdateUser={updateUser} onNavigate={handleNavigate} />}
+        {activeTab === 'home' && <div><BackButton /><HomePanel onNavigate={handleNavigate} /></div>}
+        {activeTab === 'books' && <div><BackButton /><BooksPanel /></div>}
+        {activeTab === 'video' && <div><BackButton /><VideoPanel /></div>}
+        {activeTab === 'practice' && <div><BackButton /><PracticePanel /></div>}
+        {activeTab === 'speak' && <div><BackButton /><SpeakPanel /></div>}
       </main>
 
-      {/* НИЖНЕЕ МЕНЮ */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-stone-200 px-4 pb-safe z-50 rounded-t-[1.5rem] shadow-[0_-5px_20px_rgba(0,0,0,0.03)]">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-stone-200 px-4 z-50 rounded-t-[1.5rem] shadow-[0_-5px_20px_rgba(0,0,0,0.03)]">
         <div className="flex justify-between items-center max-w-lg mx-auto h-[64px]">
           <NavBtn active={activeTab === 'dashboard'} onClick={() => handleNavigate('dashboard')} icon={Home} label="Кабинет" />
           <NavBtn active={activeTab === 'home'} onClick={() => handleNavigate('home')} icon={GraduationCap} label="Ресурсы" />
@@ -804,10 +902,9 @@ export function App() {
 
       <InstallPrompt />
 
-      {/* Сброс */}
       <Modal isOpen={showResetConfirm} onClose={() => setShowResetConfirm(false)} title="Сбросить прогресс?">
         <div className="text-center space-y-4">
-          <p className="text-stone-600">Все данные (имя, цель, стрик) будут удалены. Вы начнете заново.</p>
+          <p className="text-stone-600">Все данные (имя, цель, стрик) будут удалены.</p>
           <Button onClick={resetProgress} className="w-full !bg-red-500 !text-white !shadow-red-200">Сбросить</Button>
           <Button variant="ghost" onClick={() => setShowResetConfirm(false)} className="w-full">Отмена</Button>
         </div>
