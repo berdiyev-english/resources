@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import logo from './logo.png';
 import catHungry from './cathungry.png';
 import catFedImg from './catfed.png';
@@ -7,12 +7,12 @@ import { InstallPrompt } from './InstallPrompt';
 import {
   Home, PenTool, Heart, Menu, X, ChevronDown, ExternalLink,
   GraduationCap, Bot, Book, Film, CheckCircle, Mic, Gift,
-  Flame, Bell, Settings, Trophy, ArrowRight, CheckCircle2, Edit3
+  Flame, Bell, Settings, Trophy, ArrowRight, CheckCircle2,
+  Edit3, Plus, Trash2, Clock
 } from 'lucide-react';
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-// --- Utility ---
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -20,15 +20,23 @@ function cn(...inputs: ClassValue[]) {
 // --- ТИПЫ ---
 type UserGoal = 'ege' | 'oge' | 'ielts' | 'toefl' | 'speak' | 'fun';
 
+interface CustomTask {
+  id: string;
+  title: string;
+  time: number;
+}
+
 interface UserState {
   name: string;
   goal: UserGoal;
   streak: number;
   lastVisit: string;
   completedTasks: string[];
+  customTasks: CustomTask[];
   notificationsEnabled: boolean;
   isOnboarded: boolean;
   catFed: boolean;
+  streakShownDate: string;
 }
 
 const GOAL_OPTIONS: { id: UserGoal; label: string; icon: string }[] = [
@@ -45,7 +53,7 @@ const GOAL_LABELS: Record<UserGoal, string> = {
   toefl: '🇺🇸 TOEFL', speak: '🗣 Разговор', fun: '🍿 Для себя',
 };
 
-// --- ЗАДАНИЯ С ВРЕМЕНЕМ (~15 мин/день) ---
+// --- ЗАДАНИЯ (~15 мин/день) ---
 const DAILY_TASKS: Record<UserGoal, { id: string; title: string; time: number; link: string; isExternal: boolean }[]> = {
   ege: [
     { id: 'ege_1', title: 'Решить 5 заданий ЕГЭ', time: 7, link: 'https://en-ege.sdamgia.ru/', isExternal: true },
@@ -86,12 +94,10 @@ const Button = ({ children, className, variant = 'primary', href, onClick, ...pr
   const variants: Record<string, string> = {
     primary: "bg-violet-600 text-white hover:bg-violet-700 shadow-lg shadow-violet-200 border border-transparent",
     ghost: "bg-transparent text-stone-600 hover:bg-stone-100 border border-stone-200",
-    menu: "bg-white text-stone-800 hover:bg-stone-50 border border-stone-100 justify-start"
   };
   const Comp = href ? 'a' : 'button';
   return (
-    <Comp
-      href={href} onClick={onClick}
+    <Comp href={href} onClick={onClick}
       className={cn(baseStyles, variants[variant] || variants.primary, className)}
       {...(href ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       {...props}
@@ -165,7 +171,6 @@ const Onboarding = ({ onComplete }: { onComplete: (name: string, goal: UserGoal)
       <div className="w-28 h-28 rounded-full overflow-hidden mb-6 shadow-xl border-4 border-white">
         <img src={logo} alt="Bob" className="w-full h-full object-cover" />
       </div>
-
       {step === 1 && (
         <div className="w-full max-w-sm">
           <h1 className="text-3xl font-black text-stone-800 mb-2">Привет! Я Боб 🐱</h1>
@@ -174,7 +179,6 @@ const Onboarding = ({ onComplete }: { onComplete: (name: string, goal: UserGoal)
           <button disabled={!name.trim()} onClick={() => setStep(2)} className="w-full py-4 bg-violet-600 text-white font-bold rounded-2xl disabled:opacity-50 hover:scale-[1.02] transition-transform shadow-lg shadow-violet-200">Дальше</button>
         </div>
       )}
-
       {step === 2 && (
         <div className="w-full max-w-sm">
           <h2 className="text-2xl font-bold text-stone-800 mb-2">{name}, какая у тебя цель?</h2>
@@ -197,15 +201,81 @@ const Onboarding = ({ onComplete }: { onComplete: (name: string, goal: UserGoal)
   );
 };
 
-// --- ПОПАП КОРМЁЖКИ БОБА ---
+// --- ПОПАП СТРИКА ---
+
+const StreakPopup = ({ isOpen, onClose, streak }: { isOpen: boolean; onClose: () => void; streak: number }) => {
+  if (!isOpen) return null;
+
+  const isFirst = streak <= 1;
+  const fireCount = Math.min(streak, 7);
+
+  return (
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-stone-900/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-sm bg-[#fafaf9] rounded-[2rem] shadow-2xl p-8 border border-white text-center">
+        
+        {/* Анимированный огонь */}
+        <div className="text-7xl mb-4 animate-bounce">🔥</div>
+
+        {isFirst ? (
+          <>
+            <h3 className="text-2xl font-black text-stone-900 mb-2">Стрик зародился!</h3>
+            <p className="text-stone-500 mb-2 text-sm">Ты начал свой путь! Занимайся каждый день, чтобы не потерять стрик.</p>
+            <p className="text-stone-400 text-xs mb-6">Боб верит в тебя! 🐱</p>
+          </>
+        ) : (
+          <>
+            <h3 className="text-2xl font-black text-stone-900 mb-2">
+              {streak} {streak < 5 ? 'дня' : 'дней'} подряд!
+            </h3>
+            <p className="text-stone-500 mb-2 text-sm">Отличная серия! Не останавливайся!</p>
+            <p className="text-stone-400 text-xs mb-6">Боб гордится тобой 😸</p>
+          </>
+        )}
+
+        {/* Полоска огней */}
+        <div className="flex items-center justify-center gap-1.5 mb-6 flex-wrap">
+          {Array.from({ length: fireCount }, (_, i) => (
+            <div key={i} className="w-9 h-9 rounded-full bg-gradient-to-b from-orange-100 to-amber-50 flex items-center justify-center text-lg border border-orange-200 shadow-sm">
+              🔥
+            </div>
+          ))}
+          {streak > 7 && (
+            <span className="text-stone-400 font-bold text-sm ml-1.5">+{streak - 7}</span>
+          )}
+        </div>
+
+        {/* Мотивация */}
+        <div className="bg-violet-50 rounded-xl p-3 mb-6 border border-violet-100">
+          <p className="text-xs font-bold text-violet-700">
+            {isFirst
+              ? '💡 Совет: занимайся хотя бы 15 минут в день — это 1 урок!'
+              : streak >= 7
+                ? '🏆 Неделя без пропусков! Ты — машина!'
+                : streak >= 3
+                  ? '💪 3+ дня подряд — отличное начало!'
+                  : '📈 Каждый день — это +1 к твоему уровню!'
+            }
+          </p>
+        </div>
+
+        <button onClick={onClose} className="w-full py-3.5 bg-violet-600 text-white font-bold rounded-2xl hover:bg-violet-700 shadow-lg shadow-violet-200">
+          {isFirst ? 'Начнём! 🚀' : 'Продолжаем! 💪'}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// --- ПОПАП КОРМЁЖКИ ---
 
 const CatFeedPopup = ({ isOpen, onClose, user, tasks }: { isOpen: boolean; onClose: () => void; user: UserState; tasks: any[] }) => {
   if (!isOpen) return null;
-
-  const doneCount = user.completedTasks.length;
+  const doneCount = user.completedTasks.filter(id => tasks.some((t: any) => t.id === id)).length;
   const totalCount = tasks.length;
-  const feedProgress = user.catFed ? 100 : Math.round((doneCount / totalCount) * 100);
+  const feedProgress = user.catFed ? 100 : totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
   const isFed = user.catFed;
+  const remaining = totalCount - doneCount;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -213,7 +283,6 @@ const CatFeedPopup = ({ isOpen, onClose, user, tasks }: { isOpen: boolean; onClo
       <div className="relative w-full max-w-sm bg-[#fafaf9] rounded-[2rem] shadow-2xl p-6 border border-white text-center">
         <button onClick={onClose} className="absolute top-4 right-4 p-2 rounded-full hover:bg-stone-200 text-stone-400"><X size={20} /></button>
 
-        {/* Кот */}
         <div className={cn("w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 shadow-lg transition-all duration-700", isFed ? "border-green-300 shadow-green-100" : "border-orange-300 shadow-orange-100")}>
           <img src={isFed ? catFedImg : catHungry} alt="Bob" className="w-full h-full object-cover" />
         </div>
@@ -229,26 +298,23 @@ const CatFeedPopup = ({ isOpen, onClose, user, tasks }: { isOpen: boolean; onClo
             <div className="text-4xl mb-2">😿</div>
             <h3 className="text-xl font-black text-stone-900 mb-1">Боб голодный!</h3>
             <p className="text-stone-500 text-sm mb-2">Выполни все задания, чтобы покормить Боба</p>
-            <p className="text-xs text-stone-400 mb-6">Осталось: {totalCount - doneCount} {totalCount - doneCount === 1 ? 'задание' : 'задания'}</p>
+            <p className="text-xs text-stone-400 mb-6">
+              Осталось: {remaining} {remaining === 1 ? 'задание' : remaining < 5 ? 'задания' : 'заданий'}
+            </p>
           </>
         )}
 
-        {/* Шкала корма */}
         <div className="mb-2">
           <div className="flex items-center justify-between text-xs font-bold text-stone-500 mb-1.5">
             <span>🍽️ Миска с кормом</span>
             <span>{feedProgress}%</span>
           </div>
           <div className="h-4 bg-stone-100 rounded-full overflow-hidden border border-stone-200">
-            <div
-              className={cn("h-full rounded-full transition-all duration-1000", isFed ? "bg-gradient-to-r from-green-400 to-emerald-500" : "bg-gradient-to-r from-orange-300 to-amber-400")}
-              style={{ width: `${feedProgress}%` }}
-            />
+            <div className={cn("h-full rounded-full transition-all duration-1000", isFed ? "bg-gradient-to-r from-green-400 to-emerald-500" : "bg-gradient-to-r from-orange-300 to-amber-400")} style={{ width: `${feedProgress}%` }} />
           </div>
         </div>
 
-        {/* Список заданий в попапе */}
-        <div className="mt-4 space-y-2 text-left">
+        <div className="mt-4 space-y-2 text-left max-h-40 overflow-y-auto">
           {tasks.map((task: any) => {
             const isDone = user.completedTasks.includes(task.id);
             return (
@@ -261,7 +327,7 @@ const CatFeedPopup = ({ isOpen, onClose, user, tasks }: { isOpen: boolean; onClo
           })}
         </div>
 
-        <button onClick={onClose} className="mt-6 w-full py-3 bg-violet-600 text-white font-bold rounded-2xl hover:bg-violet-700 transition-colors shadow-lg shadow-violet-200">
+        <button onClick={onClose} className="mt-6 w-full py-3 bg-violet-600 text-white font-bold rounded-2xl hover:bg-violet-700 shadow-lg shadow-violet-200">
           {isFed ? 'Отлично! 😸' : 'Пойду заниматься!'}
         </button>
       </div>
@@ -269,18 +335,14 @@ const CatFeedPopup = ({ isOpen, onClose, user, tasks }: { isOpen: boolean; onClo
   );
 };
 
-// --- ПОПАП ПРОФИЛЯ (ИЗМЕНИТЬ ИМЯ + ЦЕЛЬ) ---
+// --- ПОПАП ПРОФИЛЯ ---
 
 const ProfileModal = ({ isOpen, onClose, user, onSave }: { isOpen: boolean; onClose: () => void; user: UserState; onSave: (name: string, goal: UserGoal) => void }) => {
   const [editName, setEditName] = useState(user.name);
   const [selectedGoal, setSelectedGoal] = useState<UserGoal>(user.goal);
 
-  // Синхронизация при открытии
   useEffect(() => {
-    if (isOpen) {
-      setEditName(user.name);
-      setSelectedGoal(user.goal);
-    }
+    if (isOpen) { setEditName(user.name); setSelectedGoal(user.goal); }
   }, [isOpen, user]);
 
   const handleSave = () => {
@@ -302,47 +364,35 @@ const ProfileModal = ({ isOpen, onClose, user, onSave }: { isOpen: boolean; onCl
           <button onClick={onClose} className="p-2 rounded-full hover:bg-stone-200 text-stone-500"><X size={20} /></button>
         </div>
 
-        {/* Аватарка */}
         <div className="flex justify-center mb-6">
           <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-lg">
             <img src={logo} alt="Bob" className="w-full h-full object-cover" />
           </div>
         </div>
 
-        {/* Имя */}
         <div className="mb-6">
           <label className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2 block">Имя</label>
-          <input
-            type="text" value={editName} onChange={(e) => setEditName(e.target.value)}
-            className="w-full p-3.5 rounded-xl bg-white border border-stone-200 text-base font-bold focus:outline-none focus:ring-2 focus:ring-violet-500 shadow-sm"
-            placeholder="Твоё имя..."
-          />
+          <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)}
+            className="w-full p-3.5 rounded-xl bg-white border border-stone-200 text-base font-bold focus:outline-none focus:ring-2 focus:ring-violet-500 shadow-sm" placeholder="Твоё имя..." />
         </div>
 
-        {/* Цель */}
         <div className="mb-6">
           <label className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2 block">Цель</label>
           <div className="space-y-2">
             {GOAL_OPTIONS.map((opt) => (
               <button key={opt.id} onClick={() => setSelectedGoal(opt.id)}
                 className={cn("w-full p-3.5 rounded-xl flex items-center gap-3 border-2 transition-all text-left",
-                  selectedGoal === opt.id ? "border-violet-600 bg-violet-50" : "border-stone-100 bg-white",
-                  user.goal === opt.id && selectedGoal !== opt.id && "border-stone-200 bg-stone-50"
+                  selectedGoal === opt.id ? "border-violet-600 bg-violet-50" : "border-stone-100 bg-white"
                 )}>
                 <span className="text-xl">{opt.icon}</span>
                 <span className="font-bold text-stone-800 flex-1 text-sm">{opt.label}</span>
-                {selectedGoal === opt.id && (
-                  <CheckCircle2 className="w-5 h-5 text-violet-600 fill-violet-100" />
-                )}
-                {user.goal === opt.id && selectedGoal !== opt.id && (
-                  <span className="text-[10px] text-stone-400 font-bold">текущая</span>
-                )}
+                {selectedGoal === opt.id && <CheckCircle2 className="w-5 h-5 text-violet-600 fill-violet-100" />}
+                {user.goal === opt.id && selectedGoal !== opt.id && <span className="text-[10px] text-stone-400 font-bold">текущая</span>}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Предупреждение при смене цели */}
         {goalChanged && (
           <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700 font-medium">
             ⚠️ При смене цели план на сегодня сбросится, но стрик сохранится!
@@ -350,9 +400,70 @@ const ProfileModal = ({ isOpen, onClose, user, onSave }: { isOpen: boolean; onCl
         )}
 
         <button onClick={handleSave} disabled={!editName.trim()}
-          className="w-full py-3.5 bg-violet-600 text-white font-bold rounded-2xl hover:bg-violet-700 transition-colors shadow-lg shadow-violet-200 disabled:opacity-50">
+          className="w-full py-3.5 bg-violet-600 text-white font-bold rounded-2xl hover:bg-violet-700 shadow-lg shadow-violet-200 disabled:opacity-50">
           Сохранить
         </button>
+      </div>
+    </div>
+  );
+};
+
+// --- ПОПАП ДОБАВЛЕНИЯ ЗАДАНИЯ ---
+
+const AddTaskModal = ({ isOpen, onClose, onAdd }: { isOpen: boolean; onClose: () => void; onAdd: (title: string, time: number) => void }) => {
+  const [title, setTitle] = useState('');
+  const [time, setTime] = useState(5);
+
+  const handleAdd = () => {
+    if (!title.trim()) return;
+    onAdd(title.trim(), time);
+    setTitle('');
+    setTime(5);
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-md bg-[#fafaf9] rounded-[2rem] shadow-2xl p-6 border border-white">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-bold text-stone-900">Добавить задание</h3>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-stone-200 text-stone-500"><X size={20} /></button>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="text-xs font-bold text-stone-500 uppercase mb-1.5 block">Что делать?</label>
+            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
+              placeholder="Например: Посмотреть TED Talk"
+              className="w-full p-3.5 rounded-xl bg-white border border-stone-200 font-bold focus:outline-none focus:ring-2 focus:ring-violet-500 shadow-sm" />
+          </div>
+
+          <div>
+            <label className="text-xs font-bold text-stone-500 uppercase mb-1.5 block">Сколько минут?</label>
+            <div className="flex gap-2">
+              {[3, 5, 10, 15, 20].map(m => (
+                <button key={m} onClick={() => setTime(m)}
+                  className={cn("flex-1 py-2.5 rounded-xl font-bold text-sm border-2 transition-all",
+                    time === m ? "border-violet-600 bg-violet-50 text-violet-700" : "border-stone-100 bg-white text-stone-600"
+                  )}>
+                  {m}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-stone-50 rounded-xl p-3 border border-stone-100">
+            <p className="text-xs text-stone-500">💡 Это задание будет появляться в твоём плане <strong>каждый день</strong>. Удалить можно в любой момент.</p>
+          </div>
+
+          <button onClick={handleAdd} disabled={!title.trim()}
+            className="w-full py-3.5 bg-violet-600 text-white font-bold rounded-2xl disabled:opacity-50 hover:bg-violet-700 shadow-lg shadow-violet-200">
+            Добавить ✅
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -361,50 +472,72 @@ const ProfileModal = ({ isOpen, onClose, user, onSave }: { isOpen: boolean; onCl
 // --- DASHBOARD ---
 
 const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpdateUser: (u: UserState) => void; onNavigate: (tab: string) => void }) => {
-  const tasks = DAILY_TASKS[user.goal] || DAILY_TASKS.fun;
-  const doneCount = user.completedTasks.length;
-  const progress = tasks.length > 0 ? Math.round((doneCount / tasks.length) * 100) : 0;
-  const totalTime = tasks.reduce((sum, t) => sum + t.time, 0);
-  const doneTime = tasks.filter(t => user.completedTasks.includes(t.id)).reduce((sum, t) => sum + t.time, 0);
+
+  // Собираем все задания: стандартные + кастомные
+  const defaultTasks = DAILY_TASKS[user.goal] || DAILY_TASKS.fun;
+  const customDailyTasks = (user.customTasks || []).map(ct => ({
+    ...ct, link: '', isExternal: false, isCustom: true,
+  }));
+  const allTasks = [...defaultTasks, ...customDailyTasks];
+
+  const validCompleted = user.completedTasks.filter(id => allTasks.some(t => t.id === id));
+  const progress = allTasks.length > 0 ? Math.round((validCompleted.length / allTasks.length) * 100) : 0;
+  const totalTime = allTasks.reduce((sum, t) => sum + t.time, 0);
+  const doneTime = allTasks.filter(t => validCompleted.includes(t.id)).reduce((sum, t) => sum + t.time, 0);
 
   const [showCatPopup, setShowCatPopup] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showAddTask, setShowAddTask] = useState(false);
 
   const toggleTask = (taskId: string) => {
-    const isCompleted = user.completedTasks.includes(taskId);
+    const isCompleted = validCompleted.includes(taskId);
     const newCompleted = isCompleted
-      ? user.completedTasks.filter((id) => id !== taskId)
+      ? user.completedTasks.filter(id => id !== taskId)
       : [...user.completedTasks, taskId];
 
-    const allDone = newCompleted.length >= tasks.length;
+    const newValidCompleted = newCompleted.filter(id => allTasks.some(t => t.id === id));
+    const allDone = newValidCompleted.length >= allTasks.length;
 
-    // Авто-показ попапа кормёжки при первом завершении всех задач
     if (allDone && !user.catFed) {
       setTimeout(() => setShowCatPopup(true), 500);
     }
 
-    onUpdateUser({
-      ...user,
-      completedTasks: newCompleted,
-      catFed: user.catFed || allDone,
-    });
+    onUpdateUser({ ...user, completedTasks: newCompleted, catFed: user.catFed || allDone });
   };
 
   const handleTaskLink = (e: React.MouseEvent, task: any) => {
     e.stopPropagation();
-    if (task.isExternal) {
-      window.open(task.link, '_blank');
+    if (task.isExternal) { window.open(task.link, '_blank'); return; }
+    const hash = task.link.replace('#', '');
+    if (['home', 'books', 'video', 'practice', 'speak'].includes(hash)) {
+      onNavigate(hash);
     } else {
-      const hash = task.link.replace('#', '');
-      if (['home', 'books', 'video', 'practice', 'speak'].includes(hash)) {
-        onNavigate(hash);
-      } else {
-        onNavigate('home');
-        setTimeout(() => {
-          document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' });
-        }, 300);
-      }
+      onNavigate('home');
+      setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 300);
     }
+  };
+
+  const addCustomTask = (title: string, time: number) => {
+    const newTask: CustomTask = { id: `custom_${Date.now()}`, title, time };
+    onUpdateUser({ ...user, customTasks: [...(user.customTasks || []), newTask] });
+  };
+
+  const deleteCustomTask = (taskId: string) => {
+    onUpdateUser({
+      ...user,
+      customTasks: (user.customTasks || []).filter(t => t.id !== taskId),
+      completedTasks: user.completedTasks.filter(id => id !== taskId),
+      catFed: false, // пересчитаем
+    });
+  };
+
+  const handleProfileSave = (name: string, goal: UserGoal) => {
+    const goalChanged = goal !== user.goal;
+    onUpdateUser({
+      ...user, name, goal,
+      completedTasks: goalChanged ? [] : user.completedTasks,
+      catFed: goalChanged ? false : user.catFed,
+    });
   };
 
   const requestNotification = async () => {
@@ -416,24 +549,13 @@ const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpda
     }
   };
 
-  const handleProfileSave = (name: string, goal: UserGoal) => {
-    const goalChanged = goal !== user.goal;
-    onUpdateUser({
-      ...user,
-      name,
-      goal,
-      completedTasks: goalChanged ? [] : user.completedTasks,
-      catFed: goalChanged ? false : user.catFed,
-    });
-  };
-
   const isCatFed = user.catFed;
   const feedProgress = isCatFed ? 100 : progress;
 
   return (
     <div className="pb-24 pt-4 px-4 space-y-5">
 
-      {/* Приветствие + кнопка редактирования */}
+      {/* Приветствие */}
       <div className="flex justify-between items-center">
         <div className="flex-1">
           <p className="text-stone-500 text-xs font-bold uppercase tracking-wider">Личный кабинет</p>
@@ -456,35 +578,23 @@ const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpda
           <Trophy className="w-4 h-4 text-violet-600" />
           <span className="text-sm font-bold text-violet-800">{GOAL_LABELS[user.goal]}</span>
         </div>
-        <button onClick={() => setShowProfileModal(true)} className="px-4 py-2.5 rounded-2xl bg-white border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50 transition-colors">
-          Изменить
-        </button>
+        <button onClick={() => setShowProfileModal(true)} className="px-4 py-2.5 rounded-2xl bg-white border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">Изменить</button>
       </div>
 
-      {/* Карточка Боба (кормёжка) */}
-      <div
-        onClick={() => setShowCatPopup(true)}
-        className={cn(
-          "rounded-[2rem] p-5 shadow-sm border cursor-pointer transition-all hover:shadow-md",
+      {/* Боб (кормёжка) */}
+      <div onClick={() => setShowCatPopup(true)}
+        className={cn("rounded-[2rem] p-5 shadow-sm border cursor-pointer transition-all hover:shadow-md",
           isCatFed ? "bg-gradient-to-r from-green-50 to-emerald-50 border-green-200" : "bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200"
-        )}
-      >
+        )}>
         <div className="flex items-center gap-4">
-          <div className={cn("w-16 h-16 rounded-full overflow-hidden border-3 shadow-md shrink-0", isCatFed ? "border-green-300" : "border-orange-300")}>
+          <div className={cn("w-16 h-16 rounded-full overflow-hidden border-[3px] shadow-md shrink-0", isCatFed ? "border-green-300" : "border-orange-300")}>
             <img src={isCatFed ? catFedImg : catHungry} alt="Bob" className="w-full h-full object-cover" />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-stone-900 text-base mb-0.5">
-              {isCatFed ? 'Боб сыт! 😸' : 'Боб голодный! 😿'}
-            </h3>
-            <p className="text-xs text-stone-500 mb-2">
-              {isCatFed ? 'Спасибо что покормил! Приходи завтра' : 'Выполни задания чтобы покормить'}
-            </p>
+            <h3 className="font-bold text-stone-900 text-base mb-0.5">{isCatFed ? 'Боб сыт! 😸' : 'Боб голодный! 😿'}</h3>
+            <p className="text-xs text-stone-500 mb-2">{isCatFed ? 'Приходи завтра!' : 'Выполни задания чтобы покормить'}</p>
             <div className="h-2.5 bg-white/70 rounded-full overflow-hidden">
-              <div
-                className={cn("h-full rounded-full transition-all duration-700", isCatFed ? "bg-gradient-to-r from-green-400 to-emerald-500" : "bg-gradient-to-r from-orange-300 to-amber-400")}
-                style={{ width: `${feedProgress}%` }}
-              />
+              <div className={cn("h-full rounded-full transition-all duration-700", isCatFed ? "bg-gradient-to-r from-green-400 to-emerald-500" : "bg-gradient-to-r from-orange-300 to-amber-400")} style={{ width: `${feedProgress}%` }} />
             </div>
           </div>
         </div>
@@ -499,13 +609,16 @@ const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpda
         <div className="flex justify-between items-start mb-5 mt-2">
           <div>
             <h2 className="text-lg font-bold text-stone-900">План на сегодня</h2>
-            <p className="text-stone-500 text-xs">~{totalTime} мин · Выполнено: {doneTime}/{totalTime} мин ({progress}%)</p>
+            <p className="text-stone-500 text-xs flex items-center gap-1.5">
+              <Clock size={12} /> ~{totalTime} мин · Сделано: {doneTime}/{totalTime} мин ({progress}%)
+            </p>
           </div>
         </div>
 
         <div className="space-y-3">
-          {tasks.map((task) => {
-            const isDone = user.completedTasks.includes(task.id);
+          {/* Стандартные задания */}
+          {defaultTasks.map((task) => {
+            const isDone = validCompleted.includes(task.id);
             return (
               <div key={task.id}
                 className={cn("flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer",
@@ -520,7 +633,7 @@ const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpda
                   <span className={cn("font-bold text-sm text-stone-700 block", isDone && "line-through text-stone-400")}>{task.title}</span>
                   <span className="text-[11px] text-stone-400">~{task.time} мин</span>
                 </div>
-                {!isDone && (
+                {!isDone && task.link && (
                   <button onClick={(e) => handleTaskLink(e, task)} className="p-2 text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-lg shrink-0">
                     <ArrowRight size={16} />
                   </button>
@@ -528,7 +641,43 @@ const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpda
               </div>
             );
           })}
+
+          {/* Кастомные задания */}
+          {customDailyTasks.length > 0 && (
+            <div className="pt-2 border-t border-dashed border-stone-200">
+              <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-2 px-1">Мои задания</p>
+              {customDailyTasks.map((task: any) => {
+                const isDone = validCompleted.includes(task.id);
+                return (
+                  <div key={task.id}
+                    className={cn("flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer mb-2 last:mb-0",
+                      isDone ? "bg-stone-50 border-transparent opacity-60" : "bg-violet-50/50 border-violet-100 hover:border-violet-200 shadow-sm"
+                    )}
+                    onClick={() => toggleTask(task.id)}>
+                    <div className={cn("w-6 h-6 rounded-full flex items-center justify-center border transition-colors shrink-0",
+                      isDone ? "bg-violet-500 border-violet-500" : "border-violet-300")}>
+                      {isDone && <CheckCircle2 className="w-4 h-4 text-white" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className={cn("font-bold text-sm text-stone-700 block", isDone && "line-through text-stone-400")}>{task.title}</span>
+                      <span className="text-[11px] text-stone-400">~{task.time} мин · своё</span>
+                    </div>
+                    <button onClick={(e) => { e.stopPropagation(); deleteCustomTask(task.id); }}
+                      className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg shrink-0 transition-colors">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
+
+        {/* Кнопка добавить */}
+        <button onClick={() => setShowAddTask(true)}
+          className="mt-4 w-full py-3 bg-stone-50 hover:bg-stone-100 border-2 border-dashed border-stone-200 rounded-xl text-sm font-bold text-stone-500 hover:text-violet-600 transition-colors flex items-center justify-center gap-2">
+          <Plus size={18} /> Добавить своё задание
+        </button>
 
         {progress === 100 && (
           <div className="mt-4 p-3 bg-green-50 text-green-700 rounded-xl text-sm font-bold text-center">
@@ -542,7 +691,7 @@ const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpda
         <div className="bg-gradient-to-r from-violet-600 to-indigo-600 rounded-[2rem] p-5 text-white shadow-lg relative overflow-hidden">
           <div className="relative z-10">
             <h3 className="font-bold text-base mb-1">Напоминалки</h3>
-            <p className="text-violet-100 text-xs mb-3">Боб напомнит тебе позаниматься, чтобы не потерять стрик.</p>
+            <p className="text-violet-100 text-xs mb-3">Боб напомнит позаниматься, чтобы не потерять стрик.</p>
             <button onClick={requestNotification} className="px-4 py-2 bg-white text-violet-700 font-bold rounded-xl text-sm flex items-center gap-2">
               <Bell size={16} /> Включить
             </button>
@@ -565,17 +714,16 @@ const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpda
       </div>
 
       {/* Попапы */}
-      <CatFeedPopup isOpen={showCatPopup} onClose={() => setShowCatPopup(false)} user={user} tasks={tasks} />
+      <CatFeedPopup isOpen={showCatPopup} onClose={() => setShowCatPopup(false)} user={user} tasks={allTasks} />
       <ProfileModal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} user={user} onSave={handleProfileSave} />
+      <AddTaskModal isOpen={showAddTask} onClose={() => setShowAddTask(false)} onAdd={addCustomTask} />
     </div>
   );
 };
 
 const MenuCard = ({ icon: Icon, label, color, onClick }: any) => (
   <button onClick={onClick} className="bg-white p-4 rounded-2xl border border-stone-100 shadow-sm flex flex-col items-center gap-2 hover:scale-[1.02] transition-transform active:scale-95">
-    <div className={cn("w-12 h-12 rounded-full flex items-center justify-center mb-1", color)}>
-      <Icon size={24} />
-    </div>
+    <div className={cn("w-12 h-12 rounded-full flex items-center justify-center mb-1", color)}><Icon size={24} /></div>
     <span className="font-bold text-stone-700 text-sm">{label}</span>
   </button>
 );
@@ -595,16 +743,11 @@ const Header = ({ onNavigate, onOpenSettings }: any) => {
           <span className="font-black text-xl tracking-tight text-stone-800">BEMAT</span>
         </button>
         <div className="flex items-center gap-3">
-          <button onClick={() => setIsSupportOpen(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-amber-50 text-amber-500 border border-amber-100">
-            <Gift size={20} />
-          </button>
-          <button onClick={() => setIsMenuOpen(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-900 text-white">
-            <Menu size={20} />
-          </button>
+          <button onClick={() => setIsSupportOpen(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-amber-50 text-amber-500 border border-amber-100"><Gift size={20} /></button>
+          <button onClick={() => setIsMenuOpen(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-900 text-white"><Menu size={20} /></button>
         </div>
       </header>
 
-      {/* Боковое меню */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-50 bg-stone-900/20 backdrop-blur-sm flex justify-end" onClick={() => setIsMenuOpen(false)}>
           <div className="w-80 h-full bg-[#fafaf9] p-6 shadow-2xl overflow-y-auto" onClick={(e) => e.stopPropagation()}>
@@ -620,7 +763,7 @@ const Header = ({ onNavigate, onOpenSettings }: any) => {
                 { l: 'IELTS Expert', u: 'https://t.me/IELTS_berdiyev_bot', d: 'IELTS легко' },
                 { l: 'TOEFL Expert', u: 'https://t.me/TOBEENG_TOEFL_IBT_BOT', d: 'TOEFL 100+' },
                 { l: 'Боб — Английский с ИИ', u: 'https://t.me/Tobeeng_GPT_bot', d: 'Научит говорить за 3 месяца' },
-              ].map((b) => (
+              ].map(b => (
                 <a key={b.l} href={b.u} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-3 rounded-xl hover:bg-violet-50 group border border-transparent hover:border-violet-100 transition-colors">
                   <div><div className="font-bold text-stone-800 text-sm group-hover:text-violet-700">{b.l}</div><div className="text-xs text-stone-500">{b.d}</div></div>
                   <ExternalLink size={16} className="text-stone-300 group-hover:text-violet-500 shrink-0" />
@@ -651,9 +794,7 @@ const Header = ({ onNavigate, onOpenSettings }: any) => {
 
       <Modal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} title="Поддержать проект">
         <div className="text-center">
-          <div className="w-20 h-20 bg-gradient-to-tr from-amber-200 to-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <Heart size={40} className="text-white fill-white" />
-          </div>
+          <div className="w-20 h-20 bg-gradient-to-tr from-amber-200 to-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"><Heart size={40} className="text-white fill-white" /></div>
           <p className="text-stone-600 mb-6 text-sm">BEMAT — бесплатный проект. Ваша поддержка помогает Бобу кушать и развивать приложение!</p>
           <div className="space-y-3">
             <Button href="https://pay.cloudtips.ru/p/8f56d7d3" className="w-full !py-3">Поддержать</Button>
@@ -665,7 +806,7 @@ const Header = ({ onNavigate, onOpenSettings }: any) => {
   );
 };
 
-// --- ПАНЕЛИ КОНТЕНТА ---
+// --- ПАНЕЛИ ---
 
 const HomePanel = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
   const CARDS = [
@@ -807,7 +948,10 @@ export function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [user, setUser] = useState<UserState | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [showStreakPopup, setShowStreakPopup] = useState(false);
+  const streakPopupScheduled = useRef(false);
 
+  // Загрузка
   useEffect(() => {
     const saved = localStorage.getItem('bemat_user_v3');
     if (saved) {
@@ -815,22 +959,39 @@ export function App() {
         const parsed = JSON.parse(saved);
         const last = new Date(parsed.lastVisit);
         const today = new Date();
+        const todayStr = today.toDateString();
         const diff = Math.floor((today.getTime() - last.getTime()) / (1000 * 60 * 60 * 24));
 
         let newStreak = parsed.streak || 1;
         let newCompleted = parsed.completedTasks || [];
         let newCatFed = parsed.catFed || false;
 
-        if (today.toDateString() !== last.toDateString()) {
+        // Новый день
+        if (todayStr !== last.toDateString()) {
           newCompleted = [];
           newCatFed = false;
           if (diff <= 1) newStreak += 1;
           else newStreak = 1;
         }
 
-        const updated = { ...parsed, streak: newStreak, lastVisit: today.toISOString(), completedTasks: newCompleted, catFed: newCatFed };
+        const updated: UserState = {
+          ...parsed,
+          streak: newStreak,
+          lastVisit: today.toISOString(),
+          completedTasks: newCompleted,
+          catFed: newCatFed,
+          customTasks: parsed.customTasks || [],
+          streakShownDate: parsed.streakShownDate || '',
+        };
+
         setUser(updated);
         localStorage.setItem('bemat_user_v3', JSON.stringify(updated));
+
+        // Показать стрик попап если не показывали сегодня
+        if (updated.streakShownDate !== todayStr && !streakPopupScheduled.current) {
+          streakPopupScheduled.current = true;
+          setTimeout(() => setShowStreakPopup(true), 600);
+        }
       } catch {
         localStorage.removeItem('bemat_user_v3');
       }
@@ -840,10 +1001,14 @@ export function App() {
   const handleOnboarding = (name: string, goal: UserGoal) => {
     const newUser: UserState = {
       name, goal, streak: 1, lastVisit: new Date().toISOString(),
-      completedTasks: [], notificationsEnabled: false, isOnboarded: true, catFed: false,
+      completedTasks: [], customTasks: [], notificationsEnabled: false,
+      isOnboarded: true, catFed: false, streakShownDate: '',
     };
     setUser(newUser);
     localStorage.setItem('bemat_user_v3', JSON.stringify(newUser));
+
+    // Показать стрик «зародился» после онбординга
+    setTimeout(() => setShowStreakPopup(true), 800);
   };
 
   const updateUser = (u: UserState) => {
@@ -856,6 +1021,7 @@ export function App() {
     setUser(null);
     setShowResetConfirm(false);
     setActiveTab('dashboard');
+    streakPopupScheduled.current = false;
   };
 
   const handleNavigate = (tab: string) => {
@@ -863,10 +1029,17 @@ export function App() {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
   };
 
+  const closeStreakPopup = () => {
+    setShowStreakPopup(false);
+    if (user) {
+      const updated = { ...user, streakShownDate: new Date().toDateString() };
+      updateUser(updated);
+    }
+  };
+
   if (!user) return <Onboarding onComplete={handleOnboarding} />;
 
   const handleBack = () => setActiveTab('dashboard');
-
   const BackButton = () => (
     <div className="px-4 pt-4">
       <button onClick={handleBack} className="flex items-center gap-2 text-stone-500 font-bold mb-2 hover:text-violet-600 transition-colors">
@@ -902,9 +1075,13 @@ export function App() {
 
       <InstallPrompt />
 
+      {/* Попап стрика */}
+      <StreakPopup isOpen={showStreakPopup} onClose={closeStreakPopup} streak={user.streak} />
+
+      {/* Сброс */}
       <Modal isOpen={showResetConfirm} onClose={() => setShowResetConfirm(false)} title="Сбросить прогресс?">
         <div className="text-center space-y-4">
-          <p className="text-stone-600">Все данные (имя, цель, стрик) будут удалены.</p>
+          <p className="text-stone-600">Все данные (имя, цель, стрик, задания) будут удалены.</p>
           <Button onClick={resetProgress} className="w-full !bg-red-500 !text-white !shadow-red-200">Сбросить</Button>
           <Button variant="ghost" onClick={() => setShowResetConfirm(false)} className="w-full">Отмена</Button>
         </div>
