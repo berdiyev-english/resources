@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Переход на внешний ресурс</title>
+    <style>
+        /* Общие настройки страницы */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        /* Карточка уведомления */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            animation: fadeIn 0.8s ease-out;
+            position: relative;
+        }
+
+        /* Заголовок */
+        h1 {
+            margin-top: 0;
+            font-size: 24px;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        /* Текст описания */
+        p {
+            color: #718096;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        /* Красивая кнопка */
+        .btn {
+            display: inline-block;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* Эффект при наведении на кнопку */
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(118, 75, 162, 0.6);
+        }
+
+        /* Эффект при нажатии */
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Ссылка внизу */
+        .sub-link {
+            display: block;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #a0aec0;
+            text-decoration: none;
+        }
+        
+        .sub-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Анимация появления */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Иконка (опционально) */
+        .icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <span class="icon">🚀</span>
+        <h1>Переход на сайт</h1>
+        <p>Вы собираетесь перейти на сайт <strong>bemat.ru</strong>.<br>Сайт откроется в новой вкладке.</p>
+        
+        <!-- Кнопка с JS функцией -->
+        <button class="btn" onclick="openSite()">Перейти на сайт</button>
+        
+        <a href="https://bemat.ru" target="_blank" class="sub-link">bemat.ru</a>
+    </div>
+
+    <script>
+        function openSite() {
+            // Открывает сайт в новой вкладке
+            window.open("https://bemat.ru", "_blank");
+            
+            // Опционально: меняем текст кнопки после нажатия
+            const btn = document.querySelector('.btn');
+            btn.innerHTML = "Открываем...";
+            setTimeout(() => {
+                btn.innerHTML = "Перейти";
+            }, 2000);
+        }
+    </script>
+
+</body>
+</html>
