@@ -276,7 +276,7 @@ const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: a
             <h2 className="text-xl font-black mb-2 flex items-center gap-2">
               <Download size={24} /> Установи приложение
             </h2>
-            <p className="text-violet-100 text-sm mb-6">BEMAT работает как приложение. Установи его на свой телефон — это бесплатно и занимает 10 секунд!</p>
+            <p className="text-violet-100 text-sm mb-6">Чтобы получить доступ к BEMAT. Установи его на свой телефон — это бесплатно и занимает 10 секунд!</p>
 
             {/* Android */}
             {device === 'android' && (
@@ -337,7 +337,7 @@ const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: a
                       <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center shrink-0 text-base font-black">4</div>
                       <div>
                         <p className="font-bold text-white">Нажмите «Добавить»</p>
-                        <p className="text-xs text-violet-200">Иконка BEMAT появится на рабочем столе</p>
+                        <p className="text-xs text-violet-200">Иконка BEMAT появится на рабочем столе и нажмите и приложение заработает</p>
                       </div>
                     </div>
                   </div>
