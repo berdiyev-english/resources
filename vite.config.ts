@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'prompt', // Важно для "безопасных обновлений"
+      registerType: 'prompt', // Важно для "безопасных обновлений
       includeAssets: ['logo.png', 'cathungry.png', 'catfed.png', 'icophot/*.png', 'icophot/*.svg', 'icophot/*.ico'],
       
       workbox: {
