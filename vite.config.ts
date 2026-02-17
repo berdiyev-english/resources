@@ -6,12 +6,15 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig({
   plugins: [
     react(),
-    tailwindcss(), // <--- Добавили Tailwind 4
+    tailwindcss(),
     VitePWA({
       registerType: 'prompt',
       includeAssets: ['logo.png', 'cathungry.png', 'catfed.png', 'icophot/**/*'],
       
       workbox: {
+        // Увеличиваем лимит кеша до 5 МБ, чтобы большие картинки не ломали сборку
+        maximumFileSizeToCacheInBytes: 5000000, 
+        
         globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,svg,webp,woff,woff2}'],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api/],
