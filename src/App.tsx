@@ -393,17 +393,30 @@ const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: a
             {/* Desktop Logic */}
             {device === 'desktop' && (
               <div className="space-y-4">
-                 <p className="text-stone-300 text-sm mb-4 text-center">
-                   Установите BEMAT как приложение на ваш компьютер для быстрого доступа.
-                 </p>
                  {deferredPrompt ? (
-                    <button onClick={onPromptInstall} className="w-full py-4 bg-white text-stone-900 font-black rounded-xl shadow-lg hover:scale-[1.02] transition-transform flex items-center justify-center gap-2">
-                       <Monitor size={20} /> Установить на компьютер
-                    </button>
+                    // Сценарий 1: Браузер разрешил установку
+                    <>
+                      <p className="text-white font-bold text-lg mb-2 text-center">Доступна установка на ПК! 🖥️</p>
+                      <button 
+                        onClick={onPromptInstall} 
+                        className="w-full py-4 bg-white text-stone-900 font-black rounded-xl shadow-lg hover:scale-[1.02] transition-transform flex items-center justify-center gap-3 animate-pulse"
+                      >
+                         <Monitor size={20} className="text-violet-600" /> УСТАНОВИТЬ НА КОМПЬЮТЕР
+                      </button>
+                      <p className="text-stone-400 text-xs text-center mt-2">
+                        Приложение появится в меню Пуск и на рабочем столе
+                      </p>
+                    </>
                  ) : (
-                    <div className="bg-white/10 p-4 rounded-xl border border-white/5 text-center">
+                    // Сценарий 2: Браузер не дал событие
+                    <div className="bg-white/10 p-5 rounded-2xl border border-white/5 text-center">
                        <p className="font-bold text-white mb-2">Как установить?</p>
-                       <p className="text-sm text-stone-300">Нажмите иконку установки ⊕ в адресной строке браузера (справа).</p>
+                       <p className="text-sm text-stone-300 mb-4">
+                         Найдите иконку установки <span className="inline-flex items-center justify-center bg-white/20 w-6 h-6 rounded-full text-xs font-bold mx-1">⊕</span> или <span className="inline-flex items-center justify-center bg-white/20 w-6 h-6 rounded-full text-xs font-bold mx-1">⬇</span> в правой части адресной строки браузера.
+                       </p>
+                       <div className="text-xs text-stone-500">
+                         Работает в Google Chrome, Edge, Yandex Browser
+                       </div>
                     </div>
                  )}
               </div>
