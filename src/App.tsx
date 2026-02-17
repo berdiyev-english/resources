@@ -228,11 +228,7 @@ const SplashScreen = () => (
 );
 
 // ==============================
-// 2. PWA LANDING PAGE (для браузера)
-// ==============================
-
-// ==============================
-// 2. PWA LANDING PAGE (FINAL VERSION)
+// 2. PWA LANDING PAGE (FINAL + FIX DESKTOP)
 // ==============================
 
 const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: any; onPromptInstall: () => void }) => {
@@ -259,13 +255,14 @@ const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: a
           <img src={logo} alt="BEMAT" className="w-8 h-8 rounded-full bg-stone-100" />
           <span className="font-black text-lg tracking-tight text-stone-900">BEMAT</span>
         </div>
+        {/* Кнопка в хедере зависит от устройства */}
         {device === 'ios' ? (
           <button onClick={scrollToInstall} className="bg-violet-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:bg-violet-700 transition-colors">
             Установить
           </button>
         ) : deferredPrompt ? (
           <button onClick={onPromptInstall} className="bg-violet-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:bg-violet-700 transition-colors">
-            Скачать
+            {device === 'desktop' ? 'Установить на ПК' : 'Скачать'}
           </button>
         ) : null}
       </div>
@@ -285,6 +282,7 @@ const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: a
           Бесплатное приложение с фильмами, книгами и AI-репетитором. Учи язык играючи вместе с котом Бобом! 🐱
         </p>
 
+        {/* Кнопки Hero */}
         {device === 'android' && deferredPrompt && (
           <button onClick={onPromptInstall} className="w-full max-w-xs py-4 bg-stone-900 text-white font-bold rounded-2xl shadow-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 mb-4">
             <Download size={20} /> Скачать на Android
@@ -293,6 +291,11 @@ const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: a
         {device === 'ios' && (
           <button onClick={scrollToInstall} className="w-full max-w-xs py-4 bg-stone-900 text-white font-bold rounded-2xl shadow-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 mb-4">
             <Download size={20} /> Установить на iPhone
+          </button>
+        )}
+        {device === 'desktop' && deferredPrompt && (
+          <button onClick={onPromptInstall} className="w-full max-w-xs py-4 bg-stone-900 text-white font-bold rounded-2xl shadow-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 mb-4">
+            <Monitor size={20} /> Установить на компьютер
           </button>
         )}
         
@@ -323,7 +326,7 @@ const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: a
           <div className="relative z-10">
             <h2 className="text-2xl font-black mb-2 flex items-center gap-3">
               <Download className="text-violet-400" /> 
-              {device === 'ios' ? 'Скачать на iPhone' : 'Установка'}
+              {device === 'ios' ? 'Скачать на iPhone' : device === 'desktop' ? 'Установка на ПК' : 'Установка'}
             </h2>
             
             {/* iOS Info */}
@@ -343,35 +346,23 @@ const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: a
               <div className="space-y-4">
                 <div className="flex items-center gap-4 bg-white/10 p-4 rounded-2xl border border-white/5">
                   <div className="w-10 h-10 bg-white text-stone-900 rounded-xl flex items-center justify-center font-black text-lg shadow-lg">1</div>
-                  <div className="flex-1">
-                    <p className="font-bold text-sm">Нажми «Поделиться»</p>
-                    <p className="text-xs text-stone-400 mt-0.5">Внизу экрана Safari</p>
-                  </div>
-                  <div className="w-8 h-8 flex items-center justify-center">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 15V3M12 3L7 8M12 3L17 8M4 11V19C4 20.1046 4.89543 21 6 21H18C19.1046 21 20 20.1046 20 19V11" stroke="#007AFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </div>
+                  <div className="flex-1"><p className="font-bold text-sm">Нажми «Поделиться»</p><p className="text-xs text-stone-400 mt-0.5">Внизу экрана Safari</p></div>
+                  <div className="w-8 h-8 flex items-center justify-center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 15V3M12 3L7 8M12 3L17 8M4 11V19C4 20.1046 4.89543 21 6 21H18C19.1046 21 20 20.1046 20 19V11" stroke="#007AFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
                 </div>
-
                 <div className="flex items-center gap-4 bg-white/10 p-4 rounded-2xl border border-white/5">
                   <div className="w-10 h-10 bg-white text-stone-900 rounded-xl flex items-center justify-center font-black text-lg shadow-lg">2</div>
-                  <div className="flex-1">
-                    <p className="font-bold text-sm">«На экран Домой»</p>
-                    <p className="text-xs text-stone-400 mt-0.5">В списке (пролистай вниз)</p>
-                  </div>
-                  <div className="w-8 h-8 rounded-lg bg-stone-700 flex items-center justify-center border border-stone-600">
-                    <div className="bg-white/90 w-6 h-6 rounded flex items-center justify-center">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5V19M5 12H19" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </div>
-                  </div>
+                  <div className="flex-1"><p className="font-bold text-sm">«На экран Домой»</p><p className="text-xs text-stone-400 mt-0.5">В списке (пролистай вниз)</p></div>
+                  <div className="w-8 h-8 rounded-lg bg-stone-700 flex items-center justify-center border border-stone-600"><div className="bg-white/90 w-6 h-6 rounded flex items-center justify-center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5V19M5 12H19" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div></div>
                 </div>
-
                 <div className="flex items-center gap-4 bg-white/10 p-4 rounded-2xl border border-white/5">
                   <div className="w-10 h-10 bg-white text-stone-900 rounded-xl flex items-center justify-center font-black text-lg shadow-lg">3</div>
-                  <div className="flex-1">
-                    <p className="font-bold text-sm">Нажми «Добавить»</p>
-                    <p className="text-xs text-stone-400 mt-0.5">В правом верхнем углу</p>
-                  </div>
+                  <div className="flex-1"><p className="font-bold text-sm">Нажми «Добавить»</p><p className="text-xs text-stone-400 mt-0.5">В правом верхнем углу</p></div>
                   <div className="text-[#007AFF] font-bold text-sm">Добавить</div>
+                </div>
+                <div className="flex items-center gap-4 bg-gradient-to-r from-violet-600/20 to-indigo-600/20 p-4 rounded-2xl border border-violet-500/30">
+                  <div className="w-10 h-10 bg-violet-600 text-white rounded-xl flex items-center justify-center font-black text-lg shadow-lg">4</div>
+                  <div className="flex-1"><p className="font-bold text-sm text-white">Всё готово! 🥳</p><p className="text-xs text-violet-200 mt-0.5 leading-snug">Нажми на иконку <span className="text-white font-bold">BEMAT</span> на рабочем столе и наслаждайся!</p></div>
+                  <img src={logo} className="w-10 h-10 rounded-xl border border-white/10 shadow-sm" alt="App Icon" />
                 </div>
               </div>
             )}
@@ -399,14 +390,21 @@ const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: a
               </div>
             )}
 
-            {/* Desktop */}
+            {/* Desktop Logic */}
             {device === 'desktop' && (
-              <div className="text-center">
-                 <p className="text-sm text-stone-300 mb-4">Нажмите иконку установки в адресной строке браузера ⊕</p>
-                 {deferredPrompt && (
-                    <button onClick={onPromptInstall} className="px-6 py-3 bg-white text-stone-900 font-bold rounded-xl shadow-lg hover:scale-105 transition-transform">
-                       Установить на компьютер
+              <div className="space-y-4">
+                 <p className="text-stone-300 text-sm mb-4 text-center">
+                   Установите BEMAT как приложение на ваш компьютер для быстрого доступа.
+                 </p>
+                 {deferredPrompt ? (
+                    <button onClick={onPromptInstall} className="w-full py-4 bg-white text-stone-900 font-black rounded-xl shadow-lg hover:scale-[1.02] transition-transform flex items-center justify-center gap-2">
+                       <Monitor size={20} /> Установить на компьютер
                     </button>
+                 ) : (
+                    <div className="bg-white/10 p-4 rounded-xl border border-white/5 text-center">
+                       <p className="font-bold text-white mb-2">Как установить?</p>
+                       <p className="text-sm text-stone-300">Нажмите иконку установки ⊕ в адресной строке браузера (справа).</p>
+                    </div>
                  )}
               </div>
             )}
