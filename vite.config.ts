@@ -1,13 +1,15 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   plugins: [
     react(),
+    tailwindcss(), // <--- Добавили Tailwind 4
     VitePWA({
-      registerType: 'prompt', // Важно для "безопасных обновлени
-      includeAssets: ['logo.png', 'cathungry.png', 'catfed.png', 'icophot/*.png', 'icophot/*.svg', 'icophot/*.ico'],
+      registerType: 'prompt',
+      includeAssets: ['logo.png', 'cathungry.png', 'catfed.png', 'icophot/**/*'],
       
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,svg,webp,woff,woff2}'],
