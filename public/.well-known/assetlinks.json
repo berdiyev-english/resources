@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "ru.bemat.twa",
+        "sha256_cert_fingerprints": ["31:F2:FB:46:81:F7:9D:AC:D2:60:1E:91:F2:E7:88:5F:3D:8C:2A:C3:6A:85:1D:77:24:E8:DA:B3:BA:4A:3D:4B"]
+      }
+    }]
