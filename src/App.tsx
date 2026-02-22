@@ -8,7 +8,7 @@ import {
   GraduationCap, Bot, Book, Film, CheckCircle, Mic, Gift,
   Flame, Bell, Settings, Trophy, ArrowRight, CheckCircle2,
   Edit3, Plus, Trash2, Clock, BellRing, Download, Share2,
-  Smartphone, Monitor, RefreshCw
+  Smartphone, Monitor, RefreshCw, LogIn
 } from 'lucide-react';
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -24,8 +24,8 @@ function checkIsPWA(): boolean {
   if ((window.navigator as any).standalone === true) return true;
   if (window.matchMedia('(display-mode: standalone)').matches) return true;
   if (window.matchMedia('(display-mode: fullscreen)').matches) return true;
+  if (window.matchMedia('(display-mode: minimal-ui)').matches) return true;
   if (document.referrer.startsWith('android-app://')) return true;
-  // Разрешаем localhost для разработки
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') return true;
   return false;
 }
@@ -141,6 +141,24 @@ function scheduleNotification(notifHour: number = 19) {
 
 function cancelNotification() { if (notifTimeoutId) { clearTimeout(notifTimeoutId); notifTimeoutId = null; } }
 
+async function sendTestNotification(hour: number) {
+  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+  const title = 'Напоминалки включены! 🔔';
+  const body = `Буду напоминать в ${hour}:00`;
+  const options = {
+    body,
+    icon: '/icophot/web-app-manifest-192x192.png',
+    badge: '/icophot/web-app-manifest-192x192.png',
+    tag: 'bemat-test',
+    vibrate: [200, 100, 200] as number[],
+  };
+  try {
+    const reg = await navigator.serviceWorker?.ready;
+    if (reg) { await reg.showNotification(title, options); return; }
+  } catch {}
+  try { new Notification(title, { body, icon: options.icon }); } catch {}
+}
+
 // ==============================
 // UI КОМПОНЕНТЫ
 // ==============================
@@ -205,13 +223,12 @@ const MediaRow = ({ title, desc, img, link, btnText = "Перейти" }: any) =
 );
 
 // ==============================
-// 1. SPLASH SCREEN (загрузка)
+// 1. SPLASH SCREEN
 // ==============================
 
 const SplashScreen = () => (
   <div className="fixed inset-0 z-[200] bg-[#fafaf9] flex flex-col items-center justify-center">
     <div className="relative">
-      {/* Пульсирующий круг */}
       <div className="absolute inset-0 w-32 h-32 rounded-full bg-violet-200 animate-ping opacity-30" />
       <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-2xl animate-breathe">
         <img src={logo} alt="BEMAT" className="w-full h-full object-cover" />
@@ -228,10 +245,10 @@ const SplashScreen = () => (
 );
 
 // ==============================
-// 2. PWA LANDING PAGE (FINAL + FIX DESKTOP)
+// 2. PWA LANDING PAGE
 // ==============================
 
-const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: any; onPromptInstall: () => void }) => {
+const PWALandingPage = ({ deferredPrompt, onPromptInstall, onSkip }: { deferredPrompt: any; onPromptInstall: () => void; onSkip: () => void }) => {
   const device = getDeviceType();
 
   const scrollToInstall = () => {
@@ -249,13 +266,12 @@ const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: a
 
   return (
     <div className="min-h-screen bg-[#fafaf9] font-sans text-stone-900 overflow-y-auto pb-safe">
-      {/* 1. Верхний бар */}
+      {/* Верхний бар */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-stone-100 px-4 py-3 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-2">
           <img src={logo} alt="BEMAT" className="w-8 h-8 rounded-full bg-stone-100" />
           <span className="font-black text-lg tracking-tight text-stone-900">BEMAT</span>
         </div>
-        {/* Кнопка в хедере зависит от устройства */}
         {device === 'ios' ? (
           <button onClick={scrollToInstall} className="bg-violet-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:bg-violet-700 transition-colors">
             Установить
@@ -264,17 +280,20 @@ const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: a
           <button onClick={onPromptInstall} className="bg-violet-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:bg-violet-700 transition-colors">
             {device === 'desktop' ? 'Установить на ПК' : 'Скачать'}
           </button>
+        ) : device === 'desktop' ? (
+          <button onClick={onSkip} className="bg-stone-900 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:bg-stone-800 transition-colors flex items-center gap-2">
+            <LogIn size={14} /> Войти
+          </button>
         ) : null}
       </div>
 
-      {/* 2. Hero */}
+      {/* Hero */}
       <div className="pt-28 pb-10 px-6 flex flex-col items-center text-center">
         <div className="relative w-32 h-32 mb-6">
           <div className="absolute inset-0 bg-violet-200 rounded-full blur-xl opacity-50 animate-pulse" />
           <img src={logo} alt="Bob" className="relative w-full h-full rounded-full border-4 border-white shadow-2xl object-cover" />
           <div className="absolute -bottom-2 -right-2 bg-white px-3 py-1 rounded-full text-xl shadow-lg">🇬🇧</div>
         </div>
-        
         <h1 className="text-4xl font-black text-stone-900 mb-3 leading-tight">
           Английский <br/><span className="text-violet-600">в твоём кармане</span>
         </h1>
@@ -282,7 +301,6 @@ const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: a
           Бесплатное приложение с фильмами, книгами и AI-репетитором. Учи язык играючи вместе с котом Бобом! 🐱
         </p>
 
-        {/* Кнопки Hero */}
         {device === 'android' && deferredPrompt && (
           <button onClick={onPromptInstall} className="w-full max-w-xs py-4 bg-stone-900 text-white font-bold rounded-2xl shadow-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 mb-4">
             <Download size={20} /> Скачать на Android
@@ -293,16 +311,21 @@ const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: a
             <Download size={20} /> Установить на iPhone
           </button>
         )}
-        {device === 'desktop' && deferredPrompt && (
-          <button onClick={onPromptInstall} className="w-full max-w-xs py-4 bg-stone-900 text-white font-bold rounded-2xl shadow-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 mb-4">
-            <Monitor size={20} /> Установить на компьютер
-          </button>
+        {device === 'desktop' && (
+          deferredPrompt ? (
+            <button onClick={onPromptInstall} className="w-full max-w-xs py-4 bg-stone-900 text-white font-bold rounded-2xl shadow-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 mb-4">
+              <Monitor size={20} /> Установить на компьютер
+            </button>
+          ) : (
+            <button onClick={onSkip} className="w-full max-w-xs py-4 bg-violet-600 text-white font-bold rounded-2xl shadow-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 mb-4">
+              <LogIn size={20} /> Войти в приложение
+            </button>
+          )
         )}
-        
         <p className="text-xs text-stone-400 font-medium">Бесплатно · Без рекламы · Без регистрации</p>
       </div>
 
-      {/* 3. Фичи */}
+      {/* Фичи */}
       <div className="px-4 pb-12">
         <h2 className="text-xl font-bold text-stone-900 mb-4 px-2">Что внутри?</h2>
         <div className="grid grid-cols-2 gap-3">
@@ -318,30 +341,27 @@ const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: a
         </div>
       </div>
 
-      {/* 4. Инструкция */}
+      {/* Инструкция */}
       <div id="install-section" className="px-4 pb-16 scroll-mt-20">
         <div className="bg-stone-900 rounded-[2.5rem] p-6 text-white shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-violet-600 blur-[60px] opacity-40 rounded-full translate-x-10 -translate-y-10" />
-          
           <div className="relative z-10">
             <h2 className="text-2xl font-black mb-2 flex items-center gap-3">
-              <Download className="text-violet-400" /> 
+              <Download className="text-violet-400" />
               {device === 'ios' ? 'Скачать на iPhone' : device === 'desktop' ? 'Установка на ПК' : 'Установка'}
             </h2>
-            
-            {/* iOS Info */}
+
             {device === 'ios' && (
               <div className="mb-6 bg-white/10 p-4 rounded-2xl border border-white/5">
                 <p className="text-sm font-bold mb-1">🍎 В App Store пока нет</p>
                 <p className="text-xs text-stone-300 leading-relaxed">
-                  Но вы можете скачать веб-версию! Она работает точно так же, как обычное приложение. 
+                  Но вы можете скачать веб-версию! Она работает точно так же, как обычное приложение.
                   <br/><br/>
                   <span className="text-white font-bold">После установки нажмите на иконку на рабочем столе — и всё заработает шикарно! ✨</span>
                 </p>
               </div>
             )}
 
-            {/* iOS Steps */}
             {device === 'ios' && (
               <div className="space-y-4">
                 <div className="flex items-center gap-4 bg-white/10 p-4 rounded-2xl border border-white/5">
@@ -367,7 +387,6 @@ const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: a
               </div>
             )}
 
-            {/* Android Logic */}
             {device === 'android' && (
               <div className="space-y-4">
                 {deferredPrompt ? (
@@ -383,42 +402,35 @@ const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: a
                     <p className="font-bold mb-3 text-white">Приложение уже установлено?</p>
                     <p className="text-sm text-stone-300 mb-6">Если нет — скачайте APK через RuStore</p>
                     <a href="https://www.rustore.ru/catalog/app/co.median.android.pkpxbe" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3 w-full py-4 bg-[#0077FF] text-white rounded-xl text-base font-bold shadow-lg hover:bg-[#0066CC] transition-colors">
-                       <Smartphone size={20} /> <span>Скачать в RuStore</span>
+                      <Smartphone size={20} /> <span>Скачать в RuStore</span>
                     </a>
                   </div>
                 )}
               </div>
             )}
 
-            {/* Desktop Logic */}
             {device === 'desktop' && (
               <div className="space-y-4">
-                 {deferredPrompt ? (
-                    // Сценарий 1: Браузер разрешил установку
-                    <>
-                      <p className="text-white font-bold text-lg mb-2 text-center">Доступна установка на ПК! 🖥️</p>
-                      <button 
-                        onClick={onPromptInstall} 
-                        className="w-full py-4 bg-white text-stone-900 font-black rounded-xl shadow-lg hover:scale-[1.02] transition-transform flex items-center justify-center gap-3 animate-pulse"
-                      >
-                         <Monitor size={20} className="text-violet-600" /> УСТАНОВИТЬ НА КОМПЬЮТЕР
-                      </button>
-                      <p className="text-stone-400 text-xs text-center mt-2">
-                        Приложение появится в меню Пуск и на рабочем столе
-                      </p>
-                    </>
-                 ) : (
-                    // Сценарий 2: Браузер не дал событие
-                    <div className="bg-white/10 p-5 rounded-2xl border border-white/5 text-center">
-                       <p className="font-bold text-white mb-2">Как установить?</p>
-                       <p className="text-sm text-stone-300 mb-4">
-                         Найдите иконку установки <span className="inline-flex items-center justify-center bg-white/20 w-6 h-6 rounded-full text-xs font-bold mx-1">⊕</span> или <span className="inline-flex items-center justify-center bg-white/20 w-6 h-6 rounded-full text-xs font-bold mx-1">⬇</span> в правой части адресной строки браузера.
-                       </p>
-                       <div className="text-xs text-stone-500">
-                         Работает в Google Chrome, Edge, Yandex Browser
-                       </div>
-                    </div>
-                 )}
+                {deferredPrompt ? (
+                  <>
+                    <p className="text-white font-bold text-lg mb-2 text-center">Доступна установка на ПК! 🖥️</p>
+                    <button onClick={onPromptInstall} className="w-full py-4 bg-white text-stone-900 font-black rounded-xl shadow-lg hover:scale-[1.02] transition-transform flex items-center justify-center gap-3 animate-pulse">
+                      <Monitor size={20} className="text-violet-600" /> УСТАНОВИТЬ НА КОМПЬЮТЕР
+                    </button>
+                    <p className="text-stone-400 text-xs text-center mt-2">Приложение появится в меню Пуск и на рабочем столе</p>
+                  </>
+                ) : (
+                  <div className="bg-white/10 p-5 rounded-2xl border border-white/5 text-center">
+                    <p className="font-bold text-white mb-2">Уже установили?</p>
+                    <p className="text-sm text-stone-300 mb-4">
+                      Если вы видите это в приложении — нажмите "Войти".<br/>
+                      Если нет — найдите иконку <span className="inline-flex items-center justify-center bg-white/20 w-6 h-6 rounded-full text-xs font-bold mx-1">⊕</span> в адресной строке.
+                    </p>
+                    <button onClick={onSkip} className="w-full py-3 bg-violet-600 text-white font-bold rounded-xl shadow-lg hover:bg-violet-700 transition-colors flex items-center justify-center gap-2">
+                      <LogIn size={18} /> Войти в приложение
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -436,6 +448,7 @@ const PWALandingPage = ({ deferredPrompt, onPromptInstall }: { deferredPrompt: a
     </div>
   );
 };
+
 // ==============================
 // 3. UPDATE BANNER
 // ==============================
@@ -613,17 +626,27 @@ const AddTaskModal = ({ isOpen, onClose, onAdd }: { isOpen: boolean; onClose: ()
 const NotifSettingsModal = ({ isOpen, onClose, user, onSave }: { isOpen: boolean; onClose: () => void; user: UserState; onSave: (e: boolean, h: number) => void }) => {
   const [enabled, setEnabled] = useState(user.notificationsEnabled);
   const [hour, setHour] = useState(user.notifHour || 19);
+  const [testSent, setTestSent] = useState(false);
   if (!isOpen) return null;
   const toggle = async () => {
     if (!enabled) {
       if (!("Notification" in window)) { alert("Браузер не поддерживает уведомления"); return; }
-      if (Notification.permission === 'denied') { alert("Уведомления заблокированы в настройках"); return; }
+      if (Notification.permission === 'denied') { alert("Уведомления заблокированы в настройках браузера. Разблокируй вручную."); return; }
     }
     setEnabled(!enabled);
   };
   const save = async () => {
     if (enabled && Notification.permission !== 'granted') { const p = await Notification.requestPermission(); if (p !== 'granted') { alert('Разреши уведомления'); return; } }
     onSave(enabled, hour); onClose();
+  };
+  const handleTest = async () => {
+    if (Notification.permission !== 'granted') {
+      const p = await Notification.requestPermission();
+      if (p !== 'granted') { alert('Разреши уведомления'); return; }
+    }
+    await sendTestNotification(hour);
+    setTestSent(true);
+    setTimeout(() => setTestSent(false), 3000);
   };
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -635,7 +658,18 @@ const NotifSettingsModal = ({ isOpen, onClose, user, onSave }: { isOpen: boolean
           <div className="flex items-center gap-3"><BellRing size={20} className={enabled ? "text-violet-600" : "text-stone-400"} /><span className="font-bold text-stone-800">Уведомления</span></div>
           <button onClick={toggle} className={cn("w-12 h-7 rounded-full relative", enabled ? "bg-violet-600" : "bg-stone-200")}><div className={cn("w-5 h-5 bg-white rounded-full absolute top-1 shadow-sm transition-all", enabled ? "right-1" : "left-1")} /></button>
         </div>
-        {enabled && (<div className="mb-6"><label className="text-xs font-bold text-stone-500 uppercase mb-2 block">Во сколько?</label><div className="grid grid-cols-4 gap-2">{[9,12,15,17,18,19,20,21].map(h => (<button key={h} onClick={() => setHour(h)} className={cn("py-2.5 rounded-xl font-bold text-sm border-2", hour === h ? "border-violet-600 bg-violet-50 text-violet-700" : "border-stone-100 bg-white text-stone-600")}>{h}:00</button>))}</div><p className="text-[11px] text-stone-400 mt-2">⏰ Придёт если ты не заходил в этот день</p></div>)}
+        {enabled && (<div className="mb-4"><label className="text-xs font-bold text-stone-500 uppercase mb-2 block">Во сколько?</label><div className="grid grid-cols-4 gap-2">{[9,12,15,17,18,19,20,21].map(h => (<button key={h} onClick={() => setHour(h)} className={cn("py-2.5 rounded-xl font-bold text-sm border-2", hour === h ? "border-violet-600 bg-violet-50 text-violet-700" : "border-stone-100 bg-white text-stone-600")}>{h}:00</button>))}</div><p className="text-[11px] text-stone-400 mt-2">⏰ Придёт если ты не заходил в этот день</p></div>)}
+        {enabled && (
+          <button onClick={handleTest}
+            className={cn(
+              "w-full py-3 rounded-xl font-bold text-sm mb-4 flex items-center justify-center gap-2 border-2 transition-all",
+              testSent
+                ? "border-green-300 bg-green-50 text-green-700"
+                : "border-dashed border-stone-200 bg-stone-50 text-stone-600 hover:border-violet-300 hover:text-violet-600"
+            )}>
+            {testSent ? (<><CheckCircle size={16} /> Отправлено!</>) : (<><Bell size={16} /> Отправить тестовое уведомление</>)}
+          </button>
+        )}
         <button onClick={save} className="w-full py-3.5 bg-violet-600 text-white font-bold rounded-2xl shadow-lg shadow-violet-200">{enabled ? '✅ Сохранить' : 'Сохранить'}</button>
       </div>
     </div>
@@ -680,7 +714,13 @@ const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpda
   const addTask = (t: string, m: number) => onUpdateUser({ ...user, customTasks: [...(user.customTasks || []), { id: `c_${Date.now()}`, title: t, time: m }] });
   const delTask = (id: string) => onUpdateUser({ ...user, customTasks: (user.customTasks || []).filter(t => t.id !== id), completedTasks: user.completedTasks.filter(x => x !== id), catFed: false });
   const saveProfile = (n: string, g: UserGoal) => { const gc = g !== user.goal; onUpdateUser({ ...user, name: n, goal: g, completedTasks: gc ? [] : user.completedTasks, catFed: gc ? false : user.catFed }); };
-  const saveNotif = (en: boolean, h: number) => { onUpdateUser({ ...user, notificationsEnabled: en, notifHour: h }); if (en) { scheduleNotification(h); if (Notification.permission === 'granted') new Notification('Напоминалки включены! 🔔', { body: `Буду напоминать в ${h}:00`, icon: '/icophot/web-app-manifest-192x192.png' }); } else cancelNotification(); };
+  const saveNotif = (en: boolean, h: number) => {
+    onUpdateUser({ ...user, notificationsEnabled: en, notifHour: h });
+    if (en) {
+      scheduleNotification(h);
+      sendTestNotification(h);
+    } else cancelNotification();
+  };
 
   const isFed = user.catFed; const fp = isFed ? 100 : progress;
 
@@ -939,12 +979,10 @@ const NavBtn = ({ active, onClick, icon: Icon, label }: any) => (
 // ==============================
 
 export function App() {
-  // PWA проверка (синхронная для первого рендера)
-  const [isPWAMode] = useState(() => checkIsPWA());
-  const [isLoading, setIsLoading] = useState(() => checkIsPWA()); // Splash только для PWA
+  const [isPWAMode, setIsPWAMode] = useState(() => checkIsPWA());
+  const [isLoading, setIsLoading] = useState(() => checkIsPWA());
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
-  // Состояние приложения
   const [activeTab, setActiveTab] = useState('dashboard');
   const [user, setUser] = useState<UserState | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
@@ -953,29 +991,21 @@ export function App() {
   const streakScheduled = useRef(false);
   const swWaiting = useRef<ServiceWorker | null>(null);
 
-  // 1. Перехват install prompt (для Android/Desktop)
+  // 1. Install prompt
   useEffect(() => {
     const handler = (e: any) => { e.preventDefault(); setDeferredPrompt(e); };
     window.addEventListener('beforeinstallprompt', handler);
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
-  // 2. Service Worker: обновления
+  // 2. SW updates
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return;
-
     const checkUpdates = async () => {
       try {
         const reg = await navigator.serviceWorker.ready;
         await reg.update();
-
-        // Проверяем waiting worker
-        if (reg.waiting) {
-          swWaiting.current = reg.waiting;
-          setUpdateAvailable(true);
-        }
-
-        // Слушаем новые установки
+        if (reg.waiting) { swWaiting.current = reg.waiting; setUpdateAvailable(true); }
         reg.addEventListener('updatefound', () => {
           const newWorker = reg.installing;
           if (!newWorker) return;
@@ -988,20 +1018,16 @@ export function App() {
         });
       } catch {}
     };
-
     checkUpdates();
-    const interval = setInterval(checkUpdates, 60 * 1000); // Каждую минуту
-
-    // Перезагрузка при смене контроллера
+    const interval = setInterval(checkUpdates, 60 * 1000);
     let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (!refreshing) { refreshing = true; window.location.reload(); }
     });
-
     return () => clearInterval(interval);
   }, []);
 
-  // 3. Загрузка юзера + splash
+  // 3. User + Splash + PWA auto-detect
   useEffect(() => {
     const loadUser = () => {
       const saved = localStorage.getItem('bemat_user_v3');
@@ -1024,15 +1050,14 @@ export function App() {
         } catch { localStorage.removeItem('bemat_user_v3'); }
       }
     };
-
     loadUser();
+    if (isPWAMode) setTimeout(() => setIsLoading(false), 1500);
 
-    // Splash: 1.5 секунды для PWA
-    if (isPWAMode) {
-      setTimeout(() => setIsLoading(false), 1500);
-    }
+    // Auto-detect PWA mode switch
+    const match = window.matchMedia('(display-mode: standalone)');
+    const onChange = (evt: MediaQueryListEvent) => { if (evt.matches) setIsPWAMode(true); };
+    match.addEventListener('change', onChange);
 
-    // Перепланировка уведомлений при возврате
     const vis = () => {
       if (document.visibilityState === 'visible') {
         const s = localStorage.getItem('bemat_user_v3');
@@ -1040,56 +1065,39 @@ export function App() {
       }
     };
     document.addEventListener('visibilitychange', vis);
-    return () => { document.removeEventListener('visibilitychange', vis); cancelNotification(); };
+    return () => {
+      document.removeEventListener('visibilitychange', vis);
+      match.removeEventListener('change', onChange);
+      cancelNotification();
+    };
   }, [isPWAMode]);
 
-  // Обработчики
+  // Handlers
   const handleOnboarding = (name: string, goal: UserGoal) => {
     const nu: UserState = { name, goal, streak: 1, lastVisit: new Date().toISOString(), completedTasks: [], customTasks: [], notificationsEnabled: false, isOnboarded: true, catFed: false, streakShownDate: '', notifHour: 19 };
     setUser(nu); localStorage.setItem('bemat_user_v3', JSON.stringify(nu));
     setTimeout(() => setShowStreakPopup(true), 800);
   };
-
   const updateUser = (u: UserState) => { setUser(u); localStorage.setItem('bemat_user_v3', JSON.stringify(u)); };
-
   const resetProgress = () => { cancelNotification(); localStorage.removeItem('bemat_user_v3'); setUser(null); setShowResetConfirm(false); setActiveTab('dashboard'); streakScheduled.current = false; };
-
   const handleNavigate = (tab: string) => { setActiveTab(tab); window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior }); };
-
   const closeStreak = () => { setShowStreakPopup(false); if (user) updateUser({ ...user, streakShownDate: new Date().toDateString() }); };
-
-  const handleUpdate = () => {
-    if (swWaiting.current) swWaiting.current.postMessage({ type: 'SKIP_WAITING' });
-    else window.location.reload();
-  };
-
-  const handlePromptInstall = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    setDeferredPrompt(null);
-  };
+  const handleUpdate = () => { if (swWaiting.current) swWaiting.current.postMessage({ type: 'SKIP_WAITING' }); else window.location.reload(); };
+  const handlePromptInstall = async () => { if (!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; setDeferredPrompt(null); };
+  const handleEnterApp = () => setIsPWAMode(true);
 
   // ====== РЕНДЕР ======
 
-  // 1. Splash screen (только PWA)
   if (isLoading) return <SplashScreen />;
-
-  // 2. Не PWA → лендинг
-  if (!isPWAMode) return <PWALandingPage deferredPrompt={deferredPrompt} onPromptInstall={handlePromptInstall} />;
-
-  // 3. Нет юзера → онбординг
+  if (!isPWAMode) return <PWALandingPage deferredPrompt={deferredPrompt} onPromptInstall={handlePromptInstall} onSkip={handleEnterApp} />;
   if (!user) return <Onboarding onComplete={handleOnboarding} />;
 
-  // 4. Приложение
   const BackButton = () => (<div className="px-4 pt-4"><button onClick={() => setActiveTab('dashboard')} className="flex items-center gap-2 text-stone-500 font-bold mb-2 hover:text-violet-600"><ArrowRight className="rotate-180" size={18} /> Назад</button></div>);
 
   return (
     <div className="min-h-screen bg-[#fafaf9] font-sans text-stone-900 pb-20 selection:bg-violet-200">
       <Sponsors />
       <Header onNavigate={handleNavigate} onOpenSettings={() => setShowResetConfirm(true)} />
-
-      {/* Плашка обновления */}
       {updateAvailable && <UpdateBanner onUpdate={handleUpdate} />}
 
       <main className="max-w-xl mx-auto w-full">
