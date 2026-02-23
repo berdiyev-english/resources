@@ -72,3 +72,11 @@ html, body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+/* Скрыть скроллбар у горизонтального скролла фичей */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Радиальный градиент для фона */
+.bg-gradient-radial {
+  background: radial-gradient(ellipse at center, var(--tw-gradient-from), var(--tw-gradient-to));
+}
