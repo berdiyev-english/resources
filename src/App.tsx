@@ -245,210 +245,298 @@ const SplashScreen = () => (
 );
 
 // ==============================
-// 2. PWA LANDING PAGE
+// 2. PWA LANDING PAGE — PREMIUM
 // ==============================
 
 const PWALandingPage = ({ deferredPrompt, onPromptInstall, onSkip }: { deferredPrompt: any; onPromptInstall: () => void; onSkip: () => void }) => {
   const device = getDeviceType();
+  const [showSteps, setShowSteps] = useState(false);
 
   const scrollToInstall = () => {
+    if (device === 'ios') setShowSteps(true);
     document.getElementById('install-section')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const features = [
-    { icon: '🐱', title: 'Кот Боб', desc: 'Твой личный наставник. Корми его знаниями!' },
-    { icon: '🎬', title: 'Фильмы и сериалы', desc: 'Смотри в оригинале с умными субтитрами' },
-    { icon: '📚', title: 'Книги с переводом', desc: 'Читай и учи новые слова в контексте' },
-    { icon: '🎓', title: 'ЕГЭ / ОГЭ / IELTS', desc: 'Готовься к экзаменам с AI-помощниками' },
-    { icon: '🗣', title: 'Разговорный клуб', desc: 'Практикуй речь с AI и реальными людьми' },
-    { icon: '🔥', title: 'Система стриков', desc: 'Занимайся по 15 минут в день и не теряй прогресс' },
-  ];
+  const mainAction = () => {
+    if (device === 'ios') { scrollToInstall(); return; }
+    if (deferredPrompt) { onPromptInstall(); return; }
+    if (device === 'desktop') { onSkip(); return; }
+  };
+
+  const mainBtnText = () => {
+    if (device === 'ios') return 'Установить';
+    if (deferredPrompt) return device === 'desktop' ? 'Установить на ПК' : 'Скачать бесплатно';
+    if (device === 'desktop') return 'Открыть приложение';
+    return 'Скачать';
+  };
+
+  const mainBtnIcon = () => {
+    if (device === 'desktop' && !deferredPrompt) return <LogIn size={20} />;
+    return <Download size={20} />;
+  };
 
   return (
-    <div className="min-h-screen bg-[#fafaf9] font-sans text-stone-900 overflow-y-auto pb-safe">
-      {/* Верхний бар */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-stone-100 px-4 py-3 flex items-center justify-between shadow-sm">
-        <div className="flex items-center gap-2">
-          <img src={logo} alt="BEMAT" className="w-8 h-8 rounded-full bg-stone-100" />
-          <span className="font-black text-lg tracking-tight text-stone-900">BEMAT</span>
+    <div className="min-h-screen bg-stone-950 font-sans text-white overflow-y-auto overflow-x-hidden">
+
+      {/* ===== НАВБАР ===== */}
+      <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-3">
+        <div className="max-w-lg mx-auto flex items-center justify-between bg-white/10 backdrop-blur-xl rounded-2xl px-4 py-2.5 border border-white/10">
+          <div className="flex items-center gap-2.5">
+            <img src={logo} alt="BEMAT" className="w-8 h-8 rounded-xl shadow-lg" />
+            <span className="font-black text-base tracking-tight">BEMAT</span>
+          </div>
+          <button onClick={mainAction}
+            className="bg-violet-500 hover:bg-violet-400 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg shadow-violet-500/25 transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5">
+            {device === 'desktop' && !deferredPrompt ? <LogIn size={13} /> : <Download size={13} />}
+            {device === 'ios' ? 'Установить' : deferredPrompt ? 'Скачать' : device === 'desktop' ? 'Войти' : 'Скачать'}
+          </button>
         </div>
-        {device === 'ios' ? (
-          <button onClick={scrollToInstall} className="bg-violet-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:bg-violet-700 transition-colors">
-            Установить
-          </button>
-        ) : deferredPrompt ? (
-          <button onClick={onPromptInstall} className="bg-violet-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:bg-violet-700 transition-colors">
-            {device === 'desktop' ? 'Установить на ПК' : 'Скачать'}
-          </button>
-        ) : device === 'desktop' ? (
-          <button onClick={onSkip} className="bg-stone-900 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:bg-stone-800 transition-colors flex items-center gap-2">
-            <LogIn size={14} /> Войти
-          </button>
-        ) : null}
-      </div>
+      </nav>
 
-      {/* Hero */}
-      <div className="pt-28 pb-10 px-6 flex flex-col items-center text-center">
-        <div className="relative w-32 h-32 mb-6">
-          <div className="absolute inset-0 bg-violet-200 rounded-full blur-xl opacity-50 animate-pulse" />
-          <img src={logo} alt="Bob" className="relative w-full h-full rounded-full border-4 border-white shadow-2xl object-cover" />
-          <div className="absolute -bottom-2 -right-2 bg-white px-3 py-1 rounded-full text-xl shadow-lg">🇬🇧</div>
+      {/* ===== HERO ===== */}
+      <section className="relative pt-24 pb-6 px-6 flex flex-col items-center text-center overflow-hidden">
+        {/* Фоновые градиенты */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-radial from-violet-600/30 via-transparent to-transparent rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-20 -left-20 w-72 h-72 bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute top-40 -right-20 w-72 h-72 bg-violet-500/15 rounded-full blur-[100px] pointer-events-none" />
+
+        {/* Лого */}
+        <div className="relative mb-6">
+          <div className="absolute inset-0 w-28 h-28 bg-violet-500/40 rounded-full blur-2xl animate-pulse" />
+          <div className="relative w-28 h-28 rounded-[1.75rem] overflow-hidden border-2 border-white/20 shadow-2xl shadow-violet-500/20 rotate-3 hover:rotate-0 transition-transform duration-500">
+            <img src={logo} alt="Bob" className="w-full h-full object-cover" />
+          </div>
+          <div className="absolute -bottom-1 -right-1 bg-green-400 text-stone-900 px-2 py-0.5 rounded-lg text-[10px] font-black shadow-lg">
+            FREE
+          </div>
         </div>
-        <h1 className="text-4xl font-black text-stone-900 mb-3 leading-tight">
-          Английский <br/><span className="text-violet-600">в твоём кармане</span>
-        </h1>
-        <p className="text-stone-600 text-base max-w-xs mb-8 leading-relaxed">
-          Бесплатное приложение с фильмами, книгами и AI-репетитором. Учи язык играючи вместе с котом Бобом! 🐱
-        </p>
 
-        {device === 'android' && deferredPrompt && (
-          <button onClick={onPromptInstall} className="w-full max-w-xs py-4 bg-stone-900 text-white font-bold rounded-2xl shadow-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 mb-4">
-            <Download size={20} /> Скачать на Android
-          </button>
-        )}
-        {device === 'ios' && (
-          <button onClick={scrollToInstall} className="w-full max-w-xs py-4 bg-stone-900 text-white font-bold rounded-2xl shadow-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 mb-4">
-            <Download size={20} /> Установить на iPhone
-          </button>
-        )}
-        {device === 'desktop' && (
-          deferredPrompt ? (
-            <button onClick={onPromptInstall} className="w-full max-w-xs py-4 bg-stone-900 text-white font-bold rounded-2xl shadow-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 mb-4">
-              <Monitor size={20} /> Установить на компьютер
-            </button>
-          ) : (
-            <button onClick={onSkip} className="w-full max-w-xs py-4 bg-violet-600 text-white font-bold rounded-2xl shadow-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 mb-4">
-              <LogIn size={20} /> Войти в приложение
-            </button>
-          )
-        )}
-        <p className="text-xs text-stone-400 font-medium">Бесплатно · Без рекламы · Без регистрации</p>
-      </div>
+        {/* Текст */}
+        <div className="relative z-10 mb-8">
+          <p className="text-violet-300 text-xs font-bold uppercase tracking-[0.2em] mb-3">Приложение для изучения английского</p>
+          <h1 className="text-[2.5rem] leading-[1.1] font-black mb-4">
+            Учи английский<br/>
+            <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
+              с котом Бобом
+            </span>
+          </h1>
+          <p className="text-stone-400 text-sm max-w-[280px] mx-auto leading-relaxed">
+            Фильмы, книги, AI-репетитор и система мотивации — всё бесплатно
+          </p>
+        </div>
 
-      {/* Фичи */}
-      <div className="px-4 pb-12">
-        <h2 className="text-xl font-bold text-stone-900 mb-4 px-2">Что внутри?</h2>
-        <div className="grid grid-cols-2 gap-3">
-          {features.map((f, i) => (
-            <div key={i} className="bg-white p-4 rounded-3xl border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.03)] flex flex-col gap-2">
-              <div className="w-10 h-10 bg-stone-50 rounded-2xl flex items-center justify-center text-xl mb-1">{f.icon}</div>
-              <div>
-                <h3 className="font-bold text-stone-900 text-sm leading-tight mb-1">{f.title}</h3>
-                <p className="text-[11px] text-stone-500 leading-snug">{f.desc}</p>
-              </div>
+        {/* CTA */}
+        <button onClick={mainAction}
+          className="relative w-full max-w-xs py-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold rounded-2xl shadow-2xl shadow-violet-600/30 hover:shadow-violet-600/50 hover:scale-[1.03] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 mb-3 group">
+          <div className="absolute inset-0 bg-gradient-to-r from-violet-400 to-indigo-400 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+          <span className="relative flex items-center gap-2.5">
+            {mainBtnIcon()}
+            {mainBtnText()}
+          </span>
+        </button>
+
+        <div className="flex items-center gap-4 text-[11px] text-stone-500 font-medium">
+          <span className="flex items-center gap-1">✦ Бесплатно</span>
+          <span className="w-1 h-1 bg-stone-700 rounded-full" />
+          <span className="flex items-center gap-1">✦ Без рекламы</span>
+          <span className="w-1 h-1 bg-stone-700 rounded-full" />
+          <span className="flex items-center gap-1">✦ Офлайн</span>
+        </div>
+      </section>
+
+      {/* ===== ФИЧИ — горизонтальный скролл ===== */}
+      <section className="py-8">
+        <div className="flex gap-3 px-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide"
+          style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}>
+          {[
+            { icon: '🐱', title: 'Кот Боб', desc: 'Личный наставник', color: 'from-amber-500/20 to-orange-500/20 border-amber-500/20' },
+            { icon: '🎬', title: 'Фильмы', desc: 'Двойные субтитры', color: 'from-rose-500/20 to-pink-500/20 border-rose-500/20' },
+            { icon: '📚', title: 'Книги', desc: 'С переводом', color: 'from-emerald-500/20 to-teal-500/20 border-emerald-500/20' },
+            { icon: '🎓', title: 'Экзамены', desc: 'ЕГЭ · IELTS · TOEFL', color: 'from-blue-500/20 to-cyan-500/20 border-blue-500/20' },
+            { icon: '🗣', title: 'Разговор', desc: 'AI + живые люди', color: 'from-violet-500/20 to-purple-500/20 border-violet-500/20' },
+            { icon: '🔥', title: 'Стрики', desc: '15 мин / день', color: 'from-orange-500/20 to-red-500/20 border-orange-500/20' },
+          ].map((f, i) => (
+            <div key={i} className={cn(
+              "flex-shrink-0 w-[140px] snap-start p-4 rounded-2xl bg-gradient-to-br border backdrop-blur-sm",
+              f.color
+            )}>
+              <div className="text-2xl mb-2">{f.icon}</div>
+              <h3 className="font-bold text-white text-sm mb-0.5">{f.title}</h3>
+              <p className="text-[11px] text-stone-400 leading-snug">{f.desc}</p>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* Инструкция */}
-      <div id="install-section" className="px-4 pb-16 scroll-mt-20">
-        <div className="bg-stone-900 rounded-[2.5rem] p-6 text-white shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-violet-600 blur-[60px] opacity-40 rounded-full translate-x-10 -translate-y-10" />
-          <div className="relative z-10">
-            <h2 className="text-2xl font-black mb-2 flex items-center gap-3">
-              <Download className="text-violet-400" />
-              {device === 'ios' ? 'Скачать на iPhone' : device === 'desktop' ? 'Установка на ПК' : 'Установка'}
-            </h2>
-
-            {device === 'ios' && (
-              <div className="mb-6 bg-white/10 p-4 rounded-2xl border border-white/5">
-                <p className="text-sm font-bold mb-1">🍎 В App Store пока нет</p>
-                <p className="text-xs text-stone-300 leading-relaxed">
-                  Но вы можете скачать веб-версию! Она работает точно так же, как обычное приложение.
-                  <br/><br/>
-                  <span className="text-white font-bold">После установки нажмите на иконку на рабочем столе — и всё заработает шикарно! ✨</span>
-                </p>
-              </div>
-            )}
-
-            {device === 'ios' && (
-              <div className="space-y-4">
-                <div className="flex items-center gap-4 bg-white/10 p-4 rounded-2xl border border-white/5">
-                  <div className="w-10 h-10 bg-white text-stone-900 rounded-xl flex items-center justify-center font-black text-lg shadow-lg">1</div>
-                  <div className="flex-1"><p className="font-bold text-sm">Нажми «Поделиться»</p><p className="text-xs text-stone-400 mt-0.5">Внизу экрана Safari</p></div>
-                  <div className="w-8 h-8 flex items-center justify-center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 15V3M12 3L7 8M12 3L17 8M4 11V19C4 20.1046 4.89543 21 6 21H18C19.1046 21 20 20.1046 20 19V11" stroke="#007AFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
-                </div>
-                <div className="flex items-center gap-4 bg-white/10 p-4 rounded-2xl border border-white/5">
-                  <div className="w-10 h-10 bg-white text-stone-900 rounded-xl flex items-center justify-center font-black text-lg shadow-lg">2</div>
-                  <div className="flex-1"><p className="font-bold text-sm">«На экран Домой»</p><p className="text-xs text-stone-400 mt-0.5">В списке (пролистай вниз)</p></div>
-                  <div className="w-8 h-8 rounded-lg bg-stone-700 flex items-center justify-center border border-stone-600"><div className="bg-white/90 w-6 h-6 rounded flex items-center justify-center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5V19M5 12H19" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div></div>
-                </div>
-                <div className="flex items-center gap-4 bg-white/10 p-4 rounded-2xl border border-white/5">
-                  <div className="w-10 h-10 bg-white text-stone-900 rounded-xl flex items-center justify-center font-black text-lg shadow-lg">3</div>
-                  <div className="flex-1"><p className="font-bold text-sm">Нажми «Добавить»</p><p className="text-xs text-stone-400 mt-0.5">В правом верхнем углу</p></div>
-                  <div className="text-[#007AFF] font-bold text-sm">Добавить</div>
-                </div>
-                <div className="flex items-center gap-4 bg-gradient-to-r from-violet-600/20 to-indigo-600/20 p-4 rounded-2xl border border-violet-500/30">
-                  <div className="w-10 h-10 bg-violet-600 text-white rounded-xl flex items-center justify-center font-black text-lg shadow-lg">4</div>
-                  <div className="flex-1"><p className="font-bold text-sm text-white">Всё готово! 🥳</p><p className="text-xs text-violet-200 mt-0.5 leading-snug">Нажми на иконку <span className="text-white font-bold">BEMAT</span> на рабочем столе и наслаждайся!</p></div>
-                  <img src={logo} className="w-10 h-10 rounded-xl border border-white/10 shadow-sm" alt="App Icon" />
-                </div>
-              </div>
-            )}
-
-            {device === 'android' && (
-              <div className="space-y-4">
-                {deferredPrompt ? (
-                  <>
-                    <p className="text-white font-bold text-lg mb-2 text-center">Доступна быстрая установка! 🚀</p>
-                    <button onClick={onPromptInstall} className="w-full py-5 bg-white text-stone-900 font-black text-lg rounded-2xl shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-3 animate-pulse">
-                      <Download size={24} className="text-violet-600" /> УСТАНОВИТЬ ПРИЛОЖЕНИЕ
-                    </button>
-                    <p className="text-stone-400 text-xs text-center mt-2">Официальное PWA-приложение BEMAT</p>
-                  </>
-                ) : (
-                  <div className="bg-white/10 p-5 rounded-2xl border border-white/5 text-center">
-                    <p className="font-bold mb-3 text-white">Приложение уже установлено?</p>
-                    <p className="text-sm text-stone-300 mb-6">Если нет — скачайте APK через RuStore</p>
-                    <a href="https://www.rustore.ru/catalog/app/co.median.android.pkpxbe" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3 w-full py-4 bg-[#0077FF] text-white rounded-xl text-base font-bold shadow-lg hover:bg-[#0066CC] transition-colors">
-                      <Smartphone size={20} /> <span>Скачать в RuStore</span>
-                    </a>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {device === 'desktop' && (
-              <div className="space-y-4">
-                {deferredPrompt ? (
-                  <>
-                    <p className="text-white font-bold text-lg mb-2 text-center">Доступна установка на ПК! 🖥️</p>
-                    <button onClick={onPromptInstall} className="w-full py-4 bg-white text-stone-900 font-black rounded-xl shadow-lg hover:scale-[1.02] transition-transform flex items-center justify-center gap-3 animate-pulse">
-                      <Monitor size={20} className="text-violet-600" /> УСТАНОВИТЬ НА КОМПЬЮТЕР
-                    </button>
-                    <p className="text-stone-400 text-xs text-center mt-2">Приложение появится в меню Пуск и на рабочем столе</p>
-                  </>
-                ) : (
-                  <div className="bg-white/10 p-5 rounded-2xl border border-white/5 text-center">
-                    <p className="font-bold text-white mb-2">Уже установили?</p>
-                    <p className="text-sm text-stone-300 mb-4">
-                      Если вы видите это в приложении — нажмите "Войти".<br/>
-                      Если нет — найдите иконку <span className="inline-flex items-center justify-center bg-white/20 w-6 h-6 rounded-full text-xs font-bold mx-1">⊕</span> в адресной строке.
-                    </p>
-                    <button onClick={onSkip} className="w-full py-3 bg-violet-600 text-white font-bold rounded-xl shadow-lg hover:bg-violet-700 transition-colors flex items-center justify-center gap-2">
-                      <LogIn size={18} /> Войти в приложение
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
+      {/* ===== СОЦИАЛЬНОЕ ДОКАЗАТЕЛЬСТВО ===== */}
+      <section className="px-6 pb-8">
+        <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10 flex items-center gap-4">
+          <div className="flex -space-x-2 shrink-0">
+            {['😊','😎','🤓','😸'].map((e, i) => (
+              <div key={i} className="w-9 h-9 rounded-full bg-stone-800 border-2 border-stone-950 flex items-center justify-center text-sm">{e}</div>
+            ))}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1 mb-0.5">
+              {[1,2,3,4,5].map(i => <span key={i} className="text-amber-400 text-xs">★</span>)}
+              <span className="text-stone-500 text-xs ml-1">4.9</span>
+            </div>
+            <p className="text-stone-400 text-xs leading-snug">
+              <span className="text-white font-bold">2000+</span> учеников уже занимаются с Бобом
+            </p>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Футер */}
-      <div className="text-center pb-8 pt-4">
-        <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mb-2">BEMAT PROJECT</p>
-        <div className="flex justify-center gap-6 text-xs font-bold text-stone-500">
-          <a href="https://t.me/+NvMX2DrTa3w1NTVi" className="hover:text-violet-600 transition-colors">Telegram</a>
-          <a href="https://berdiyev-eng.ru" className="hover:text-violet-600 transition-colors">Об авторе</a>
+      {/* ===== СКРИНШОТ / ПРЕВЬЮ ===== */}
+      <section className="px-6 pb-10">
+        <div className="relative bg-gradient-to-br from-violet-600/10 to-indigo-600/10 rounded-3xl p-6 border border-violet-500/10 overflow-hidden">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-violet-500/10 rounded-full blur-[60px] pointer-events-none" />
+          <div className="relative z-10 flex items-start gap-4">
+            <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-white/10 shadow-lg shrink-0">
+              <img src={catHungry} alt="Bob hungry" className="w-full h-full object-cover" />
+            </div>
+            <div className="flex-1 pt-1">
+              <h3 className="font-bold text-white text-base mb-1">Покорми Боба! 😿</h3>
+              <p className="text-stone-400 text-xs leading-relaxed mb-3">
+                Выполняй задания каждый день — Боб будет сыт, а твой английский расти
+              </p>
+              <div className="h-2.5 bg-white/10 rounded-full overflow-hidden w-full max-w-[200px]">
+                <div className="h-full w-[65%] bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full" />
+              </div>
+              <p className="text-[10px] text-stone-500 mt-1.5 font-medium">2 из 3 заданий выполнено</p>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
+
+      {/* ===== УСТАНОВКА ===== */}
+      <section id="install-section" className="px-4 pb-10 scroll-mt-24">
+
+        {/* iOS */}
+        {device === 'ios' && (
+          <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-6 border border-white/10">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg">
+                <Download size={20} />
+              </div>
+              <div>
+                <h2 className="font-black text-lg">Установка на iPhone</h2>
+                <p className="text-stone-500 text-xs">Через Safari — 30 секунд</p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {[
+                { n: '1', title: 'Нажми «Поделиться»', sub: 'Кнопка внизу экрана Safari', right: (
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 15V3M12 3L7 8M12 3L17 8M4 11V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V11" stroke="#007AFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                )},
+                { n: '2', title: '«На экран Домой»', sub: 'Пролистай список вниз', right: (
+                  <div className="w-7 h-7 rounded-lg bg-stone-700 flex items-center justify-center border border-stone-600"><div className="bg-white/90 w-5 h-5 rounded flex items-center justify-center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div></div>
+                )},
+                { n: '3', title: 'Нажми «Добавить»', sub: 'В правом верхнем углу', right: (
+                  <span className="text-[#007AFF] font-bold text-xs">Добавить</span>
+                )},
+              ].map((step, i) => (
+                <div key={i} className="flex items-center gap-3 bg-white/5 p-3.5 rounded-xl border border-white/5">
+                  <div className="w-8 h-8 bg-white text-stone-900 rounded-lg flex items-center justify-center font-black text-sm shrink-0">{step.n}</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-sm text-white">{step.title}</p>
+                    <p className="text-[11px] text-stone-500">{step.sub}</p>
+                  </div>
+                  <div className="shrink-0">{step.right}</div>
+                </div>
+              ))}
+              
+              <div className="flex items-center gap-3 bg-gradient-to-r from-violet-500/20 to-indigo-500/20 p-3.5 rounded-xl border border-violet-500/20">
+                <div className="w-8 h-8 bg-violet-500 text-white rounded-lg flex items-center justify-center font-black text-sm shrink-0">✓</div>
+                <div className="flex-1">
+                  <p className="font-bold text-sm text-white">Готово! 🎉</p>
+                  <p className="text-[11px] text-violet-300">Открой BEMAT с рабочего стола</p>
+                </div>
+                <img src={logo} className="w-8 h-8 rounded-lg border border-white/10" alt="" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Android */}
+        {device === 'android' && (
+          <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-6 border border-white/10 text-center">
+            {deferredPrompt ? (
+              <>
+                <div className="w-14 h-14 bg-gradient-to-br from-violet-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-violet-500/20">
+                  <Download size={28} />
+                </div>
+                <h2 className="font-black text-xl mb-2">Установить BEMAT</h2>
+                <p className="text-stone-400 text-sm mb-6">Одно нажатие — и приложение у тебя</p>
+                <button onClick={onPromptInstall}
+                  className="w-full py-4 bg-white text-stone-900 font-black text-base rounded-xl shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-2">
+                  <Download size={20} className="text-violet-600" /> УСТАНОВИТЬ
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="font-bold text-white mb-2">Уже установлено?</p>
+                <p className="text-stone-400 text-sm mb-5">Если нет — скачайте через RuStore</p>
+                <a href="https://www.rustore.ru/catalog/app/co.median.android.pkpxbe" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-3.5 bg-[#0077FF] text-white rounded-xl font-bold shadow-lg hover:bg-[#0066CC] transition-colors">
+                  <Smartphone size={18} /> Скачать в RuStore
+                </a>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Desktop */}
+        {device === 'desktop' && (
+          <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-6 border border-white/10 text-center">
+            {deferredPrompt ? (
+              <>
+                <div className="w-14 h-14 bg-gradient-to-br from-violet-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-violet-500/20">
+                  <Monitor size={28} />
+                </div>
+                <h2 className="font-black text-xl mb-2">Установить на компьютер</h2>
+                <p className="text-stone-400 text-sm mb-6">Появится в меню Пуск и на рабочем столе</p>
+                <button onClick={onPromptInstall}
+                  className="w-full py-4 bg-white text-stone-900 font-black rounded-xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
+                  <Monitor size={20} className="text-violet-600" /> УСТАНОВИТЬ
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="w-14 h-14 bg-gradient-to-br from-stone-700 to-stone-800 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl border border-white/10">
+                  <LogIn size={24} className="text-violet-400" />
+                </div>
+                <h2 className="font-black text-xl mb-2">Войти в BEMAT</h2>
+                <p className="text-stone-400 text-sm mb-5">
+                  Или установите через иконку <span className="inline-flex items-center justify-center bg-white/15 w-5 h-5 rounded text-[10px] font-bold mx-0.5">⊕</span> в адресной строке
+                </p>
+                <button onClick={onSkip}
+                  className="w-full py-3.5 bg-violet-600 text-white font-bold rounded-xl shadow-lg hover:bg-violet-500 transition-colors flex items-center justify-center gap-2">
+                  <LogIn size={18} /> Открыть приложение
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </section>
+
+      {/* ===== ФУТЕР ===== */}
+      <footer className="text-center pb-10 pt-4 px-6">
+        <div className="flex items-center justify-center gap-2 mb-3">
+          <img src={logo} alt="" className="w-5 h-5 rounded-md opacity-40" />
+          <span className="text-[10px] text-stone-600 font-bold uppercase tracking-[0.15em]">BEMAT PROJECT</span>
+        </div>
+        <div className="flex justify-center gap-5 text-xs font-bold text-stone-600">
+          <a href="https://t.me/+NvMX2DrTa3w1NTVi" className="hover:text-violet-400 transition-colors">Telegram</a>
+          <span className="text-stone-800">·</span>
+          <a href="https://berdiyev-eng.ru" className="hover:text-violet-400 transition-colors">Об авторе</a>
+        </div>
+      </footer>
     </div>
   );
 };
-
 // ==============================
 // 3. UPDATE BANNER
 // ==============================
