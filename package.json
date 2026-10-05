@@ -1,30 +1,35 @@
 {
-  "name": "react-vite-tailwind",
+  "name": "bemat",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.0.0",
   "type": "module",
+  "description": "BEMAT — бесплатные ресурсы для изучения английского: фильмы, книги, грамматика, подготовка к ЕГЭ/ОГЭ/IELTS/TOEFL",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "tsc --noEmit && vite build",
+    "build:seo": "npm run build && node scripts/prerender.mjs",
+    "preview": "vite preview",
+    "serve:dist": "node scripts/serve-dist.mjs",
+    "smoke": "node scripts/smoke-test.mjs",
+    "typecheck": "tsc --noEmit",
+    "preview:single": "node scripts/preview.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",
-    "framer-motion": "^12.33.0",
-    "lucide-react": "^0.563.0",
+    "lucide-react": "^0.469.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "tailwind-merge": "^3.4.0"
+    "react-router-dom": "^6.28.1",
+    "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.0.0",
-    "@types/node": "^22.0.0",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
-    "tailwindcss": "^4.0.0",
-    "typescript": "^5.5.3",
-    "vite": "^5.4.2",
-    "vite-plugin-pwa": "^0.20.1"
+    "@tailwindcss/vite": "^4.1.11",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^29.1.1",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.11"
   }
 }

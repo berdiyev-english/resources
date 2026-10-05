@@ -2,67 +2,183 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-     <!-- 1. ЗАГОЛОВОК (Самое важное для поиска) -->
-    <title>BEMAT — Английский бесплатно: фильмы, книги, курсы, подготовка к ЕГЭ/ОГЭ</title>
-    
-    <!-- 2. ОПИСАНИЕ (То, что люди видят под ссылкой в Google) -->
-    <meta name="description" content="Бесплатные ресурсы для изучения английского языка. Смотреть фильмы и сериалы на английском, читать книги с переводом, готовиться к ЕГЭ , ОГЭ , IELTS , TOEFL. Бесплатные курсы, тренажеры грамматики и разговорная практика в BEMAT.">
-    
-    <!-- 3. КЛЮЧЕВЫЕ СЛОВА (Для Яндекса) -->
-    <meta name="keywords" content="бимат , бима , бим , английский язык, бесплатно, фильмы на английском, книги на английском, подготовка к ЕГЭ по английскому, подготовка к ОГЭ, бесплатные курсы английского, грамматика, аудирование, разговорная практика, BEMAT">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <!-- Иконки и Manifest -->
+    <!-- 1. ЗАГОЛОВОК (самое важное для поиска) -->
+    <title>BEMAT — английский бесплатно: фильмы, книги, курсы, ЕГЭ и ОГЭ</title>
+
+    <!-- 2. ОПИСАНИЕ (то, что видно под ссылкой в поиске) -->
+    <meta
+      name="description"
+      content="Бесплатные ресурсы для изучения английского языка: фильмы и сериалы с субтитрами, книги с переводом, 150+ уроков грамматики, разговорная практика с ИИ и подготовка к ЕГЭ, ОГЭ, IELTS, TOEFL. План занятий на 15 минут в день."
+    />
+
+    <!-- 3. КЛЮЧЕВЫЕ СЛОВА (Яндекс учитывает, Google — почти нет) -->
+    <meta
+      name="keywords"
+      content="английский бесплатно, учить английский, фильмы на английском, книги на английском с переводом, грамматика английского, подготовка к ЕГЭ по английскому, подготовка к ОГЭ, ielts, toefl, аудирование, разговорный английский, bemat, бимат"
+    />
+
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+    <meta name="author" content="BEMAT" />
+    <link rel="canonical" href="https://bemat.ru/" />
+
+    <!-- Региональность: сайт на русском, для России -->
+    <meta name="geo.region" content="RU" />
+    <meta name="language" content="ru" />
+
+    <!-- Open Graph (красивая ссылка в Telegram/WhatsApp/VK) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="BEMAT" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:title" content="BEMAT — весь английский в одном месте" />
+    <meta
+      property="og:description"
+      content="Фильмы, книги с переводом, грамматика, разговорная практика с ИИ и подготовка к ЕГЭ, ОГЭ, IELTS, TOEFL — бесплатно."
+    />
+    <meta property="og:url" content="https://bemat.ru/" />
+    <meta property="og:image" content="https://bemat.ru/og-bemat.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="BEMAT — английский бесплатно" />
+    <meta
+      name="twitter:description"
+      content="Фильмы, книги с переводом, грамматика и подготовка к ЕГЭ, IELTS, TOEFL. Всё бесплатно."
+    />
+    <meta name="twitter:image" content="https://bemat.ru/og-bemat.png" />
+
+    <!-- Иконки и manifest -->
     <link rel="icon" type="image/png" href="/icophot/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/icophot/tavicon.svg" />
-    <link rel="shortcut icon" href="/icophot/tavicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/icophot/apple-touch-icon.png" />
-    <meta name="apple-mobile-web-app-title" content="BEMAT" />
+    <link rel="manifest" href="/manifest.webmanifest" />
 
-    <!-- Open Graph (Красивая ссылка в Telegram/WhatsApp) -->
-    <meta property="og:title" content="BEMAT — Весь английский в одном месте">
-    <meta property="og:description" content="Фильмы, книги, курсы и подготовка к экзаменам бесплатно.">
-    <meta property="og:image" content="https://bemat.ru/icophot/web-app-manifest-512x512.png">
-    <meta property="og:type" content="website">
-
-    <!-- Настройки для iOS PWA -->
+    <!-- PWA / iOS -->
     <meta name="theme-color" content="#ffffff" />
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="BEMAT" />
+    <meta name="application-name" content="BEMAT" />
 
     <!-- Шрифты -->
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
-    
-    <!-- 2. Скрипт для уведомлений OneSignal -->
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(function(OneSignal) {
-        OneSignal.init({
-          appId: "ВАШ-ID-ОТ-ONESIGNAL", // <-- СМ. ИНСТРУКЦИЮ НИЖЕ
-          safari_web_id: "web.onesignal.auto.xxxxx",
-          notifyButton: {
-            enable: true,
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://static.tildacdn.info" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Разметка для поисковиков: сайт, организация, автор -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://bemat.ru/#website",
+            "url": "https://bemat.ru/",
+            "name": "BEMAT",
+            "alternateName": "Бимат — английский бесплатно",
+            "description": "Бесплатные ресурсы для изучения английского языка: фильмы, книги с переводом, грамматика, разговорная практика и подготовка к экзаменам.",
+            "inLanguage": "ru-RU",
+            "publisher": { "@id": "https://bemat.ru/#org" },
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://bemat.ru/?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
           },
-        });
-      });
+          {
+            "@type": "EducationalOrganization",
+            "@id": "https://bemat.ru/#org",
+            "name": "BEMAT",
+            "url": "https://bemat.ru/",
+            "logo": "https://bemat.ru/icophot/web-app-manifest-512x512.png",
+            "sameAs": ["https://t.me/+NvMX2DrTa3w1NTVi", "https://berdiyev-eng.ru"]
+          }
+        ]
+      }
     </script>
+
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+      (function (m, e, t, r, i, k, a) {
+        m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); };
+        m[i].l = 1 * new Date();
+        for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
+        k = e.createElement(t); a = e.getElementsByTagName(t)[0]; k.async = 1; k.src = r; a.parentNode.insertBefore(k, a);
+      })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=106787121', 'ym');
+
+      ym(106787121, 'init', { ssr: true, webvisor: true, clickmap: true, ecommerce: 'dataLayer', referrer: document.referrer, url: location.href, accurateTrackBounce: true, trackLinks: true });
+    </script>
+    <!-- /Yandex.Metrika counter -->
+
+    <!-- Стили для статичного SEO-контента (видны до загрузки JS) -->
+    <style>
+      #root:empty { display: none; }
+      .seo-fallback { max-width: 760px; margin: 0 auto; padding: 24px 20px 64px; font-family: "DM Sans", system-ui, sans-serif; color: #1c1917; line-height: 1.55; }
+      .seo-fallback h1 { font-size: 26px; margin: 0 0 12px; }
+      .seo-fallback h2 { font-size: 18px; margin: 24px 0 8px; }
+      .seo-fallback ul { padding-left: 20px; margin: 8px 0 16px; }
+      .seo-fallback a { color: #6d28d9; }
+      .seo-fallback .note { font-size: 13px; color: #78716c; }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-    <!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=106787121', 'ym');
+    <!--
+      Статичный контент внутри #root: его видят поисковые роботы, которые не
+      исполняют JavaScript. При старте приложения он заменяется интерфейсом
+      (см. src/main.tsx → container.replaceChildren()).
+    -->
+    <div id="root">
+      <!--seo-fallback-start-->
+      <div class="seo-fallback">
+        <h1>BEMAT — учить английский бесплатно: фильмы, книги, грамматика и подготовка к ЕГЭ</h1>
+        <p>
+          BEMAT — бесплатный сервис для изучения английского языка. Здесь собраны проверенные сайты и сервисы, чтобы
+          читать книги на английском с переводом, смотреть фильмы и сериалы с субтитрами, тренировать грамматику и
+          аудирование, практиковать разговорную речь с ИИ и готовиться к экзаменам ЕГЭ, ОГЭ, IELTS и TOEFL.
+        </p>
+        <h2>Разделы каталога</h2>
+        <ul>
+          <li><a href="/books">Книги на английском с переводом и по уровням</a></li>
+          <li><a href="/video">Фильмы и сериалы на английском с субтитрами, аудирование</a></li>
+          <li><a href="/practice">Грамматика английского: 150+ уроков и тренажёры</a></li>
+          <li><a href="/speak">Разговорный английский: практика с ИИ и людьми</a></li>
+          <li><a href="/courses">Бесплатные курсы английского языка</a></li>
+          <li><a href="/bots">ИИ-репетиторы: ЕГЭ, ОГЭ, IELTS, TOEFL</a></li>
+          <li><a href="/about">О проекте и авторе</a></li>
+        </ul>
+        <h2>Популярные ресурсы</h2>
+        <ul>
+          <li><a href="https://2books.su/">2books.su — книги на английском с переводом</a></li>
+          <li><a href="https://inoriginal.net/">Inoriginal — фильмы с двойными субтитрами</a></li>
+          <li><a href="https://bewords.ru/">Bewords — грамматика и слова</a></li>
+          <li><a href="https://www.bbc.co.uk/learningenglish/english/features/6-minute-english">BBC 6 Minute English — аудирование</a></li>
+          <li><a href="https://en-ege.sdamgia.ru/">Решу ЕГЭ — английский язык</a></li>
+          <li><a href="https://www.free4talk.com/">Free4talk — разговорная практика с людьми</a></li>
+        </ul>
+        <h2>План занятий на 15 минут в день</h2>
+        <p>
+          В личном кабинете BEMAT можно выбрать цель (ЕГЭ, ОГЭ, IELTS, TOEFL, разговорный английский или английский для
+          себя) и получить три задания на день: чтение, аудирование, грамматика или речь. Занимайся каждый день, следи за
+          стриком и помогай коту Бобу оставаться сытым.
+        </p>
+        <p><a href="/dashboard">Открыть личный кабинет и собрать план</a></p>
+        <p class="note">Для работы интерактивного приложения включите JavaScript.</p>
+      </div>
+      <!--seo-fallback-end-->
+    </div>
 
-    ym(106787121, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/106787121" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
+    <script type="module" src="/src/main.tsx"></script>
+
+    <noscript>
+      <div style="position: absolute; left: -9999px">
+        <img src="https://mc.yandex.ru/watch/106787121" alt="" />
+      </div>
+    </noscript>
   </body>
 </html>

@@ -1,4 +1,13 @@
+# robots.txt для bemat.ru
+# Каталог ресурсов открыт полностью — индексируйте все разделы.
+
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /favorites
+Disallow: /404
+
+# Убираем параметры, которые не создают новых страниц (иначе дубли в выдаче)
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&yclid&gclid&fbclid&q
 
 Sitemap: https://bemat.ru/sitemap.xml

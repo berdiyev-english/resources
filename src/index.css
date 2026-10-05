@@ -1,82 +1,88 @@
 @import "tailwindcss";
 
-:root {
-  /* ТЕПЛАЯ / ЛАМПОВАЯ ТЕМА (Stone + Violet) */
-  --background: 28 25% 98%; /* Теплый бежевый фон */
-  --foreground: 24 10% 10%;
-  
-  --card: 0 0% 100%;
-  --card-foreground: 24 10% 10%;
-  
-  --primary: 262 80% 50%; /* Насыщенный фиолетовый */
-  --primary-foreground: 210 40% 98%;
-  
-  --secondary: 30 20% 94%; /* Теплый серый */
-  --secondary-foreground: 24 10% 10%;
-  
-  --accent: 30 30% 96%;
-  --accent-foreground: 24 10% 10%;
-  
-  --muted: 30 20% 94%;
-  --muted-foreground: 25 5% 45%;
-  
-  --border: 30 10% 90%;
-  --input: 30 10% 90%;
-  --ring: 262 80% 50%;
-  --radius: 1.5rem; /* Сильные скругления для уюта */
-}
+/* ============================================================
+   BEMAT: кастомные стили.
+   Если у тебя Tailwind v3 — оставь свои @tailwind base/components/utilities
+   выше и просто скопируй блок ниже в конец своего index.css.
+   ============================================================ */
 
 @theme {
-  --color-border: hsl(var(--border));
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-primary: hsl(var(--primary));
-  --color-secondary: hsl(var(--secondary));
-  --color-muted: hsl(var(--muted));
-  --color-card: hsl(var(--card));
-  
-  /* Теплые оттенки */
-  --color-stone-50: #fafaf9;
-  --color-stone-100: #f5f5f4;
-  --color-stone-200: #e7e5e4;
-  --color-stone-800: #292524;
-  --color-stone-900: #1c1917;
-
-  --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.08);
-  --shadow-glow: 0 0 20px rgba(124, 58, 237, 0.15);
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
 
-html, body { 
-  scroll-behavior: smooth; 
-  background-color: #fafaf9; /* Stone-50 */
-  color: #1c1917; /* Stone-900 */
-  font-family: 'DM Sans', sans-serif;
-  -webkit-tap-highlight-color: transparent;
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  body {
+    margin: 0;
+    background: #fafaf9;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
+  }
+  /* аккуратный фокус для клавиатуры и скринридеров */
+  :focus-visible {
+    outline: 2px solid #7c3aed;
+    outline-offset: 2px;
+  }
 }
 
-/* Анимация "Дыхание" для важных элементов */
+/* --- градиенты (не зависят от версии Tailwind) --- */
+.grad-violet { background-image: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); }
+.grad-violet-soft { background-image: linear-gradient(135deg, #f5f3ff 0%, #eef2ff 100%); }
+.grad-orange-soft { background-image: linear-gradient(135deg, #fff7ed 0%, #fffbeb 100%); }
+.grad-green-soft { background-image: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); }
+.grad-dark { background-image: linear-gradient(135deg, #1c1917 0%, #292524 100%); }
+.bar-violet { background-image: linear-gradient(90deg, #8b5cf6 0%, #6366f1 100%); }
+.bar-orange { background-image: linear-gradient(90deg, #fdba74 0%, #fbbf24 100%); }
+.bar-green { background-image: linear-gradient(90deg, #4ade80 0%, #10b981 100%); }
+.text-grad-violet {
+  background-image: linear-gradient(90deg, #a78bfa 0%, #818cf8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero-glow {
+  background: radial-gradient(55% 55% at 50% 0%, rgba(139, 92, 246, 0.22) 0%, rgba(139, 92, 246, 0) 70%);
+}
+
+/* --- анимации --- */
 @keyframes breathe {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
+  50% { transform: scale(1.05); }
+}
+.animate-breathe { animation: breathe 4s ease-in-out infinite; }
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up { animation: slide-up 0.35s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-breathe, .animate-slide-up { animation: none; }
+  html { scroll-behavior: auto; }
 }
 
-.animate-breathe {
-  animation: breathe 3s ease-in-out infinite;
-}
+/* --- утилиты --- */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 
-/* Скрываем скроллбар для красоты, но оставляем функционал */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-/* Скрыть скроллбар у горизонтального скролла фичей */
-.scrollbar-hide::-webkit-scrollbar { display: none; }
-.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.pt-safe { padding-top: env(safe-area-inset-top, 0px); }
 
-/* Радиальный градиент для фона */
-.bg-gradient-radial {
-  background: radial-gradient(ellipse at center, var(--tw-gradient-from), var(--tw-gradient-to));
+/* Статичный SEO-фолбэк в #root (до рендера React) */
+.seo-fallback {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+  font-family: "DM Sans", system-ui, sans-serif;
+  color: #1c1917;
+  line-height: 1.55;
 }
+.seo-fallback h1 { font-size: 26px; margin: 0 0 12px; }
+.seo-fallback h2 { font-size: 18px; margin: 24px 0 8px; }
+.seo-fallback ul { padding-left: 20px; margin: 8px 0 16px; }
+.seo-fallback a { color: #6d28d9; }

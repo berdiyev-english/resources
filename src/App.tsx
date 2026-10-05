@@ -1,1222 +1,150 @@
-import React, { useState, useEffect, useRef } from 'react';
-import logo from './logo.png';
-import catHungry from './cathungry.png';
-import catFedImg from './catfed.png';
-import { Sponsors } from './Sponsors';
-import {
-  Home, PenTool, Heart, Menu, X, ChevronDown, ExternalLink,
-  GraduationCap, Bot, Book, Film, CheckCircle, Mic, Gift,
-  Flame, Bell, Settings, Trophy, ArrowRight, CheckCircle2,
-  Edit3, Plus, Trash2, Clock, BellRing, Download, Share2,
-  Smartphone, Monitor, RefreshCw, LogIn
-} from 'lucide-react';
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { Component, useEffect, type ReactNode } from 'react';
+import { BrowserRouter, Link, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { InstallProvider } from './state/InstallContext';
+import { UserProvider, useUser } from './state/UserContext';
+import { BottomNav, Header, SiteFooter } from './components/Header';
+import { InstallBanner } from './components/InstallBanner';
+import { StreakPopup } from './components/Modals';
+import { Seo } from './lib/seo';
+import { HomePage } from './pages/HomePage';
+import { SectionPage } from './pages/SectionPage';
+import { DashboardPage } from './pages/DashboardPage';
+import { FavoritesPage } from './pages/FavoritesPage';
+import { AboutPage } from './pages/AboutPage';
+import { SECTIONS_NAV } from './data/site';
 
-function cn(...inputs: ClassValue[]) { return twMerge(clsx(inputs)); }
+// ------------------------------ Обработка ошибок ------------------------------
 
-// ==============================
-// УТИЛИТЫ
-// ==============================
+class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  state = { hasError: false };
 
-function checkIsPWA(): boolean {
-  if (typeof window === 'undefined') return false;
-  if ((window.navigator as any).standalone === true) return true;
-  if (window.matchMedia('(display-mode: standalone)').matches) return true;
-  if (window.matchMedia('(display-mode: fullscreen)').matches) return true;
-  if (window.matchMedia('(display-mode: minimal-ui)').matches) return true;
-  if (document.referrer.startsWith('android-app://')) return true;
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') return true;
-  return false;
-}
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
 
-function getDeviceType(): 'ios' | 'android' | 'desktop' {
-  const ua = navigator.userAgent;
-  if (/iPad|iPhone|iPod/.test(ua)) return 'ios';
-  if (/Android/.test(ua)) return 'android';
-  return 'desktop';
-}
-
-// ==============================
-// ТИПЫ И КОНСТАНТЫ
-// ==============================
-
-type UserGoal = 'ege' | 'oge' | 'ielts' | 'toefl' | 'speak' | 'fun';
-
-interface CustomTask { id: string; title: string; time: number; }
-
-interface UserState {
-  name: string; goal: UserGoal; streak: number; lastVisit: string;
-  completedTasks: string[]; customTasks: CustomTask[];
-  notificationsEnabled: boolean; isOnboarded: boolean;
-  catFed: boolean; streakShownDate: string; notifHour: number;
-}
-
-const GOAL_OPTIONS: { id: UserGoal; label: string; icon: string }[] = [
-  { id: 'ege', label: 'Сдать ЕГЭ', icon: '🔥' },
-  { id: 'oge', label: 'Сдать ОГЭ', icon: '🎓' },
-  { id: 'ielts', label: 'Сдать IELTS', icon: '🌍' },
-  { id: 'toefl', label: 'Сдать TOEFL', icon: '🇺🇸' },
-  { id: 'speak', label: 'Говорить свободно', icon: '🗣' },
-  { id: 'fun', label: 'Для себя / Фильмы', icon: '🍿' },
-];
-
-const GOAL_LABELS: Record<UserGoal, string> = {
-  ege: '🔥 ЕГЭ', oge: '🎓 ОГЭ', ielts: '🌍 IELTS',
-  toefl: '🇺🇸 TOEFL', speak: '🗣 Разговор', fun: '🍿 Для себя',
-};
-
-const DAILY_TASKS: Record<UserGoal, { id: string; title: string; time: number; link: string; isExternal: boolean }[]> = {
-  ege: [
-    { id: 'ege_1', title: 'Решить 5 заданий ЕГЭ', time: 7, link: 'https://en-ege.sdamgia.ru/', isExternal: true },
-    { id: 'ege_2', title: 'Повторить грамматику', time: 5, link: 'https://bewords.ru/', isExternal: true },
-    { id: 'ege_3', title: 'Выучить 5 слов', time: 3, link: 'https://bewords.ru/', isExternal: true },
-  ],
-  oge: [
-    { id: 'oge_1', title: 'Решить 5 заданий ОГЭ', time: 7, link: 'https://en-oge.sdamgia.ru/', isExternal: true },
-    { id: 'oge_2', title: 'Повторить грамматику', time: 5, link: 'https://bewords.ru/', isExternal: true },
-    { id: 'oge_3', title: 'Выучить 5 слов', time: 3, link: 'https://bewords.ru/', isExternal: true },
-  ],
-  ielts: [
-    { id: 'ielts_1', title: 'IELTS бот — 1 задание', time: 7, link: 'https://t.me/IELTS_berdiyev_bot', isExternal: true },
-    { id: 'ielts_2', title: 'Выучить 5 академич. слов', time: 3, link: 'https://bewords.ru/', isExternal: true },
-    { id: 'ielts_3', title: 'Послушать BBC 6 min', time: 6, link: 'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english', isExternal: true },
-  ],
-  toefl: [
-    { id: 'toefl_1', title: 'TOEFL бот — 1 задание', time: 7, link: 'https://t.me/TOBEENG_TOEFL_IBT_BOT', isExternal: true },
-    { id: 'toefl_2', title: 'Выучить 5 академич. слов', time: 3, link: 'https://bewords.ru/', isExternal: true },
-    { id: 'toefl_3', title: 'Аудирование BBC (6 мин)', time: 6, link: 'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english', isExternal: true },
-  ],
-  speak: [
-    { id: 'speak_1', title: 'Поговорить с ИИ Бобом', time: 5, link: 'https://t.me/Tobeeng_GPT_bot', isExternal: true },
-    { id: 'speak_2', title: 'Выучить 10 слов', time: 5, link: 'https://bewords.ru/', isExternal: true },
-    { id: 'speak_3', title: 'Повторить грамматику', time: 5, link: 'https://bewords.ru/', isExternal: true },
-  ],
-  fun: [
-    { id: 'fun_1', title: 'Посмотреть видео на EN', time: 5, link: '#video', isExternal: false },
-    { id: 'fun_2', title: 'Прочитать отрывок книги', time: 5, link: '#books', isExternal: false },
-    { id: 'fun_3', title: 'Выучить 5 слов', time: 5, link: 'https://bewords.ru/', isExternal: true },
-  ],
-};
-
-// ==============================
-// УВЕДОМЛЕНИЯ
-// ==============================
-
-let notifTimeoutId: ReturnType<typeof setTimeout> | null = null;
-
-function scheduleNotification(notifHour: number = 19) {
-  if (notifTimeoutId) clearTimeout(notifTimeoutId);
-  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
-  const now = new Date();
-  let target = new Date(now);
-  target.setHours(notifHour, 0, 0, 0);
-  if (now >= target) target.setDate(target.getDate() + 1);
-  const delay = target.getTime() - now.getTime();
-  notifTimeoutId = setTimeout(async () => {
-    const saved = localStorage.getItem('bemat_user_v3');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (new Date(parsed.lastVisit).toDateString() === new Date().toDateString()) {
-          scheduleNotification(parsed.notifHour || 19); return;
-        }
-      } catch {}
-    }
-    const msgs = [
-      { title: 'Боб проголодался! 🐱', body: 'Зайди позаниматься и покорми Боба 🔥' },
-      { title: 'Не забудь про английский! 📚', body: '15 минут — и Боб будет сытым 😸' },
-      { title: 'Стрик горит! 🔥', body: 'Зайди на 15 минут, чтобы сохранить серию' },
-      { title: 'Боб скучает! 😿', body: 'Он ждёт тебя, чтобы поучить английский' },
-    ];
-    const msg = msgs[Math.floor(Math.random() * msgs.length)];
-    try {
-      const reg = await navigator.serviceWorker?.ready;
-      if (reg) await reg.showNotification(msg.title, { body: msg.body, icon: '/icophot/web-app-manifest-192x192.png', badge: '/icophot/web-app-manifest-192x192.png', tag: 'bemat-daily', renotify: true, vibrate: [200, 100, 200] });
-      else new Notification(msg.title, { body: msg.body, icon: '/icophot/web-app-manifest-192x192.png' });
-    } catch { try { new Notification(msg.title, { body: msg.body }); } catch {} }
-    scheduleNotification(notifHour);
-  }, delay);
-}
-
-function cancelNotification() { if (notifTimeoutId) { clearTimeout(notifTimeoutId); notifTimeoutId = null; } }
-
-async function sendTestNotification(hour: number) {
-  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
-  const title = 'Напоминалки включены! 🔔';
-  const body = `Буду напоминать в ${hour}:00`;
-  const options = {
-    body,
-    icon: '/icophot/web-app-manifest-192x192.png',
-    badge: '/icophot/web-app-manifest-192x192.png',
-    tag: 'bemat-test',
-    vibrate: [200, 100, 200] as number[],
-  };
-  try {
-    const reg = await navigator.serviceWorker?.ready;
-    if (reg) { await reg.showNotification(title, options); return; }
-  } catch {}
-  try { new Notification(title, { body, icon: options.icon }); } catch {}
-}
-
-// ==============================
-// UI КОМПОНЕНТЫ
-// ==============================
-
-const Button = ({ children, className, variant = 'primary', href, onClick, ...props }: any) => {
-  const base = "inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-sm transition-transform no-underline cursor-pointer select-none active:scale-95";
-  const v: Record<string, string> = {
-    primary: "bg-violet-600 text-white hover:bg-violet-700 shadow-lg shadow-violet-200 border border-transparent",
-    ghost: "bg-transparent text-stone-600 hover:bg-stone-100 border border-stone-200",
-  };
-  const Comp = href ? 'a' : 'button';
-  return <Comp href={href} onClick={onClick} className={cn(base, v[variant] || v.primary, className)} {...(href ? { target: "_blank", rel: "noopener noreferrer" } : {})} {...props}>{children}</Comp>;
-};
-
-const Modal = ({ isOpen, onClose, title, children }: any) => {
-  useEffect(() => { document.body.style.overflow = isOpen ? 'hidden' : 'unset'; return () => { document.body.style.overflow = 'unset'; }; }, [isOpen]);
-  if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-[#fafaf9] rounded-[2rem] shadow-2xl p-6 border border-white max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold text-stone-900">{title}</h3>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-stone-200 text-stone-500"><X size={20} /></button>
-        </div>
-        {children}
-      </div>
-    </div>
-  );
-};
-
-const Accordion = ({ title, children, defaultOpen = false }: any) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-  return (
-    <div className="mb-4 last:mb-0">
-      <div className="bg-white border border-stone-100 rounded-2xl overflow-hidden shadow-sm">
-        <button onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between p-4 bg-white hover:bg-stone-50 text-left">
-          <span className="text-lg font-bold text-stone-900">{title}</span>
-          <div className={cn("p-1.5 rounded-full bg-stone-100 text-stone-500", isOpen && "bg-violet-100 text-violet-600")}>
-            <ChevronDown size={20} className={cn("transition-transform duration-200", isOpen && "rotate-180")} />
-          </div>
-        </button>
-        {isOpen && <div className="p-4 pt-0 border-t border-stone-100">{children}</div>}
-      </div>
-    </div>
-  );
-};
-
-const MediaRow = ({ title, desc, img, link, btnText = "Перейти" }: any) => (
-  <div className="flex flex-row gap-3 sm:gap-4 p-3 sm:p-4 bg-white rounded-2xl border border-stone-100 shadow-sm mb-3 last:mb-0 hover:border-violet-200 transition-colors items-start sm:items-center">
-    <div className="w-20 h-20 sm:w-28 sm:h-28 flex-shrink-0 bg-stone-50 rounded-xl overflow-hidden border border-stone-100">
-      <img src={img} alt={title} className="w-full h-full object-cover" onError={(e: any) => { e.target.src = 'https://via.placeholder.com/150?text=IMG'; }} />
-    </div>
-    <div className="flex-1 flex flex-col justify-between min-h-[5rem] py-0.5">
-      <div>
-        <h4 className="text-sm sm:text-base font-bold text-stone-900 leading-tight mb-1 line-clamp-2">{title}</h4>
-        <p className="text-xs text-stone-500 leading-snug mb-2 line-clamp-2">{desc}</p>
-      </div>
-      <div><Button href={link} className="py-1.5 px-4 text-xs !bg-violet-600 !text-white shadow-sm hover:!bg-violet-700 w-auto rounded-lg">{btnText}</Button></div>
-    </div>
-  </div>
-);
-
-// ==============================
-// 1. SPLASH SCREEN
-// ==============================
-
-const SplashScreen = () => (
-  <div className="fixed inset-0 z-[200] bg-[#fafaf9] flex flex-col items-center justify-center">
-    <div className="relative">
-      <div className="absolute inset-0 w-32 h-32 rounded-full bg-violet-200 animate-ping opacity-30" />
-      <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-2xl animate-breathe">
-        <img src={logo} alt="BEMAT" className="w-full h-full object-cover" />
-      </div>
-    </div>
-    <h1 className="mt-6 text-3xl font-black text-stone-800 tracking-tight">BEMAT</h1>
-    <p className="text-stone-500 text-sm mt-1">Английский с котом Бобом</p>
-    <div className="mt-8 flex gap-1.5">
-      {[0, 1, 2].map(i => (
-        <div key={i} className="w-2.5 h-2.5 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
-      ))}
-    </div>
-  </div>
-);
-
-// ==============================
-// 2. PWA LANDING PAGE — PREMIUM
-// ==============================
-
-const PWALandingPage = ({ deferredPrompt, onPromptInstall, onSkip }: { deferredPrompt: any; onPromptInstall: () => void; onSkip: () => void }) => {
-  const device = getDeviceType();
-  const [showSteps, setShowSteps] = useState(false);
-
-  const scrollToInstall = () => {
-    if (device === 'ios') setShowSteps(true);
-    document.getElementById('install-section')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const mainAction = () => {
-    if (device === 'ios') { scrollToInstall(); return; }
-    if (deferredPrompt) { onPromptInstall(); return; }
-    if (device === 'desktop') { onSkip(); return; }
-  };
-
-  const mainBtnText = () => {
-    if (device === 'ios') return 'Установить';
-    if (deferredPrompt) return device === 'desktop' ? 'Установить на ПК' : 'Скачать бесплатно';
-    if (device === 'desktop') return 'Открыть приложение';
-    return 'Скачать';
-  };
-
-  const mainBtnIcon = () => {
-    if (device === 'desktop' && !deferredPrompt) return <LogIn size={20} />;
-    return <Download size={20} />;
-  };
-
-  return (
-    <div className="min-h-screen bg-stone-950 font-sans text-white overflow-y-auto overflow-x-hidden">
-
-      {/* ===== НАВБАР ===== */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-3">
-        <div className="max-w-lg mx-auto flex items-center justify-between bg-white/10 backdrop-blur-xl rounded-2xl px-4 py-2.5 border border-white/10">
-          <div className="flex items-center gap-2.5">
-            <img src={logo} alt="BEMAT" className="w-8 h-8 rounded-xl shadow-lg" />
-            <span className="font-black text-base tracking-tight">BEMAT</span>
-          </div>
-          <button onClick={mainAction}
-            className="bg-violet-500 hover:bg-violet-400 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg shadow-violet-500/25 transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5">
-            {device === 'desktop' && !deferredPrompt ? <LogIn size={13} /> : <Download size={13} />}
-            {device === 'ios' ? 'Установить' : deferredPrompt ? 'Скачать' : device === 'desktop' ? 'Войти' : 'Скачать'}
-          </button>
-        </div>
-      </nav>
-
-      {/* ===== HERO ===== */}
-      <section className="relative pt-24 pb-6 px-6 flex flex-col items-center text-center overflow-hidden">
-        {/* Фоновые градиенты */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-radial from-violet-600/30 via-transparent to-transparent rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-20 -left-20 w-72 h-72 bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute top-40 -right-20 w-72 h-72 bg-violet-500/15 rounded-full blur-[100px] pointer-events-none" />
-
-        {/* Лого */}
-        <div className="relative mb-6">
-          <div className="absolute inset-0 w-28 h-28 bg-violet-500/40 rounded-full blur-2xl animate-pulse" />
-          <div className="relative w-28 h-28 rounded-[1.75rem] overflow-hidden border-2 border-white/20 shadow-2xl shadow-violet-500/20 rotate-3 hover:rotate-0 transition-transform duration-500">
-            <img src={logo} alt="Bob" className="w-full h-full object-cover" />
-          </div>
-          <div className="absolute -bottom-1 -right-1 bg-green-400 text-stone-900 px-2 py-0.5 rounded-lg text-[10px] font-black shadow-lg">
-            FREE
-          </div>
-        </div>
-
-        {/* Текст */}
-        <div className="relative z-10 mb-8">
-          <p className="text-violet-300 text-xs font-bold uppercase tracking-[0.2em] mb-3">Приложение для изучения английского</p>
-          <h1 className="text-[2.5rem] leading-[1.1] font-black mb-4">
-            Учи английский<br/>
-            <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
-              с котом Бобом
-            </span>
-          </h1>
-          <p className="text-stone-400 text-sm max-w-[280px] mx-auto leading-relaxed">
-            Фильмы, книги, AI-репетитор и система мотивации — всё бесплатно
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#fafaf9]">
+          <div className="text-5xl mb-4">🙈</div>
+          <h1 className="text-xl font-black text-stone-900 mb-2">Что-то пошло не так</h1>
+          <p className="text-sm text-stone-500 mb-6 max-w-sm">
+            Попробуй обновить страницу — скорее всего, всё заработает. Прогресс никуда не пропал.
           </p>
-        </div>
-
-        {/* CTA */}
-        <button onClick={mainAction}
-          className="relative w-full max-w-xs py-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold rounded-2xl shadow-2xl shadow-violet-600/30 hover:shadow-violet-600/50 hover:scale-[1.03] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 mb-3 group">
-          <div className="absolute inset-0 bg-gradient-to-r from-violet-400 to-indigo-400 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-          <span className="relative flex items-center gap-2.5">
-            {mainBtnIcon()}
-            {mainBtnText()}
-          </span>
-        </button>
-
-        <div className="flex items-center gap-4 text-[11px] text-stone-500 font-medium">
-          <span className="flex items-center gap-1">✦ Бесплатно</span>
-          <span className="w-1 h-1 bg-stone-700 rounded-full" />
-          <span className="flex items-center gap-1">✦ Без рекламы</span>
-          <span className="w-1 h-1 bg-stone-700 rounded-full" />
-          <span className="flex items-center gap-1">✦ Офлайн</span>
-        </div>
-      </section>
-
-      {/* ===== ФИЧИ — горизонтальный скролл ===== */}
-      <section className="py-8">
-        <div className="flex gap-3 px-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide"
-          style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}>
-          {[
-            { icon: '🐱', title: 'Кот Боб', desc: 'Личный наставник', color: 'from-amber-500/20 to-orange-500/20 border-amber-500/20' },
-            { icon: '🎬', title: 'Фильмы', desc: 'Двойные субтитры', color: 'from-rose-500/20 to-pink-500/20 border-rose-500/20' },
-            { icon: '📚', title: 'Книги', desc: 'С переводом', color: 'from-emerald-500/20 to-teal-500/20 border-emerald-500/20' },
-            { icon: '🎓', title: 'Экзамены', desc: 'ЕГЭ · IELTS · TOEFL', color: 'from-blue-500/20 to-cyan-500/20 border-blue-500/20' },
-            { icon: '🗣', title: 'Разговор', desc: 'AI + живые люди', color: 'from-violet-500/20 to-purple-500/20 border-violet-500/20' },
-            { icon: '🔥', title: 'Стрики', desc: '15 мин / день', color: 'from-orange-500/20 to-red-500/20 border-orange-500/20' },
-          ].map((f, i) => (
-            <div key={i} className={cn(
-              "flex-shrink-0 w-[140px] snap-start p-4 rounded-2xl bg-gradient-to-br border backdrop-blur-sm",
-              f.color
-            )}>
-              <div className="text-2xl mb-2">{f.icon}</div>
-              <h3 className="font-bold text-white text-sm mb-0.5">{f.title}</h3>
-              <p className="text-[11px] text-stone-400 leading-snug">{f.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ===== СОЦИАЛЬНОЕ ДОКАЗАТЕЛЬСТВО ===== */}
-      <section className="px-6 pb-8">
-        <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10 flex items-center gap-4">
-          <div className="flex -space-x-2 shrink-0">
-            {['😊','😎','🤓','😸'].map((e, i) => (
-              <div key={i} className="w-9 h-9 rounded-full bg-stone-800 border-2 border-stone-950 flex items-center justify-center text-sm">{e}</div>
-            ))}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1 mb-0.5">
-              {[1,2,3,4,5].map(i => <span key={i} className="text-amber-400 text-xs">★</span>)}
-              <span className="text-stone-500 text-xs ml-1">4.9</span>
-            </div>
-            <p className="text-stone-400 text-xs leading-snug">
-              <span className="text-white font-bold">2000+</span> учеников уже занимаются с Бобом
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== СКРИНШОТ / ПРЕВЬЮ ===== */}
-      <section className="px-6 pb-10">
-        <div className="relative bg-gradient-to-br from-violet-600/10 to-indigo-600/10 rounded-3xl p-6 border border-violet-500/10 overflow-hidden">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-violet-500/10 rounded-full blur-[60px] pointer-events-none" />
-          <div className="relative z-10 flex items-start gap-4">
-            <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-white/10 shadow-lg shrink-0">
-              <img src={catHungry} alt="Bob hungry" className="w-full h-full object-cover" />
-            </div>
-            <div className="flex-1 pt-1">
-              <h3 className="font-bold text-white text-base mb-1">Покорми Боба! 😿</h3>
-              <p className="text-stone-400 text-xs leading-relaxed mb-3">
-                Выполняй задания каждый день — Боб будет сыт, а твой английский расти
-              </p>
-              <div className="h-2.5 bg-white/10 rounded-full overflow-hidden w-full max-w-[200px]">
-                <div className="h-full w-[65%] bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full" />
-              </div>
-              <p className="text-[10px] text-stone-500 mt-1.5 font-medium">2 из 3 заданий выполнено</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== УСТАНОВКА ===== */}
-      <section id="install-section" className="px-4 pb-10 scroll-mt-24">
-
-        {/* iOS */}
-        {device === 'ios' && (
-          <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-6 border border-white/10">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg">
-                <Download size={20} />
-              </div>
-              <div>
-                <h2 className="font-black text-lg">Установка на iPhone</h2>
-                <p className="text-stone-500 text-xs">Через Safari — 30 секунд</p>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              {[
-                { n: '1', title: 'Нажми «Поделиться»', sub: 'Кнопка внизу экрана Safari', right: (
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 15V3M12 3L7 8M12 3L17 8M4 11V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V11" stroke="#007AFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                )},
-                { n: '2', title: '«На экран Домой»', sub: 'Пролистай список вниз', right: (
-                  <div className="w-7 h-7 rounded-lg bg-stone-700 flex items-center justify-center border border-stone-600"><div className="bg-white/90 w-5 h-5 rounded flex items-center justify-center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div></div>
-                )},
-                { n: '3', title: 'Нажми «Добавить»', sub: 'В правом верхнем углу', right: (
-                  <span className="text-[#007AFF] font-bold text-xs">Добавить</span>
-                )},
-              ].map((step, i) => (
-                <div key={i} className="flex items-center gap-3 bg-white/5 p-3.5 rounded-xl border border-white/5">
-                  <div className="w-8 h-8 bg-white text-stone-900 rounded-lg flex items-center justify-center font-black text-sm shrink-0">{step.n}</div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-sm text-white">{step.title}</p>
-                    <p className="text-[11px] text-stone-500">{step.sub}</p>
-                  </div>
-                  <div className="shrink-0">{step.right}</div>
-                </div>
-              ))}
-              
-              <div className="flex items-center gap-3 bg-gradient-to-r from-violet-500/20 to-indigo-500/20 p-3.5 rounded-xl border border-violet-500/20">
-                <div className="w-8 h-8 bg-violet-500 text-white rounded-lg flex items-center justify-center font-black text-sm shrink-0">✓</div>
-                <div className="flex-1">
-                  <p className="font-bold text-sm text-white">Готово! 🎉</p>
-                  <p className="text-[11px] text-violet-300">Открой BEMAT с рабочего стола</p>
-                </div>
-                <img src={logo} className="w-8 h-8 rounded-lg border border-white/10" alt="" />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Android */}
-        {device === 'android' && (
-          <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-6 border border-white/10 text-center">
-            {deferredPrompt ? (
-              <>
-                <div className="w-14 h-14 bg-gradient-to-br from-violet-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-violet-500/20">
-                  <Download size={28} />
-                </div>
-                <h2 className="font-black text-xl mb-2">Установить BEMAT</h2>
-                <p className="text-stone-400 text-sm mb-6">Одно нажатие — и приложение у тебя</p>
-                <button onClick={onPromptInstall}
-                  className="w-full py-4 bg-white text-stone-900 font-black text-base rounded-xl shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-2">
-                  <Download size={20} className="text-violet-600" /> УСТАНОВИТЬ
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="font-bold text-white mb-2">Уже установлено?</p>
-                <p className="text-stone-400 text-sm mb-5">Если нет — скачайте через RuStore</p>
-                <a href="https://www.rustore.ru/catalog/app/co.median.android.pkpxbe" target="_blank" rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full py-3.5 bg-[#0077FF] text-white rounded-xl font-bold shadow-lg hover:bg-[#0066CC] transition-colors">
-                  <Smartphone size={18} /> Скачать в RuStore
-                </a>
-              </>
-            )}
-          </div>
-        )}
-
-        {/* Desktop */}
-        {device === 'desktop' && (
-          <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-6 border border-white/10 text-center">
-            {deferredPrompt ? (
-              <>
-                <div className="w-14 h-14 bg-gradient-to-br from-violet-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-violet-500/20">
-                  <Monitor size={28} />
-                </div>
-                <h2 className="font-black text-xl mb-2">Установить на компьютер</h2>
-                <p className="text-stone-400 text-sm mb-6">Появится в меню Пуск и на рабочем столе</p>
-                <button onClick={onPromptInstall}
-                  className="w-full py-4 bg-white text-stone-900 font-black rounded-xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
-                  <Monitor size={20} className="text-violet-600" /> УСТАНОВИТЬ
-                </button>
-              </>
-            ) : (
-              <>
-                <div className="w-14 h-14 bg-gradient-to-br from-stone-700 to-stone-800 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl border border-white/10">
-                  <LogIn size={24} className="text-violet-400" />
-                </div>
-                <h2 className="font-black text-xl mb-2">Войти в BEMAT</h2>
-                <p className="text-stone-400 text-sm mb-5">
-                  Или установите через иконку <span className="inline-flex items-center justify-center bg-white/15 w-5 h-5 rounded text-[10px] font-bold mx-0.5">⊕</span> в адресной строке
-                </p>
-                <button onClick={onSkip}
-                  className="w-full py-3.5 bg-violet-600 text-white font-bold rounded-xl shadow-lg hover:bg-violet-500 transition-colors flex items-center justify-center gap-2">
-                  <LogIn size={18} /> Открыть приложение
-                </button>
-              </>
-            )}
-          </div>
-        )}
-      </section>
-
-      {/* ===== ФУТЕР ===== */}
-      <footer className="text-center pb-10 pt-4 px-6">
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <img src={logo} alt="" className="w-5 h-5 rounded-md opacity-40" />
-          <span className="text-[10px] text-stone-600 font-bold uppercase tracking-[0.15em]">BEMAT PROJECT</span>
-        </div>
-        <div className="flex justify-center gap-5 text-xs font-bold text-stone-600">
-          <a href="https://t.me/+NvMX2DrTa3w1NTVi" className="hover:text-violet-400 transition-colors">Telegram</a>
-          <span className="text-stone-800">·</span>
-          <a href="https://berdiyev-eng.ru" className="hover:text-violet-400 transition-colors">Об авторе</a>
-        </div>
-      </footer>
-    </div>
-  );
-};
-// ==============================
-// 3. UPDATE BANNER
-// ==============================
-
-const UpdateBanner = ({ onUpdate }: { onUpdate: () => void }) => (
-  <div className="sticky top-[57px] z-30 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-center py-2.5 px-4 shadow-md">
-    <div className="flex items-center justify-center gap-3 max-w-xl mx-auto">
-      <RefreshCw size={16} className="animate-spin" />
-      <span className="text-sm font-bold">Доступно обновление!</span>
-      <button onClick={onUpdate} className="bg-white text-emerald-700 px-4 py-1 rounded-full font-bold text-xs hover:scale-105 transition-transform shadow">
-        Обновить
-      </button>
-    </div>
-  </div>
-);
-
-// ==============================
-// ОНБОРДИНГ
-// ==============================
-
-const Onboarding = ({ onComplete }: { onComplete: (name: string, goal: UserGoal) => void }) => {
-  const [step, setStep] = useState(1);
-  const [name, setName] = useState('');
-  const [goal, setGoal] = useState<UserGoal>('fun');
-
-  return (
-    <div className="fixed inset-0 z-[60] bg-[#fafaf9] flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
-      <div className="w-28 h-28 rounded-full overflow-hidden mb-6 shadow-xl border-4 border-white">
-        <img src={logo} alt="Bob" className="w-full h-full object-cover" />
-      </div>
-      {step === 1 && (
-        <div className="w-full max-w-sm">
-          <h1 className="text-3xl font-black text-stone-800 mb-2">Привет! Я Боб 🐱</h1>
-          <p className="text-stone-600 mb-8 text-lg">Помогу выучить английский. Как тебя зовут?</p>
-          <input type="text" placeholder="Твоё имя..." className="w-full p-4 rounded-2xl bg-white border border-stone-200 text-lg focus:outline-none focus:ring-2 focus:ring-violet-500 mb-4 shadow-sm" value={name} onChange={e => setName(e.target.value)} />
-          <button disabled={!name.trim()} onClick={() => setStep(2)} className="w-full py-4 bg-violet-600 text-white font-bold rounded-2xl disabled:opacity-50 hover:scale-[1.02] transition-transform shadow-lg shadow-violet-200">Дальше</button>
-        </div>
-      )}
-      {step === 2 && (
-        <div className="w-full max-w-sm">
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">{name}, какая у тебя цель?</h2>
-          <p className="text-stone-500 mb-6">Я составлю план занятий для тебя.</p>
-          <div className="space-y-3 mb-8">
-            {GOAL_OPTIONS.map(opt => (
-              <button key={opt.id} onClick={() => setGoal(opt.id)}
-                className={cn("w-full p-4 rounded-2xl flex items-center gap-3 border-2 text-left transition-all",
-                  goal === opt.id ? "border-violet-600 bg-violet-50" : "border-white bg-white shadow-sm"
-                )}>
-                <span className="text-2xl">{opt.icon}</span>
-                <span className="font-bold text-stone-800">{opt.label}</span>
-              </button>
-            ))}
-          </div>
-          <button onClick={() => onComplete(name, goal)} className="w-full py-4 bg-violet-600 text-white font-bold rounded-2xl hover:scale-[1.02] transition-transform shadow-lg shadow-violet-200">Создать план 🚀</button>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// ==============================
-// ПОПАПЫ
-// ==============================
-
-const StreakPopup = ({ isOpen, onClose, streak }: { isOpen: boolean; onClose: () => void; streak: number }) => {
-  if (!isOpen) return null;
-  const isFirst = streak <= 1;
-  return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-stone-900/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-sm bg-[#fafaf9] rounded-[2rem] shadow-2xl p-8 border border-white text-center">
-        <div className="text-7xl mb-4 animate-bounce">🔥</div>
-        {isFirst ? (
-          <><h3 className="text-2xl font-black text-stone-900 mb-2">Стрик зародился!</h3><p className="text-stone-500 mb-2 text-sm">Занимайся каждый день, чтобы не потерять стрик.</p><p className="text-stone-400 text-xs mb-6">Боб верит в тебя! 🐱</p></>
-        ) : (
-          <><h3 className="text-2xl font-black text-stone-900 mb-2">{streak} {streak < 5 ? 'дня' : 'дней'} подряд!</h3><p className="text-stone-500 mb-2 text-sm">Отличная серия! Не останавливайся!</p><p className="text-stone-400 text-xs mb-6">Боб гордится тобой 😸</p></>
-        )}
-        <div className="flex items-center justify-center gap-1.5 mb-6 flex-wrap">
-          {Array.from({ length: Math.min(streak, 7) }, (_, i) => (
-            <div key={i} className="w-9 h-9 rounded-full bg-gradient-to-b from-orange-100 to-amber-50 flex items-center justify-center text-lg border border-orange-200 shadow-sm">🔥</div>
-          ))}
-          {streak > 7 && <span className="text-stone-400 font-bold text-sm ml-1.5">+{streak - 7}</span>}
-        </div>
-        <div className="bg-violet-50 rounded-xl p-3 mb-6 border border-violet-100">
-          <p className="text-xs font-bold text-violet-700">{isFirst ? '💡 Занимайся 15 минут в день!' : streak >= 7 ? '🏆 Неделя без пропусков!' : streak >= 3 ? '💪 3+ дня подряд!' : '📈 Каждый день — +1 к уровню!'}</p>
-        </div>
-        <button onClick={onClose} className="w-full py-3.5 bg-violet-600 text-white font-bold rounded-2xl hover:bg-violet-700 shadow-lg shadow-violet-200">{isFirst ? 'Начнём! 🚀' : 'Продолжаем! 💪'}</button>
-      </div>
-    </div>
-  );
-};
-
-const CatFeedPopup = ({ isOpen, onClose, user, tasks }: { isOpen: boolean; onClose: () => void; user: UserState; tasks: any[] }) => {
-  if (!isOpen) return null;
-  const doneCount = user.completedTasks.filter(id => tasks.some((t: any) => t.id === id)).length;
-  const totalCount = tasks.length;
-  const feedProgress = user.catFed ? 100 : totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
-  const isFed = user.catFed;
-  const remaining = totalCount - doneCount;
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-sm bg-[#fafaf9] rounded-[2rem] shadow-2xl p-6 border border-white text-center">
-        <button onClick={onClose} className="absolute top-4 right-4 p-2 rounded-full hover:bg-stone-200 text-stone-400"><X size={20} /></button>
-        <div className={cn("w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 shadow-lg", isFed ? "border-green-300" : "border-orange-300")}>
-          <img src={isFed ? catFedImg : catHungry} alt="Bob" className="w-full h-full object-cover" />
-        </div>
-        {isFed ? (
-          <><div className="text-4xl mb-2">🎉</div><h3 className="text-xl font-black text-stone-900 mb-1">Боб сыт!</h3><p className="text-stone-500 text-sm mb-6">Приходи завтра 😸</p></>
-        ) : (
-          <><div className="text-4xl mb-2">😿</div><h3 className="text-xl font-black text-stone-900 mb-1">Боб голодный!</h3><p className="text-stone-500 text-sm mb-2">Выполни все задания</p><p className="text-xs text-stone-400 mb-6">Осталось: {remaining}</p></>
-        )}
-        <div className="mb-2">
-          <div className="flex items-center justify-between text-xs font-bold text-stone-500 mb-1.5"><span>🍽️ Миска</span><span>{feedProgress}%</span></div>
-          <div className="h-4 bg-stone-100 rounded-full overflow-hidden border border-stone-200">
-            <div className={cn("h-full rounded-full transition-all duration-1000", isFed ? "bg-gradient-to-r from-green-400 to-emerald-500" : "bg-gradient-to-r from-orange-300 to-amber-400")} style={{ width: `${feedProgress}%` }} />
-          </div>
-        </div>
-        <div className="mt-4 space-y-2 text-left max-h-40 overflow-y-auto">
-          {tasks.map((t: any) => { const d = user.completedTasks.includes(t.id); return (
-            <div key={t.id} className={cn("flex items-center gap-2 text-xs p-2 rounded-lg", d ? "text-stone-400 bg-stone-50" : "text-stone-700 bg-white border border-stone-100")}>
-              <span>{d ? '✅' : '⬜'}</span><span className={cn("flex-1", d && "line-through")}>{t.title}</span><span className="text-stone-400">{t.time}м</span>
-            </div>
-          ); })}
-        </div>
-        <button onClick={onClose} className="mt-6 w-full py-3 bg-violet-600 text-white font-bold rounded-2xl shadow-lg shadow-violet-200">{isFed ? 'Отлично! 😸' : 'Пойду заниматься!'}</button>
-      </div>
-    </div>
-  );
-};
-
-const ProfileModal = ({ isOpen, onClose, user, onSave }: { isOpen: boolean; onClose: () => void; user: UserState; onSave: (n: string, g: UserGoal) => void }) => {
-  const [editName, setEditName] = useState(user.name);
-  const [sel, setSel] = useState<UserGoal>(user.goal);
-  useEffect(() => { if (isOpen) { setEditName(user.name); setSel(user.goal); } }, [isOpen, user]);
-  if (!isOpen) return null;
-  const gc = sel !== user.goal;
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-[#fafaf9] rounded-[2rem] shadow-2xl p-6 border border-white max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-6"><h3 className="text-xl font-bold text-stone-900">Твой профиль</h3><button onClick={onClose} className="p-2 rounded-full hover:bg-stone-200 text-stone-500"><X size={20} /></button></div>
-        <div className="flex justify-center mb-6"><div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-lg"><img src={logo} alt="Bob" className="w-full h-full object-cover" /></div></div>
-        <div className="mb-6"><label className="text-xs font-bold text-stone-500 uppercase mb-2 block">Имя</label><input type="text" value={editName} onChange={e => setEditName(e.target.value)} className="w-full p-3.5 rounded-xl bg-white border border-stone-200 text-base font-bold focus:outline-none focus:ring-2 focus:ring-violet-500 shadow-sm" /></div>
-        <div className="mb-6"><label className="text-xs font-bold text-stone-500 uppercase mb-2 block">Цель</label><div className="space-y-2">
-          {GOAL_OPTIONS.map(o => (<button key={o.id} onClick={() => setSel(o.id)} className={cn("w-full p-3.5 rounded-xl flex items-center gap-3 border-2 text-left", sel === o.id ? "border-violet-600 bg-violet-50" : "border-stone-100 bg-white")}><span className="text-xl">{o.icon}</span><span className="font-bold text-stone-800 flex-1 text-sm">{o.label}</span>{sel === o.id && <CheckCircle2 className="w-5 h-5 text-violet-600" />}</button>))}
-        </div></div>
-        {gc && <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700 font-medium">⚠️ При смене цели план сбросится, стрик сохранится!</div>}
-        <button onClick={() => { if (editName.trim()) { onSave(editName.trim(), sel); onClose(); } }} disabled={!editName.trim()} className="w-full py-3.5 bg-violet-600 text-white font-bold rounded-2xl shadow-lg shadow-violet-200 disabled:opacity-50">Сохранить</button>
-      </div>
-    </div>
-  );
-};
-
-const AddTaskModal = ({ isOpen, onClose, onAdd }: { isOpen: boolean; onClose: () => void; onAdd: (t: string, m: number) => void }) => {
-  const [title, setTitle] = useState('');
-  const [time, setTime] = useState(5);
-  if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-[#fafaf9] rounded-[2rem] shadow-2xl p-6 border border-white">
-        <div className="flex items-center justify-between mb-4"><h3 className="text-xl font-bold text-stone-900">Добавить задание</h3><button onClick={onClose} className="p-2 rounded-full hover:bg-stone-200 text-stone-500"><X size={20} /></button></div>
-        <div className="space-y-4">
-          <div><label className="text-xs font-bold text-stone-500 uppercase mb-1.5 block">Что делать?</label><input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Например: Посмотреть TED Talk" className="w-full p-3.5 rounded-xl bg-white border border-stone-200 font-bold focus:outline-none focus:ring-2 focus:ring-violet-500 shadow-sm" /></div>
-          <div><label className="text-xs font-bold text-stone-500 uppercase mb-1.5 block">Сколько минут?</label><div className="flex gap-2">{[3,5,10,15,20].map(m => (<button key={m} onClick={() => setTime(m)} className={cn("flex-1 py-2.5 rounded-xl font-bold text-sm border-2", time === m ? "border-violet-600 bg-violet-50 text-violet-700" : "border-stone-100 bg-white text-stone-600")}>{m}</button>))}</div></div>
-          <div className="bg-stone-50 rounded-xl p-3 border border-stone-100"><p className="text-xs text-stone-500">💡 Задание будет <strong>каждый день</strong>. Удалить можно в любой момент.</p></div>
-          <button onClick={() => { if (title.trim()) { onAdd(title.trim(), time); setTitle(''); setTime(5); onClose(); } }} disabled={!title.trim()} className="w-full py-3.5 bg-violet-600 text-white font-bold rounded-2xl disabled:opacity-50 shadow-lg shadow-violet-200">Добавить ✅</button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const NotifSettingsModal = ({ isOpen, onClose, user, onSave }: { isOpen: boolean; onClose: () => void; user: UserState; onSave: (e: boolean, h: number) => void }) => {
-  const [enabled, setEnabled] = useState(user.notificationsEnabled);
-  const [hour, setHour] = useState(user.notifHour || 19);
-  const [testSent, setTestSent] = useState(false);
-  if (!isOpen) return null;
-  const toggle = async () => {
-    if (!enabled) {
-      if (!("Notification" in window)) { alert("Браузер не поддерживает уведомления"); return; }
-      if (Notification.permission === 'denied') { alert("Уведомления заблокированы в настройках браузера. Разблокируй вручную."); return; }
-    }
-    setEnabled(!enabled);
-  };
-  const save = async () => {
-    if (enabled && Notification.permission !== 'granted') { const p = await Notification.requestPermission(); if (p !== 'granted') { alert('Разреши уведомления'); return; } }
-    onSave(enabled, hour); onClose();
-  };
-  const handleTest = async () => {
-    if (Notification.permission !== 'granted') {
-      const p = await Notification.requestPermission();
-      if (p !== 'granted') { alert('Разреши уведомления'); return; }
-    }
-    await sendTestNotification(hour);
-    setTestSent(true);
-    setTimeout(() => setTestSent(false), 3000);
-  };
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-sm bg-[#fafaf9] rounded-[2rem] shadow-2xl p-6 border border-white">
-        <div className="flex items-center justify-between mb-6"><h3 className="text-xl font-bold text-stone-900">Напоминания</h3><button onClick={onClose} className="p-2 rounded-full hover:bg-stone-200 text-stone-500"><X size={20} /></button></div>
-        <div className="text-center mb-6"><div className="w-20 h-20 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg mb-3"><img src={catHungry} alt="Bob" className="w-full h-full object-cover" /></div><p className="text-sm text-stone-600">Боб напомнит заниматься</p></div>
-        <div className="flex items-center justify-between p-4 bg-white rounded-xl border border-stone-100 mb-4">
-          <div className="flex items-center gap-3"><BellRing size={20} className={enabled ? "text-violet-600" : "text-stone-400"} /><span className="font-bold text-stone-800">Уведомления</span></div>
-          <button onClick={toggle} className={cn("w-12 h-7 rounded-full relative", enabled ? "bg-violet-600" : "bg-stone-200")}><div className={cn("w-5 h-5 bg-white rounded-full absolute top-1 shadow-sm transition-all", enabled ? "right-1" : "left-1")} /></button>
-        </div>
-        {enabled && (<div className="mb-4"><label className="text-xs font-bold text-stone-500 uppercase mb-2 block">Во сколько?</label><div className="grid grid-cols-4 gap-2">{[9,12,15,17,18,19,20,21].map(h => (<button key={h} onClick={() => setHour(h)} className={cn("py-2.5 rounded-xl font-bold text-sm border-2", hour === h ? "border-violet-600 bg-violet-50 text-violet-700" : "border-stone-100 bg-white text-stone-600")}>{h}:00</button>))}</div><p className="text-[11px] text-stone-400 mt-2">⏰ Придёт если ты не заходил в этот день</p></div>)}
-        {enabled && (
-          <button onClick={handleTest}
-            className={cn(
-              "w-full py-3 rounded-xl font-bold text-sm mb-4 flex items-center justify-center gap-2 border-2 transition-all",
-              testSent
-                ? "border-green-300 bg-green-50 text-green-700"
-                : "border-dashed border-stone-200 bg-stone-50 text-stone-600 hover:border-violet-300 hover:text-violet-600"
-            )}>
-            {testSent ? (<><CheckCircle size={16} /> Отправлено!</>) : (<><Bell size={16} /> Отправить тестовое уведомление</>)}
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-3 rounded-2xl bg-violet-600 text-white font-bold"
+          >
+            Обновить страницу
           </button>
-        )}
-        <button onClick={save} className="w-full py-3.5 bg-violet-600 text-white font-bold rounded-2xl shadow-lg shadow-violet-200">{enabled ? '✅ Сохранить' : 'Сохранить'}</button>
-      </div>
-    </div>
-  );
-};
-
-// ==============================
-// DASHBOARD
-// ==============================
-
-const Dashboard = ({ user, onUpdateUser, onNavigate }: { user: UserState; onUpdateUser: (u: UserState) => void; onNavigate: (t: string) => void }) => {
-  const defaultTasks = DAILY_TASKS[user.goal] || DAILY_TASKS.fun;
-  const customDailyTasks = (user.customTasks || []).map(ct => ({ ...ct, link: '', isExternal: false, isCustom: true }));
-  const allTasks = [...defaultTasks, ...customDailyTasks];
-  const validCompleted = user.completedTasks.filter(id => allTasks.some(t => t.id === id));
-  const progress = allTasks.length > 0 ? Math.round((validCompleted.length / allTasks.length) * 100) : 0;
-  const totalTime = allTasks.reduce((s, t) => s + t.time, 0);
-  const doneTime = allTasks.filter(t => validCompleted.includes(t.id)).reduce((s, t) => s + t.time, 0);
-
-  const [showCat, setShowCat] = useState(false);
-  const [showProfile, setShowProfile] = useState(false);
-  const [showAdd, setShowAdd] = useState(false);
-  const [showNotif, setShowNotif] = useState(false);
-
-  const toggle = (id: string) => {
-    const done = validCompleted.includes(id);
-    const nc = done ? user.completedTasks.filter(x => x !== id) : [...user.completedTasks, id];
-    const nv = nc.filter(x => allTasks.some(t => t.id === x));
-    const allDone = nv.length >= allTasks.length;
-    if (allDone && !user.catFed) setTimeout(() => setShowCat(true), 500);
-    onUpdateUser({ ...user, completedTasks: nc, catFed: user.catFed || allDone });
-  };
-
-  const taskLink = (e: React.MouseEvent, task: any) => {
-    e.stopPropagation();
-    if (task.isExternal) { window.open(task.link, '_blank'); return; }
-    const h = task.link.replace('#', '');
-    if (['home','books','video','practice','speak'].includes(h)) onNavigate(h);
-    else { onNavigate('home'); setTimeout(() => document.getElementById(h)?.scrollIntoView({ behavior: 'smooth' }), 300); }
-  };
-
-  const addTask = (t: string, m: number) => onUpdateUser({ ...user, customTasks: [...(user.customTasks || []), { id: `c_${Date.now()}`, title: t, time: m }] });
-  const delTask = (id: string) => onUpdateUser({ ...user, customTasks: (user.customTasks || []).filter(t => t.id !== id), completedTasks: user.completedTasks.filter(x => x !== id), catFed: false });
-  const saveProfile = (n: string, g: UserGoal) => { const gc = g !== user.goal; onUpdateUser({ ...user, name: n, goal: g, completedTasks: gc ? [] : user.completedTasks, catFed: gc ? false : user.catFed }); };
-  const saveNotif = (en: boolean, h: number) => {
-    onUpdateUser({ ...user, notificationsEnabled: en, notifHour: h });
-    if (en) {
-      scheduleNotification(h);
-      sendTestNotification(h);
-    } else cancelNotification();
-  };
-
-  const isFed = user.catFed; const fp = isFed ? 100 : progress;
-
-  return (
-    <div className="pb-24 pt-4 px-4 space-y-5">
-      {/* Приветствие */}
-      <div className="flex justify-between items-center">
-        <div className="flex-1"><p className="text-stone-500 text-xs font-bold uppercase tracking-wider">Личный кабинет</p><div className="flex items-center gap-2"><h1 className="text-2xl font-black text-stone-800">Привет, {user.name} 👋</h1><button onClick={() => setShowProfile(true)} className="p-1.5 rounded-full hover:bg-stone-100 text-stone-400 hover:text-violet-600"><Edit3 size={16} /></button></div></div>
-        <div className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full shadow-sm border border-stone-100"><Flame className={cn("w-5 h-5", user.streak > 0 ? "text-orange-500 fill-orange-500" : "text-stone-300")} /><span className="font-bold text-stone-800">{user.streak} дн.</span></div>
-      </div>
-
-      {/* Цель */}
-      <div className="flex items-center gap-3">
-        <div className="bg-violet-50 rounded-2xl px-4 py-2.5 border border-violet-100 flex items-center gap-2 flex-1"><Trophy className="w-4 h-4 text-violet-600" /><span className="text-sm font-bold text-violet-800">{GOAL_LABELS[user.goal]}</span></div>
-        <button onClick={() => setShowProfile(true)} className="px-4 py-2.5 rounded-2xl bg-white border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">Изменить</button>
-      </div>
-
-      {/* Боб */}
-      <div onClick={() => setShowCat(true)} className={cn("rounded-[2rem] p-5 shadow-sm border cursor-pointer hover:shadow-md", isFed ? "bg-gradient-to-r from-green-50 to-emerald-50 border-green-200" : "bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200")}>
-        <div className="flex items-center gap-4">
-          <div className={cn("w-16 h-16 rounded-full overflow-hidden border-[3px] shadow-md shrink-0", isFed ? "border-green-300" : "border-orange-300")}><img src={isFed ? catFedImg : catHungry} alt="Bob" className="w-full h-full object-cover" /></div>
-          <div className="flex-1 min-w-0"><h3 className="font-bold text-stone-900 text-base mb-0.5">{isFed ? 'Боб сыт! 😸' : 'Боб голодный! 😿'}</h3><p className="text-xs text-stone-500 mb-2">{isFed ? 'Приходи завтра!' : 'Выполни задания'}</p><div className="h-2.5 bg-white/70 rounded-full overflow-hidden"><div className={cn("h-full rounded-full transition-all duration-700", isFed ? "bg-gradient-to-r from-green-400 to-emerald-500" : "bg-gradient-to-r from-orange-300 to-amber-400")} style={{ width: `${fp}%` }} /></div></div>
         </div>
-      </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
-      {/* План */}
-      <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-stone-100 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1.5 bg-stone-100"><div className="h-full bg-violet-500 transition-all duration-500 rounded-r-full" style={{ width: `${progress}%` }} /></div>
-        <div className="flex justify-between items-start mb-5 mt-2">
-          <div><h2 className="text-lg font-bold text-stone-900">План на сегодня</h2><p className="text-stone-500 text-xs flex items-center gap-1.5"><Clock size={12} />~{totalTime} мин · {doneTime}/{totalTime} мин ({progress}%)</p></div>
-        </div>
-        <div className="space-y-3">
-          {defaultTasks.map(t => { const d = validCompleted.includes(t.id); return (
-            <div key={t.id} className={cn("flex items-center gap-3 p-3 rounded-xl border cursor-pointer", d ? "bg-stone-50 border-transparent opacity-60" : "bg-white border-stone-100 hover:border-violet-200 shadow-sm")} onClick={() => toggle(t.id)}>
-              <div className={cn("w-6 h-6 rounded-full flex items-center justify-center border shrink-0", d ? "bg-violet-500 border-violet-500" : "border-stone-300")}>{d && <CheckCircle2 className="w-4 h-4 text-white" />}</div>
-              <div className="flex-1 min-w-0"><span className={cn("font-bold text-sm text-stone-700 block", d && "line-through text-stone-400")}>{t.title}</span><span className="text-[11px] text-stone-400">~{t.time} мин</span></div>
-              {!d && t.link && <button onClick={e => taskLink(e, t)} className="p-2 text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-lg shrink-0"><ArrowRight size={16} /></button>}
-            </div>
-          ); })}
-          {customDailyTasks.length > 0 && (
-            <div className="pt-2 border-t border-dashed border-stone-200">
-              <p className="text-[10px] font-bold text-stone-400 uppercase mb-2 px-1">Мои задания</p>
-              {customDailyTasks.map((t: any) => { const d = validCompleted.includes(t.id); return (
-                <div key={t.id} className={cn("flex items-center gap-3 p-3 rounded-xl border cursor-pointer mb-2 last:mb-0", d ? "bg-stone-50 border-transparent opacity-60" : "bg-violet-50/50 border-violet-100 shadow-sm")} onClick={() => toggle(t.id)}>
-                  <div className={cn("w-6 h-6 rounded-full flex items-center justify-center border shrink-0", d ? "bg-violet-500 border-violet-500" : "border-violet-300")}>{d && <CheckCircle2 className="w-4 h-4 text-white" />}</div>
-                  <div className="flex-1 min-w-0"><span className={cn("font-bold text-sm text-stone-700 block", d && "line-through text-stone-400")}>{t.title}</span><span className="text-[11px] text-stone-400">~{t.time} мин</span></div>
-                  <button onClick={e => { e.stopPropagation(); delTask(t.id); }} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg shrink-0"><Trash2 size={14} /></button>
-                </div>
-              ); })}
-            </div>
-          )}
-        </div>
-        <button onClick={() => setShowAdd(true)} className="mt-4 w-full py-3 bg-stone-50 hover:bg-stone-100 border-2 border-dashed border-stone-200 rounded-xl text-sm font-bold text-stone-500 hover:text-violet-600 flex items-center justify-center gap-2"><Plus size={18} /> Добавить своё задание</button>
-        {progress === 100 && <div className="mt-4 p-3 bg-green-50 text-green-700 rounded-xl text-sm font-bold text-center">Все выполнено! Боб покормлен 😸🎉</div>}
-      </div>
+// --------------------------------- Каркас ---------------------------------
 
-      {/* Уведомления */}
-      <div onClick={() => setShowNotif(true)} className={cn("rounded-[2rem] p-5 shadow-sm border cursor-pointer hover:shadow-md", user.notificationsEnabled ? "bg-gradient-to-r from-violet-50 to-indigo-50 border-violet-200" : "bg-gradient-to-r from-violet-600 to-indigo-600 border-transparent")}>
-        <div className="flex items-center gap-4">
-          <div className={cn("w-12 h-12 rounded-full flex items-center justify-center shrink-0", user.notificationsEnabled ? "bg-violet-100" : "bg-white/20")}>{user.notificationsEnabled ? <BellRing size={24} className="text-violet-600" /> : <Bell size={24} className="text-white" />}</div>
-          <div className="flex-1">{user.notificationsEnabled ? (<><h3 className="font-bold text-violet-900 text-sm">Напоминания ✅</h3><p className="text-xs text-violet-600">Каждый день в {user.notifHour || 19}:00</p></>) : (<><h3 className="font-bold text-white text-sm">Включить напоминания</h3><p className="text-xs text-violet-100">Боб напомнит позаниматься</p></>)}</div>
-        </div>
-      </div>
-
-      {/* Библиотека */}
-      <div>
-        <h3 className="font-bold text-stone-800 mb-3 px-1">Библиотека материалов</h3>
-        <div className="grid grid-cols-2 gap-3">
-          <MC icon={Home} label="Вся подборка" color="bg-slate-100 text-slate-700" onClick={() => onNavigate('home')} />
-          <MC icon={Book} label="Книги" color="bg-emerald-100 text-emerald-700" onClick={() => onNavigate('books')} />
-          <MC icon={Film} label="Фильмы" color="bg-rose-100 text-rose-700" onClick={() => onNavigate('video')} />
-          <MC icon={PenTool} label="Грамматика" color="bg-amber-100 text-amber-700" onClick={() => onNavigate('practice')} />
-          <MC icon={Mic} label="Разговор" color="bg-sky-100 text-sky-700" onClick={() => onNavigate('speak')} />
-          <MC icon={Bot} label="AI Боты" color="bg-violet-100 text-violet-700" onClick={() => { onNavigate('home'); setTimeout(() => document.getElementById('bots')?.scrollIntoView({ behavior: 'smooth' }), 300); }} />
-        </div>
-      </div>
-
-      <CatFeedPopup isOpen={showCat} onClose={() => setShowCat(false)} user={user} tasks={allTasks} />
-      <ProfileModal isOpen={showProfile} onClose={() => setShowProfile(false)} user={user} onSave={saveProfile} />
-      <AddTaskModal isOpen={showAdd} onClose={() => setShowAdd(false)} onAdd={addTask} />
-      <NotifSettingsModal isOpen={showNotif} onClose={() => setShowNotif(false)} user={user} onSave={saveNotif} />
-    </div>
-  );
-};
-
-const MC = ({ icon: Icon, label, color, onClick }: any) => (
-  <button onClick={onClick} className="bg-white p-4 rounded-2xl border border-stone-100 shadow-sm flex flex-col items-center gap-2 hover:scale-[1.02] transition-transform active:scale-95">
-    <div className={cn("w-12 h-12 rounded-full flex items-center justify-center mb-1", color)}><Icon size={24} /></div>
-    <span className="font-bold text-stone-700 text-sm">{label}</span>
-  </button>
-);
-
-// ==============================
-// HEADER
-// ==============================
-
-const Header = ({ onNavigate, onOpenSettings }: any) => {
-  const [menu, setMenu] = useState(false);
-  const [support, setSupport] = useState(false);
-  const [about, setAbout] = useState(false);
+function NotFoundPage() {
   return (
     <>
-      <header className="sticky top-0 z-40 bg-[#fafaf9]/90 backdrop-blur-md px-4 py-3 flex justify-between items-center border-b border-stone-100">
-        <button onClick={() => onNavigate('dashboard')} className="flex items-center gap-2"><img src={logo} alt="Bob" className="w-9 h-9 rounded-full bg-stone-200 border border-white shadow-sm" /><span className="font-black text-xl tracking-tight text-stone-800">BEMAT</span></button>
-        <div className="flex items-center gap-3">
-          <button onClick={() => setSupport(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-amber-50 text-amber-500 border border-amber-100"><Gift size={20} /></button>
-          <button onClick={() => setMenu(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-900 text-white"><Menu size={20} /></button>
+      <Seo
+        seo={{
+          path: '/404',
+          title: 'Страница не найдена | BEMAT',
+          description: 'Такой страницы нет. Загляни в каталог ресурсов для изучения английского.',
+          noindex: true,
+        }}
+      />
+      <div className="px-4 py-16 text-center">
+        <div className="text-6xl mb-4">🧭</div>
+        <h1 className="text-2xl font-black text-stone-900 mb-2">Страница не найдена</h1>
+        <p className="text-sm text-stone-500 mb-6">Возможно, ссылка устарела. Попробуй один из разделов:</p>
+        <div className="flex flex-wrap justify-center gap-2">
+          <Link
+            to="/"
+            className="px-4 py-2.5 rounded-xl bg-violet-600 text-white text-sm font-bold no-underline"
+          >
+            Каталог ресурсов
+          </Link>
+          {SECTIONS_NAV.map((s) => (
+            <Link
+              key={s.path}
+              to={s.path}
+              className="px-4 py-2.5 rounded-xl bg-white border border-stone-200 text-stone-700 text-sm font-bold no-underline"
+            >
+              {s.emoji} {s.label}
+            </Link>
+          ))}
         </div>
-      </header>
-      {menu && (
-        <div className="fixed inset-0 z-50 bg-stone-900/20 backdrop-blur-sm flex justify-end" onClick={() => setMenu(false)}>
-          <div className="w-80 h-full bg-[#fafaf9] p-6 shadow-2xl overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-6"><h3 className="font-bold text-xl text-stone-900">Меню</h3><button onClick={() => setMenu(false)} className="p-2 bg-stone-100 rounded-full"><X size={20} /></button></div>
-            <div className="space-y-2 mb-6"><div className="px-2 py-1 text-xs font-bold text-stone-400 uppercase">AI Помощники</div>
-              {[{ l:'ЕГЭ с ИИ',u:'https://t.me/EGE_ENGLISH_GPT_bot',d:'80+ баллов' },{ l:'ОГЭ с ИИ',u:'https://t.me/OGE_ENG_HELPER_BOT',d:'ОГЭ на 5' },{ l:'IELTS Expert',u:'https://t.me/IELTS_berdiyev_bot',d:'IELTS легко' },{ l:'TOEFL Expert',u:'https://t.me/TOBEENG_TOEFL_IBT_BOT',d:'TOEFL 100+' },{ l:'Боб - Английский с ИИ',u:'https://t.me/Tobeeng_GPT_bot',d:'Говори за 3 мес.' }].map(b => (
-                <a key={b.l} href={b.u} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-3 rounded-xl hover:bg-violet-50 group border border-transparent hover:border-violet-100"><div><div className="font-bold text-stone-800 text-sm group-hover:text-violet-700">{b.l}</div><div className="text-xs text-stone-500">{b.d}</div></div><ExternalLink size={16} className="text-stone-300 group-hover:text-violet-500 shrink-0" /></a>
-              ))}
-            </div>
-            <div className="h-px bg-stone-200 my-4" />
-            <div className="space-y-3">
-              <button onClick={() => { setMenu(false); setAbout(true); }} className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border border-stone-100 font-bold text-stone-700 text-sm">ℹ️ О приложении</button>
-              <button onClick={() => { setMenu(false); onOpenSettings(); }} className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border border-stone-100 font-bold text-stone-700 text-sm"><Settings size={18} /> Сбросить прогресс</button>
-              <a href="https://berdiyev-eng.ru" target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-violet-600 text-white font-bold text-sm"><Gift size={18} /> Бесплатный урок</a>
-            </div>
-          </div>
-        </div>
-      )}
-      <Modal isOpen={about} onClose={() => setAbout(false)} title="О приложении BEMAT">
-        <div className="space-y-4">
-          <p className="text-stone-700"><strong>BEMAT</strong> — бесплатные ресурсы для изучения английского.</p>
-          <ul className="space-y-2 text-sm text-stone-600">{['Курсы и боты для экзаменов','Книги и новости с переводом','Фильмы и аудирование','Грамматика и перевод','Разговорная практика'].map(t => <li key={t} className="flex items-start gap-2"><span className="text-violet-500">•</span><span>{t}</span></li>)}</ul>
-          <Button onClick={() => setAbout(false)} className="w-full !py-3">Понятно!</Button>
-        </div>
-      </Modal>
-      <Modal isOpen={support} onClose={() => setSupport(false)} title="Поддержать проект">
-        <div className="text-center">
-          <div className="w-20 h-20 bg-gradient-to-tr from-amber-200 to-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"><Heart size={40} className="text-white fill-white" /></div>
-          <p className="text-stone-600 mb-6 text-sm">BEMAT — бесплатный проект , я делаю его в одиночку. Поддержка помогает развивать приложение и покупать корм коту Бобу!</p>
-          <div className="space-y-3"><Button href="https://pay.cloudtips.ru/p/8f56d7d3" className="w-full !py-3">Поддержать</Button><Button variant="ghost" href="https://t.me/+NvMX2DrTa3w1NTVi" className="w-full">Telegram канал</Button></div>
-        </div>
-      </Modal>
+      </div>
     </>
   );
-};
+}
 
-// ==============================
-// ПАНЕЛИ КОНТЕНТА
-// ==============================
+function Shell() {
+  const { user, newDayReached, dismissNewDay } = useUser();
+  const location = useLocation();
+  // Первая страница — лендинг: на ней нет нижней панели,
+  // зато нет и повторов «Каталог» в навигации.
+  const isLanding = location.pathname === '/';
 
-const HomePanel = ({ onNavigate }: { onNavigate: (t: string) => void }) => {
-  const CARDS = [
-    { title: "Курсы", desc: "Бесплатные курсы", icon: GraduationCap, color: "text-blue-500", action: () => document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' }) },
-    { title: "Боты", desc: "AI для экзаменов", icon: Bot, color: "text-violet-500", action: () => document.getElementById('bots')?.scrollIntoView({ behavior: 'smooth' }) },
-    { title: "Чтение", desc: "Книги с переводом", icon: Book, color: "text-emerald-500", action: () => onNavigate('books') },
-    { title: "Видео", desc: "Фильмы и аудирование", icon: Film, color: "text-rose-500", action: () => onNavigate('video') },
-    { title: "Грамматика", desc: "Более 150+ уроков", icon: PenTool, color: "text-amber-500", action: () => onNavigate('practice') },
-    { title: "Разговор", desc: "Практика с людьми", icon: Mic, color: "text-cyan-500", action: () => onNavigate('speak') },
-  ];
-  return (
-    <div className="pb-24 space-y-8 pt-4 px-4">
-      <div className="grid grid-cols-2 gap-3">{CARDS.map(c => (
-        <div key={c.title} className="bg-white p-4 rounded-2xl border border-stone-100 shadow-sm flex flex-col items-start gap-3">
-          <div className={cn("p-2.5 rounded-xl bg-stone-50", c.color)}><c.icon size={28} /></div>
-          <div className="flex-1"><h3 className="font-bold text-stone-900 text-sm leading-tight mb-1">{c.title}</h3><p className="text-xs text-stone-500 line-clamp-2">{c.desc}</p></div>
-          <button onClick={c.action} className="mt-2 w-full py-2.5 bg-violet-600 text-white rounded-xl text-xs font-bold hover:bg-violet-700 shadow-sm active:scale-95">Перейти</button>
-        </div>
-      ))}</div>
-      <div id="courses" className="scroll-mt-24">
-        <div className="flex items-center gap-2 mb-4 px-1"><GraduationCap className="text-violet-600" /><h2 className="text-xl font-bold text-stone-900">Бесплатные курсы</h2></div>
-        <MediaRow title="Плейлист‑курсы в TG" desc="Курсы под каждый уровень." img="https://static.tildacdn.info/tild3534-3233-4463-a134-346339623162/7A7E2857-CCF4-42C5-A.jpeg" link="https://t.me/to_be_eng/190" btnText="Открыть" />
-        <MediaRow title="Lingust — с нуля" desc="Пошаговый курс с нуля." img="https://static.tildacdn.info/tild3662-6262-4237-b766-646237396666/52B5C22F-AAA2-4AF7-8.jpeg" link="https://lingust.ru/english/english-lessons" btnText="Открыть" />
-      </div>
-      <div id="bots" className="scroll-mt-24">
-        <div className="flex items-center gap-2 mb-4 px-1"><Bot className="text-violet-600" /><h2 className="text-xl font-bold text-stone-900">Боты и материалы</h2></div>
-        <MediaRow title="ЕГЭ с ИИ" desc="Ваш репетитор для подготвки к ЕГЭ на 80+ баллов" img="https://bemat.ru/egeai.jpg" link="https://t.me/EGE_ENGLISH_GPT_bot" btnText="Попробовать" />
-        <MediaRow title="ОГЭ с ИИ" desc="Ваш репетитор для подготвки к ОГЭ на 5 баллов" img="https://bemat.ru/ogeai.jpg" link="https://t.me/OGE_ENG_HELPER_BOT" btnText="Попробовать" />
-        <MediaRow title="IELTS эксперт" desc="Ваш репетитор для подготвки к IELTS на 7 + баллов" img="https://static.tildacdn.info/tild3532-3932-4635-a261-306563383261/11.jpg" link="https://t.me/IELTS_berdiyev_bot" btnText="Попробовать" />
-        <MediaRow title="TOEFL эксперт" desc="Ваш репетитор для подготвки к TOEFL на 100+ баллов" img="https://static.tildacdn.info/tild3936-3366-4461-a139-656230353061/10.jpg" link="https://t.me/TOBEENG_TOEFL_IBT_BOT" btnText="Попробовать" />
-        <MediaRow title="ЕГЭ материалы" desc="Все материалы для подготовки к ЕГЭ тут" img="https://bemat.ru/egemat.jpg" link="https://t.me/tobeeng_ege_bot" btnText="Открыть" />
-        <MediaRow title="Боб — Английский с ИИ" desc="Научись английскому за 3 месяца" img="https://bemat.ru/bobai.jpg" link="https://t.me/Tobeeng_GPT_bot" btnText="Попробовать" />
-      </div>
-      <div className="mt-12 pt-8 border-t border-stone-200">
-        <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-lg">
-          <div className="flex flex-col md:flex-row gap-6 items-start">
-            <div className="w-full md:w-48 aspect-[3/4] rounded-2xl overflow-hidden shadow-md"><img src="https://static.tildacdn.info/tild6137-3239-4731-b932-343437323234/__1.jpg" alt="Автор" className="w-full h-full object-cover" /></div>
-            <div className="flex-1">
-              <div className="flex flex-wrap gap-2 mb-4">{['АСПИРАНТ ПЕД НАУК','TEFL','C2','Помог более 2000 + людям','Автор BEMAT'].map(t => <span key={t} className="px-3 py-1 bg-stone-100 text-stone-600 rounded-full text-xs font-bold border border-stone-200">{t}</span>)}</div>
-              <h3 className="text-2xl font-black text-stone-900 mb-3">Об авторе</h3>
-              <p className="text-stone-600 leading-relaxed mb-4">Абдуррахим Бердиев. Помогаю заговорить на английском. ЕГЭ/ОГЭ, IELTS/TOEFL.</p>
-              <ul className="space-y-2 mb-6 text-sm text-stone-600">{['Разговорная практика','Грамматика без теории','Стратегии экзаменов'].map(t => <li key={t} className="flex items-center gap-2"><CheckCircle size={16} className="text-emerald-500" /><span>{t}</span></li>)}</ul>
-              <Button href="https://berdiyev-eng.ru" className="w-full !py-3 !bg-stone-900 !text-white shadow-xl">Бесплатный урок</Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const BooksPanel = () => (<div className="pb-24 pt-4 px-4"><Accordion title="Читать на английском" defaultOpen={true}>
-  <MediaRow title="2books.su" desc="Книги + перевод." img="https://static.tildacdn.info/tild3539-6535-4239-b735-666530633965/1.jpg" link="https://2books.su/" />
-  <MediaRow title="Linguasaur" desc="Книги по уровням." img="https://optim.tildacdn.pub/tild6263-3964-4535-b234-303234656665/-/format/webp/3.png.webp" link="https://linguasaur.com/ru/en/books" />
-  <MediaRow title="AnyLang" desc="Чтение + карточки." img="https://static.tildacdn.info/tild3564-3631-4036-b636-623266636266/2.png" link="https://anylang.net/ru/books/en" />
-  <MediaRow title="Breaking News English" desc="Новости с заданиями." img="https://static.tildacdn.info/tild3161-3861-4234-b362-613030653564/2.jpg" link="https://breakingnewsenglish.com/" />
-</Accordion></div>);
-
-const VideoPanel = () => (<div className="pb-24 pt-4 px-4">
-  <Accordion title="Фильмы и сериалы" defaultOpen={true}>
-    <MediaRow title="Inoriginal" desc="Есть не все фильмы , но есть двойные субтитры." img="https://static.tildacdn.info/tild3336-3030-4964-b966-303862353932/10.jpg" link="https://inoriginal.net/" />
-    <MediaRow title="Solarmovies" desc="Смотрите кино , сериалы и аниме полностью бесплатно ! Может понадобиться VNP." img="https://static.tildacdn.info/tild3036-3665-4436-b131-396638313261/ADB9F47D-E5AA-479B-A.jpeg" link="https://solarmovies.ms/home" />
-    <MediaRow title="HDRezka" desc="Запасной сервис , переключите озвучку на EN." img="https://static.tildacdn.info/tild3639-6237-4435-b338-373633663331/IMG_7903.PNG" link="https://hdrezka.fans/" />
-    <MediaRow title="Zetflix" desc="Ещё один запасной сервис , переключите озвучку на EN." img="https://static.tildacdn.info/tild3430-6262-4238-b332-343464626162/11.jpg" link="https://go.zetflix-online.lol/" />
-  </Accordion>
-  <Accordion title="Аудирование">
-    <MediaRow title="Listen in English" desc="Мини уроки по фильмам и сериалам." img="https://static.tildacdn.info/tild3636-3261-4532-b231-626664646132/BA22E78D-3200-4109-8.jpeg" link="https://listeninenglish.com/index.php" />
-    <MediaRow title="iSLCollective" desc="Мини видео для отработки грамматики и лексики." img="https://static.tildacdn.info/tild3836-3837-4331-b162-623335363239/12.jpg" link="https://en.islcollective.com/english-esl-video-lessons/search" />
-  </Accordion>
-  <Accordion title="Лексика">
-    <MediaRow title="TED‑Ed" desc="Уроки с лексикой." img="https://static.tildacdn.info/tild6339-3537-4662-a130-303765373530/IMG_7745.PNG" link="https://ed.ted.com/lessons" />
-    <MediaRow title="6 Minute English" desc="Видеоуроки от BBC от уровня A2." img="https://static.tildacdn.info/tild3864-3339-4639-b030-653330343666/IMG_7746.PNG" link="https://www.bbc.co.uk/learningenglish/english/features/6-minute-english" />
-  </Accordion>
-</div>);
-
-const PracticePanel = () => (<div className="pb-24 pt-4 px-4">
-  <Accordion title="Грамматика" defaultOpen={true}>
-    <MediaRow title="Bewords.ru" desc="Вся грамматика тут , более 150+ уроков." img="https://bemat.ru/bewordsgram.jpg" link="https://bewords.ru/" btnText="Открыть" />
-    <MediaRow title="Test‑English" desc="Грамматика для уровней A1–B2." img="https://static.tildacdn.info/tild3131-3437-4330-a633-393162336665/4.jpg" link="https://test-english.com/grammar-points/" />
-    <MediaRow title="Lingust" desc="148 уроков грамматики." img="https://optim.tildacdn.pub/tild3062-6233-4431-b363-353163363163/-/format/webp/0D4BE37D-2FBF-4950-8.jpeg.webp" link="https://lingust.ru/english/grammar" />
-  </Accordion>
-  <Accordion title="Перевод предложений">
-    <MediaRow title="RU → EN" desc="Отработка грамматики через перевод." img="https://static.tildacdn.info/tild6435-3633-4265-b966-313030633165/photo.PNG" link="https://bewords.ru" btnText="Тренажёр" />
-  </Accordion>
-</div>);
-
-const SpeakPanel = () => (<div className="pb-24 pt-4 px-4">
-  <Accordion title="Разговорная практика" defaultOpen={true}>
-    <MediaRow title="Боб — Английский с ИИ" desc="Боб научит говорить вас за 3 месяца." img="https://bemat.ru/bobai.jpg" link="https://t.me/Tobeeng_GPT_bot" btnText="Попробовать" />
-    <MediaRow title="Free4talk" desc="Поговорите с реальными людьми." img="https://static.tildacdn.info/tild6631-3338-4435-b966-313430333161/_____2.jpg" link="https://www.free4talk.com/" />
-    <MediaRow title="Character.AI" desc="Разговор с разными ИИ персонажами." img="https://static.tildacdn.info/tild6435-6666-4139-a237-396664643764/_____3.jpg" link="https://character.ai/" />
-  </Accordion>
-  <Accordion title="Учить слова">
-    <MediaRow title="Bewords" desc="Лучшее приложение для повышения словарного запаса." img="https://bemat.ru/bewordswords.jpg" link="https://bewords.ru/" />
-    <MediaRow title="EnglSpace" desc="Словарь ассоциаций" img="https://static.tildacdn.info/tild3462-3164-4432-b633-316131343833/BEE2697D-A7E6-43D6-9.jpeg" link="https://t.me/English_Mnemo_Bot" />
-  </Accordion>
-</div>);
-
-const NavBtn = ({ active, onClick, icon: Icon, label }: any) => (
-  <button onClick={onClick} className={cn("flex flex-col items-center gap-1", active ? "text-violet-600" : "text-stone-400 hover:text-stone-600")}>
-    <Icon size={22} strokeWidth={active ? 2.5 : 2} className={cn("transition-all", active && "scale-110")} />
-    <span className="text-[10px] font-bold">{label}</span>
-  </button>
-);
-
-// ==============================
-// ГЛАВНЫЙ КОМПОНЕНТ
-// ==============================
-
-export function App() {
-  const [isPWAMode, setIsPWAMode] = useState(() => checkIsPWA());
-  const [isLoading, setIsLoading] = useState(() => checkIsPWA());
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [user, setUser] = useState<UserState | null>(null);
-  const [showResetConfirm, setShowResetConfirm] = useState(false);
-  const [showStreakPopup, setShowStreakPopup] = useState(false);
-  const [updateAvailable, setUpdateAvailable] = useState(false);
-  const streakScheduled = useRef(false);
-  const swWaiting = useRef<ServiceWorker | null>(null);
-
-  // 1. Install prompt
   useEffect(() => {
-    const handler = (e: any) => { e.preventDefault(); setDeferredPrompt(e); };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
-
-  // 2. SW updates
-  useEffect(() => {
-    if (!('serviceWorker' in navigator)) return;
-    const checkUpdates = async () => {
-      try {
-        const reg = await navigator.serviceWorker.ready;
-        await reg.update();
-        if (reg.waiting) { swWaiting.current = reg.waiting; setUpdateAvailable(true); }
-        reg.addEventListener('updatefound', () => {
-          const newWorker = reg.installing;
-          if (!newWorker) return;
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              swWaiting.current = newWorker;
-              setUpdateAvailable(true);
-            }
-          });
-        });
-      } catch {}
-    };
-    checkUpdates();
-    const interval = setInterval(checkUpdates, 60 * 1000);
-    let refreshing = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!refreshing) { refreshing = true; window.location.reload(); }
-    });
-    return () => clearInterval(interval);
-  }, []);
-
-  // 3. User + Splash + PWA auto-detect
-  useEffect(() => {
-    const loadUser = () => {
-      const saved = localStorage.getItem('bemat_user_v3');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          const last = new Date(parsed.lastVisit);
-          const today = new Date();
-          const todayStr = today.toDateString();
-          const diff = Math.floor((today.getTime() - last.getTime()) / (1000 * 60 * 60 * 24));
-          let newStreak = parsed.streak || 1;
-          let newCompleted = parsed.completedTasks || [];
-          let newCatFed = parsed.catFed || false;
-          if (todayStr !== last.toDateString()) { newCompleted = []; newCatFed = false; newStreak = diff <= 1 ? newStreak + 1 : 1; }
-          const updated: UserState = { ...parsed, streak: newStreak, lastVisit: today.toISOString(), completedTasks: newCompleted, catFed: newCatFed, customTasks: parsed.customTasks || [], streakShownDate: parsed.streakShownDate || '', notifHour: parsed.notifHour || 19 };
-          setUser(updated);
-          localStorage.setItem('bemat_user_v3', JSON.stringify(updated));
-          if (updated.streakShownDate !== todayStr && !streakScheduled.current) { streakScheduled.current = true; setTimeout(() => setShowStreakPopup(true), isPWAMode ? 1800 : 600); }
-          if (updated.notificationsEnabled) scheduleNotification(updated.notifHour || 19);
-        } catch { localStorage.removeItem('bemat_user_v3'); }
-      }
-    };
-    loadUser();
-    if (isPWAMode) setTimeout(() => setIsLoading(false), 1500);
-
-    // Auto-detect PWA mode switch
-    const match = window.matchMedia('(display-mode: standalone)');
-    const onChange = (evt: MediaQueryListEvent) => { if (evt.matches) setIsPWAMode(true); };
-    match.addEventListener('change', onChange);
-
-    const vis = () => {
-      if (document.visibilityState === 'visible') {
-        const s = localStorage.getItem('bemat_user_v3');
-        if (s) try { const p = JSON.parse(s); if (p.notificationsEnabled) scheduleNotification(p.notifHour || 19); } catch {}
-      }
-    };
-    document.addEventListener('visibilitychange', vis);
-    return () => {
-      document.removeEventListener('visibilitychange', vis);
-      match.removeEventListener('change', onChange);
-      cancelNotification();
-    };
-  }, [isPWAMode]);
-
-  // Handlers
-  const handleOnboarding = (name: string, goal: UserGoal) => {
-    const nu: UserState = { name, goal, streak: 1, lastVisit: new Date().toISOString(), completedTasks: [], customTasks: [], notificationsEnabled: false, isOnboarded: true, catFed: false, streakShownDate: '', notifHour: 19 };
-    setUser(nu); localStorage.setItem('bemat_user_v3', JSON.stringify(nu));
-    setTimeout(() => setShowStreakPopup(true), 800);
-  };
-  const updateUser = (u: UserState) => { setUser(u); localStorage.setItem('bemat_user_v3', JSON.stringify(u)); };
-  const resetProgress = () => { cancelNotification(); localStorage.removeItem('bemat_user_v3'); setUser(null); setShowResetConfirm(false); setActiveTab('dashboard'); streakScheduled.current = false; };
-  const handleNavigate = (tab: string) => { setActiveTab(tab); window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior }); };
-  const closeStreak = () => { setShowStreakPopup(false); if (user) updateUser({ ...user, streakShownDate: new Date().toDateString() }); };
-  const handleUpdate = () => { if (swWaiting.current) swWaiting.current.postMessage({ type: 'SKIP_WAITING' }); else window.location.reload(); };
-  const handlePromptInstall = async () => { if (!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; setDeferredPrompt(null); };
-  const handleEnterApp = () => setIsPWAMode(true);
-
-  // ====== РЕНДЕР ======
-
-  if (isLoading) return <SplashScreen />;
-  if (!isPWAMode) return <PWALandingPage deferredPrompt={deferredPrompt} onPromptInstall={handlePromptInstall} onSkip={handleEnterApp} />;
-  if (!user) return <Onboarding onComplete={handleOnboarding} />;
-
-  const BackButton = () => (<div className="px-4 pt-4"><button onClick={() => setActiveTab('dashboard')} className="flex items-center gap-2 text-stone-500 font-bold mb-2 hover:text-violet-600"><ArrowRight className="rotate-180" size={18} /> Назад</button></div>);
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [location.pathname]);
 
   return (
-    <div className="min-h-screen bg-[#fafaf9] font-sans text-stone-900 pb-20 selection:bg-violet-200">
-      <Sponsors />
-      <Header onNavigate={handleNavigate} onOpenSettings={() => setShowResetConfirm(true)} />
-      {updateAvailable && <UpdateBanner onUpdate={handleUpdate} />}
+    <div
+      className={
+        'min-h-screen bg-[#fafaf9] font-sans text-stone-900 selection:bg-violet-200 ' +
+        (isLanding ? '' : 'pb-24 lg:pb-0')
+      }
+    >
+      <Header />
 
-      <main className="max-w-xl mx-auto w-full">
-        {activeTab === 'dashboard' && <Dashboard user={user} onUpdateUser={updateUser} onNavigate={handleNavigate} />}
-        {activeTab === 'home' && <div><BackButton /><HomePanel onNavigate={handleNavigate} /></div>}
-        {activeTab === 'books' && <div><BackButton /><BooksPanel /></div>}
-        {activeTab === 'video' && <div><BackButton /><VideoPanel /></div>}
-        {activeTab === 'practice' && <div><BackButton /><PracticePanel /></div>}
-        {activeTab === 'speak' && <div><BackButton /><SpeakPanel /></div>}
+      <main className="mx-auto w-full max-w-3xl lg:max-w-5xl">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/books" element={<SectionPage section="books" />} />
+          <Route path="/video" element={<SectionPage section="video" />} />
+          <Route path="/practice" element={<SectionPage section="practice" />} />
+          <Route path="/speak" element={<SectionPage section="speak" />} />
+          <Route path="/courses" element={<SectionPage section="courses" />} />
+          <Route path="/bots" element={<SectionPage section="bots" />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/favorites" element={<FavoritesPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-stone-200 px-4 z-50 rounded-t-[1.5rem] shadow-[0_-5px_20px_rgba(0,0,0,0.03)]">
-        <div className="flex justify-between items-center max-w-lg mx-auto h-[64px]">
-          <NavBtn active={activeTab === 'dashboard'} onClick={() => handleNavigate('dashboard')} icon={Home} label="Кабинет" />
-          <NavBtn active={activeTab === 'home'} onClick={() => handleNavigate('home')} icon={GraduationCap} label="Ресурсы" />
-          <NavBtn active={activeTab === 'books'} onClick={() => handleNavigate('books')} icon={Book} label="Книги" />
-          <NavBtn active={activeTab === 'video'} onClick={() => handleNavigate('video')} icon={Film} label="Видео" />
-          <NavBtn active={activeTab === 'practice'} onClick={() => handleNavigate('practice')} icon={PenTool} label="Практика" />
-          <NavBtn active={activeTab === 'speak'} onClick={() => handleNavigate('speak')} icon={Mic} label="Разговор" />
-        </div>
-      </nav>
+      <SiteFooter />
+      {!isLanding && <BottomNav />}
+      <InstallBanner />
 
-      <StreakPopup isOpen={showStreakPopup} onClose={closeStreak} streak={user.streak} />
-
-      <Modal isOpen={showResetConfirm} onClose={() => setShowResetConfirm(false)} title="Сбросить прогресс?">
-        <div className="text-center space-y-4">
-          <p className="text-stone-600">Все данные будут удалены.</p>
-          <Button onClick={resetProgress} className="w-full !bg-red-500 !text-white !shadow-red-200">Сбросить</Button>
-          <Button variant="ghost" onClick={() => setShowResetConfirm(false)} className="w-full">Отмена</Button>
-        </div>
-      </Modal>
+      {user.isOnboarded && <StreakPopup isOpen={newDayReached} onClose={dismissNewDay} />}
     </div>
+  );
+}
+
+// В автономном превью (scripts/preview.mjs) путь в адресной строке произвольный,
+// поэтому там включается memory-роутер. На сайте всегда работает BrowserRouter.
+const Router: typeof BrowserRouter =
+  typeof window !== 'undefined' && (window as unknown as { __BEMAT_PREVIEW__?: boolean }).__BEMAT_PREVIEW__
+    ? (MemoryRouter as unknown as typeof BrowserRouter)
+    : BrowserRouter;
+
+export function App() {
+  return (
+    <ErrorBoundary>
+      <InstallProvider>
+        <Router>
+          <UserProvider>
+            <Shell />
+          </UserProvider>
+        </Router>
+      </InstallProvider>
+    </ErrorBoundary>
   );
 }

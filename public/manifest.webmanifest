@@ -1,0 +1,58 @@
+{
+  "name": "BEMAT — английский бесплатно",
+  "short_name": "BEMAT",
+  "description": "Фильмы, книги с переводом, грамматика, разговорная практика с ИИ и подготовка к ЕГЭ, ОГЭ, IELTS, TOEFL.",
+  "id": "/",
+  "start_url": "/?utm_source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#fafaf9",
+  "theme_color": "#ffffff",
+  "lang": "ru",
+  "dir": "ltr",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "/icophot/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/icophot/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icophot/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icophot/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Мой план на день",
+      "short_name": "План",
+      "url": "/dashboard"
+    },
+    {
+      "name": "Книги на английском",
+      "short_name": "Книги",
+      "url": "/books"
+    },
+    {
+      "name": "Фильмы с субтитрами",
+      "short_name": "Видео",
+      "url": "/video"
+    }
+  ]
+}
