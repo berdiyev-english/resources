@@ -38,9 +38,11 @@
     <meta name="twitter:image" content="https://bemat.ru/og-bemat.png" />
 
     <!-- Иконки и manifest -->
-    <link rel="icon" type="image/png" href="/icophot/favicon-96x96.png" sizes="96x96" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/icophot/apple-touch-icon.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- Иконка вкладки: сначала .ico (его браузер запрашивает сам), потом PNG -->
+    <link rel="icon" href="/favicon.ico" sizes="any" onerror="this.onerror=null;this.href='./favicon.ico'">
+    <link rel="icon" type="image/png" href="/icophot/favicon-96x96.png" sizes="96x96" onerror="this.onerror=null;this.href='./icophot/favicon-96x96.png'">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icophot/apple-touch-icon.png" onerror="this.onerror=null;this.href='./icophot/apple-touch-icon.png'">
+    <link rel="manifest" href="/manifest.webmanifest" onerror="this.onerror=null;this.href='./manifest.webmanifest'">
 
     <!-- PWA / iOS -->
     <meta name="theme-color" content="#ffffff" />
@@ -114,8 +116,8 @@
       .seo-fallback a { color: #6d28d9; }
       .seo-fallback .note { font-size: 13px; color: #78716c; }
     </style>
-    <script type="module" crossorigin src="/assets/index-6lE9KKlR.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-egb24dq5.css">
+    <script type="module" src="/assets/index-CcbhTrvM.js" onerror="this.onerror=null;var s=document.createElement('script');s.type='module';s.src='./assets/index-CcbhTrvM.js';document.head.appendChild(s)"></script>
+    <link rel="stylesheet" href="/assets/index-egb24dq5.css" onerror="this.onerror=null;this.href='./assets/index-egb24dq5.css'">
   </head>
   <body>
     <!--
