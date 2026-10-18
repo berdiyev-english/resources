@@ -319,7 +319,7 @@ export function HomePage() {
         </section>
 
         {/* ПОИСК ПО КАТАЛОГУ (быстрый поиск; полный каталог — на странице /catalog) */}
-        <section id="catalog" className="scroll-mt-20 mb-8">
+        <section id="catalog" className="scroll-mt-[calc(3.5rem+env(safe-area-inset-top,0px)+12px)] mb-8">
           <SectionHeading
             emoji="🔎"
             title="Поиск по каталогу"
@@ -457,8 +457,15 @@ export function HomePage() {
               <img
                 src={CONTACTS.authorPhoto}
                 alt={`${CONTACTS.authorName} — автор проекта BEMAT`}
-                loading="lazy"
-                className="w-28 sm:w-36 aspect-[3/4] object-cover rounded-2xl shadow-md mx-auto sm:mx-0"
+                loading="eager"
+                decoding="async"
+                onError={(e) => {
+                  const img = e.currentTarget;
+                  if (img.dataset.fallback) return;
+                  img.dataset.fallback = '1';
+                  img.src = '/bob-logo.png';
+                }}
+                className="w-28 sm:w-36 aspect-[3/4] object-cover rounded-2xl shadow-md mx-auto sm:mx-0 bg-stone-100"
               />
               <div className="flex-1">
                 <div className="flex flex-wrap gap-1.5 mb-3">

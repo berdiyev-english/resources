@@ -73,6 +73,17 @@
 .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
 .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
 
+/* Статус-бар (время/батарея) на iPhone в standalone и в WebView-приложениях
+   лежит ПОВЕРХ страницы — при viewport-fit=cover шапа уезжала под часы.
+   Добавляем отступ safe-area к sticky-шапке и не даём тексту залезать под вырез. */
+@supports (padding: env(safe-area-inset-top)) {
+  .app-header {
+    padding-top: env(safe-area-inset-top, 0px);
+    /* фон должен покрывать и зону статуса */
+    background-color: rgba(250, 250, 249, 0.98);
+  }
+}
+
 /* Статичный SEO-фолбэк в #root (до рендера React) */
 .seo-fallback {
   max-width: 760px;

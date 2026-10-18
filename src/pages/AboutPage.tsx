@@ -128,8 +128,18 @@ export function AboutPage() {
               <img
                 src={CONTACTS.authorPhoto}
                 alt={`${CONTACTS.authorName} — автор BEMAT`}
-                loading="lazy"
-                className="w-32 sm:w-40 aspect-[3/4] object-cover rounded-2xl shadow-md mx-auto sm:mx-0"
+                // eager + без блокирующей загрузки: на мобильных lazy-фото
+                // иногда не доезжало до экрана, а без fallback при 404
+                // оставалась пустая рамка. Онбординг-иллюстрация спасает вид.
+                loading="eager"
+                decoding="async"
+                onError={(e) => {
+                  const img = e.currentTarget;
+                  if (img.dataset.fallback) return;
+                  img.dataset.fallback = '1';
+                  img.src = '/bob-logo.png';
+                }}
+                className="w-32 sm:w-40 aspect-[3/4] object-cover rounded-2xl shadow-md mx-auto sm:mx-0 bg-stone-100"
               />
               <div className="flex-1">
                 <div className="flex flex-wrap gap-1.5 mb-3">

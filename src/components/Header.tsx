@@ -57,7 +57,7 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-[#fafaf9]/95 backdrop-blur-md border-b border-stone-100">
+      <header className="app-header sticky top-0 z-40 bg-[#fafaf9]/95 backdrop-blur-md border-b border-stone-100">
         <div className="mx-auto max-w-5xl px-4 h-14 flex items-center justify-between gap-3">
           <Link to="/" className="flex items-center gap-2 no-underline shrink-0">
             <img
