@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Clock, Flame, Search, Target, X } from 'lucide-react';
+import { ArrowRight, CheckCircle, ChevronDown, Clock, Flame, Search, Target, X } from 'lucide-react';
 import logo from '../assets/logo.png';
 import bobSticker from '../assets/bob-sticker.png';
 import { CONTACTS } from '../data/site';
@@ -9,12 +9,14 @@ import {
   RESOURCE_BY_ID,
   SECTION_META,
   SITE_SECTIONS,
+  resourcesOfSection,
   type Resource,
+  type SectionId,
 } from '../data/resources';
 import { Seo, faqPage, itemList } from '../lib/seo';
 import { Card, SectionHeading, Button } from '../components/UI';
 import { ResourceCard } from '../components/ResourceCard';
-import { FaqSection } from '../components/ContentBlocks';
+import { FaqSection, SectionChips } from '../components/ContentBlocks';
 import { SECTION_ICONS } from '../components/icons';
 import { useUser } from '../state/UserContext';
 
@@ -46,6 +48,169 @@ const HOME_FAQ = [
 ];
 
 const POPULAR = ['books-memes-bemem', 'books-2books', 'video-inoriginal', 'practice-bewords'];
+
+/** SEO-текст на главной, свёрнутый в компактную плашку (мобильный приоритет) */
+function WhyFreeBlock() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="bg-white border border-stone-100 rounded-2xl shadow-sm overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="w-full flex items-center justify-between gap-3 p-4 text-left"
+      >
+        <span>
+          <span className="block font-bold text-sm text-stone-900">📘 Как заниматься бесплатно и дойти до B1–B2</span>
+          <span className="block text-xs text-stone-500 mt-0.5">Коротко: план, ресурсы, экзамены</span>
+        </span>
+        <ChevronDown size={20} className={`text-stone-400 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="p-4 pt-3 border-t border-stone-100 space-y-3">
+          <p className="text-sm text-stone-600 leading-relaxed">
+            До уровня B1–B2 реально дойти без платных курсов: важно не количество материалов, а регулярность. BEMAT
+            собирает бесплатные ресурсы в одном месте — книги с переводом, мемы, фильмы с субтитрами, грамматику и
+            разговорную практику — и добавляет то, чего обычно не хватает: план на 15 минут, прогресс и проверку
+            письма с речью с помощью ИИ.
+          </p>
+          <p className="text-sm text-stone-600 leading-relaxed">
+            <strong className="text-stone-800">Для экзаменов:</strong> банк заданий ФИПИ для ЕГЭ и ОГЭ, практические
+            тесты British Council и ExamEnglish для IELTS и TOEFL, ИИ-репетиторы для проверки эссе и устной части.
+          </p>
+          <p className="text-sm text-stone-600 leading-relaxed">
+            <strong className="text-stone-800">Для речи:</strong> ИИ-собеседник Боб, комнаты Free4talk с реальными
+            людьми и произношение по видео носителей в YouGlish.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Главная «как приложение»: нижняя вкладка «Каталог» ведёт на /catalog,
+ * где весь каталог доступен построчно — по одному разделу за экран,
+ * вместо бесконечной простыни текста на одной странице.
+ */
+function CatalogTab() {
+  const [query, setQuery] = useState('');
+
+  const results = useMemo<Resource[]>(() => {
+    const q = query.trim().toLowerCase();
+    if (q.length < 2) return [];
+    return RESOURCES.filter(
+      (r) =>
+        r.title.toLowerCase().includes(q) ||
+        r.desc.toLowerCase().includes(q) ||
+        r.group.toLowerCase().includes(q)
+    );
+  }, [query]);
+
+  return (
+    <>
+      <Seo
+        seo={{
+          path: '/catalog',
+          title: 'Каталог ресурсов для изучения английского — все разделы | BEMAT',
+          description:
+            'Весь каталог BEMAT по разделам: книги с переводом, фильмы и сериалы с субтитрами, грамматика, разговорная практика, курсы и подготовка к ЕГЭ, ОГЭ, IELTS, TOEFL. Бесплатно.',
+          keywords:
+            'каталог ресурсов английский, книги на английском, фильмы с субтитрами, грамматика онлайн, подготовка к егэ ielts, разговорный английский бесплатно',
+          jsonLd: [
+            itemList(
+              'Каталог BEMAT',
+              SITE_SECTIONS.map((id) => ({
+                name: SECTION_META[id].navLabel,
+                url: `https://bemat.ru${SECTION_META[id].path}`,
+              }))
+            ),
+          ],
+        }}
+      />
+
+      <div className="px-4 lg:px-0 pt-4 pb-6">
+        <h1 className="text-2xl sm:text-3xl font-black text-stone-900 mb-1">Каталог ресурсов</h1>
+        <p className="text-stone-500 text-sm mb-4">
+          {RESOURCES.length} проверенных сайтов, сервисов и ботов — выбирай раздел и открывай по одному экрану за раз.
+        </p>
+
+        <div className="relative mb-4">
+          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Найти: книги, субтитры, ЕГЭ, произношение…"
+            aria-label="Поиск по каталогу ресурсов"
+            className="w-full pl-11 pr-11 py-3.5 rounded-2xl bg-white border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 shadow-sm"
+          />
+          {query && (
+            <button
+              onClick={() => setQuery('')}
+              aria-label="Очистить поиск"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-stone-400 hover:text-stone-600"
+            >
+              <X size={18} />
+            </button>
+          )}
+        </div>
+
+        {query.trim().length >= 2 ? (
+          results.length > 0 ? (
+            <div className="space-y-2">
+              <p className="text-xs text-stone-500 px-1">Найдено: {results.length}</p>
+              {results.map((r) => (
+                <ResourceCard key={r.id} resource={r} compact />
+              ))}
+            </div>
+          ) : (
+            <Card className="p-6 text-center">
+              <p className="text-sm text-stone-500">Ничего не нашлось. Попробуй другой запрос.</p>
+            </Card>
+          )
+        ) : (
+          <div className="space-y-4">
+            {SITE_SECTIONS.map((id) => {
+              const meta = SECTION_META[id];
+              const Icon = SECTION_ICONS[id];
+              const items = resourcesOfSection(id);
+              return (
+                <section key={id} className="bg-white border border-stone-100 rounded-3xl shadow-sm p-4">
+                  <div className="flex items-center justify-between gap-3 mb-3">
+                    <h2 className="flex items-center gap-2 font-black text-stone-900 text-base">
+                      <span className="w-8 h-8 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center shrink-0">
+                        <Icon size={16} />
+                      </span>
+                      {meta.navLabel}
+                    </h2>
+                    <Link
+                      to={meta.path}
+                      className="inline-flex items-center gap-1 text-xs font-bold text-violet-600 no-underline shrink-0"
+                    >
+                      Все {items.length} → 
+                    </Link>
+                  </div>
+                  <p className="text-[11px] text-stone-500 -mt-1 mb-3">{meta.tagline}</p>
+                  <div className="space-y-2">
+                    {items.slice(0, 3).map((r) => (
+                      <ResourceCard key={r.id} resource={r} compact />
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+/** Каталог — отдельная страница приложения (вкладка «Каталог» внизу). */
+export function CatalogPage() {
+  return <CatalogTab />;
+}
 
 export function HomePage() {
   const { hasProfile } = useUser();
@@ -127,12 +292,12 @@ export function HomePage() {
                 >
                   {hasProfile ? 'Мой план на сегодня' : 'Составить план на 15 минут'} <ArrowRight size={18} />
                 </Link>
-                <a
-                  href="#catalog"
+                <Link
+                  to="/catalog"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white border border-stone-200 text-stone-700 font-bold no-underline"
                 >
                   Смотреть каталог
-                </a>
+                </Link>
               </div>
               <p className="text-xs text-stone-400 mt-3">
                 Работает прямо в браузере телефона — приложение устанавливать не обязательно.
@@ -153,11 +318,11 @@ export function HomePage() {
           </div>
         </section>
 
-        {/* ПОИСК ПО КАТАЛОГУ */}
+        {/* ПОИСК ПО КАТАЛОГУ (быстрый поиск; полный каталог — на странице /catalog) */}
         <section id="catalog" className="scroll-mt-20 mb-8">
           <SectionHeading
             emoji="🔎"
-            title="Каталог ресурсов"
+            title="Поиск по каталогу"
             subtitle={`${RESOURCES.length} проверенных сайтов, сервисов и ботов`}
           />
           <div className="relative mb-4">
@@ -276,29 +441,13 @@ export function HomePage() {
           </Card>
         </section>
 
-        {/* SEO-ТЕКСТ (для поисковиков) */}
+        {/* ПОЧЕМУ БЕСПЛАТНО — свёрнуто, чтобы не перегружать главную */}
         <section className="mb-8">
-          <SectionHeading emoji="📘" title="Как заниматься английским бесплатно" />
-          <div className="space-y-4">
-            <p className="text-sm text-stone-600 leading-relaxed">
-              До уровня B1–B2 реально дойти без платных курсов: важно не количество материалов, а регулярность. BEMAT
-              собирает бесплатные ресурсы в одном месте — книги с переводом, мемы, фильмы с субтитрами, грамматику и
-              разговорную практику — и добавляет то, чего обычно не хватает: план на 15 минут, прогресс и проверку
-              письма с речью с помощью ИИ.
-            </p>
-            <p className="text-sm text-stone-600 leading-relaxed">
-              <strong className="text-stone-800">Для экзаменов:</strong> банк заданий ФИПИ для ЕГЭ и ОГЭ, практические
-              тесты British Council и ExamEnglish для IELTS и TOEFL, ИИ-репетиторы для проверки эссе и устной части.
-            </p>
-            <p className="text-sm text-stone-600 leading-relaxed">
-              <strong className="text-stone-800">Для речи:</strong> ИИ-собеседник Боб, комнаты Free4talk с реальными
-              людьми и произношение по видео носителей в YouGlish.
-            </p>
-          </div>
+          <WhyFreeBlock />
         </section>
 
         <section className="mb-8">
-          <FaqSection items={HOME_FAQ} title="Вопросы и ответы" />
+          <FaqSection items={HOME_FAQ} title="Вопросы и ответы" maxVisible={3} />
         </section>
 
         {/* АВТОР */}
