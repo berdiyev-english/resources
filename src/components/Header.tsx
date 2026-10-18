@@ -57,7 +57,10 @@ export function Header() {
 
   return (
     <>
-      <header className="app-header sticky top-0 z-40 bg-[#fafaf9]/95 backdrop-blur-md border-b border-stone-100">
+      {/* fixed (а не sticky): sticky «улетает» в WebView/Capacitor-приложениях и
+          при горизонтальном скролле страницы. Фиксированная шапка всегда видна,
+          а body-app отступает на её высоту (см. index.css). */}
+      <header className="app-header fixed top-0 left-0 right-0 z-40 bg-[#fafaf9]/95 backdrop-blur-md border-b border-stone-100">
         <div className="mx-auto max-w-5xl px-4 h-14 flex items-center justify-between gap-3">
           <Link to="/" className="flex items-center gap-2 no-underline shrink-0">
             <img

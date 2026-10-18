@@ -1,5 +1,7 @@
 import { Component, useEffect, type ReactNode } from 'react';
 import { BrowserRouter, Link, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { Home, LayoutGrid } from 'lucide-react';
+import catBob from './assets/cat-bob.png';
 import { InstallProvider } from './state/InstallContext';
 import { UserProvider, useUser } from './state/UserContext';
 import { BottomNav, Header, SiteFooter } from './components/Header';
@@ -46,7 +48,10 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 
 // --------------------------------- Каркас ---------------------------------
 
-function NotFoundPage() {
+// --------------------------------- 404 ---------------------------------
+// Та же стилистика, что и у всего приложения (кот Боб, фиолетовые акценты).
+
+export function NotFoundPage() {
   return (
     <>
       <Seo
@@ -57,22 +62,47 @@ function NotFoundPage() {
           noindex: true,
         }}
       />
-      <div className="px-4 py-16 text-center">
-        <div className="text-6xl mb-4">🧭</div>
-        <h1 className="text-2xl font-black text-stone-900 mb-2">Страница не найдена</h1>
-        <p className="text-sm text-stone-500 mb-6">Возможно, ссылка устарела. Попробуй один из разделов:</p>
-        <div className="flex flex-wrap justify-center gap-2">
+      <div className="px-4 pt-10 pb-16 text-center">
+        {/* Кот Боб потерялся */}
+        <div className="relative inline-block mb-6">
+          <img
+            src={catBob}
+            alt='Кот Боб ничего не нашёл'
+            width={128}
+            height={128}
+            className="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-white shadow-xl animate-breathe"
+          />
+          <span className="absolute -top-2 -right-3 text-3xl rotate-12" aria-hidden="true">🔍</span>
+        </div>
+
+        <p className="text-[13px] font-black uppercase tracking-[0.2em] text-violet-500 mb-2">Ошибка 404</p>
+        <h1 className="text-2xl sm:text-3xl font-black text-stone-900 mb-2">Мяу… такой страницы нет</h1>
+        <p className="text-sm text-stone-500 mb-8 max-w-sm mx-auto">
+          Боб прошёлся по всем полкам — этой ссылки здесь нет. Возможно, она устарела или в ней опечатка.
+        </p>
+
+        <div className="flex flex-wrap justify-center gap-2 mb-8">
           <Link
             to="/"
-            className="px-4 py-2.5 rounded-xl bg-violet-600 text-white text-sm font-bold no-underline"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl grad-violet text-white text-sm font-bold no-underline shadow-lg shadow-violet-600/20"
           >
-            Каталог ресурсов
+            <LayoutGrid size={16} aria-hidden="true" /> Каталог ресурсов
           </Link>
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-stone-200 text-stone-700 text-sm font-bold no-underline hover:border-violet-200"
+          >
+            <Home size={16} aria-hidden="true" /> Мой план занятий
+          </Link>
+        </div>
+
+        <p className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-3">Или загляни в разделы:</p>
+        <div className="flex flex-wrap justify-center gap-2">
           {SECTIONS_NAV.map((s) => (
             <Link
               key={s.path}
               to={s.path}
-              className="px-4 py-2.5 rounded-xl bg-white border border-stone-200 text-stone-700 text-sm font-bold no-underline"
+              className="px-4 py-2.5 rounded-xl bg-white border border-stone-200 text-stone-700 text-sm font-bold no-underline hover:border-violet-200 hover:text-violet-700 transition-colors"
             >
               {s.emoji} {s.label}
             </Link>
@@ -98,7 +128,7 @@ function Shell() {
   return (
     <div
       className={
-        'min-h-screen bg-[#fafaf9] font-sans text-stone-900 selection:bg-violet-200 ' +
+        'body-app min-h-screen bg-[#fafaf9] font-sans text-stone-900 selection:bg-violet-200 ' +
         (isLanding ? '' : 'pb-24 lg:pb-0')
       }
     >
