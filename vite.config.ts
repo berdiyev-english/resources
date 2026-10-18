@@ -20,5 +20,19 @@ export default defineConfig({
     target: 'es2020',
     cssCodeSplit: true,
     sourcemap: false,
+    // ВАЖНО: раньше было outDir:'assets' — из-за этого картинки, которые Vite
+    // кладёт в подпапку assets (логотип/кот Боб), уезжали в /assets/assets/...
+    // и на сервере давали 404 (битая «лапа», битый логотип).
+    // Теперь сборка идёт в dist/, а scripts/deploy-root.mjs копирует готовые
+    // файлы в корень репозитория (так деплоится bemat.ru).
+    outDir: 'dist',
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash][extname]',
+      },
+    },
   },
 });

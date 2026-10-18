@@ -25,6 +25,6 @@ export const CONTACTS = {
   donate: 'https://pay.cloudtips.ru/p/8f56d7d3',
   rustore: 'https://www.rustore.ru/catalog/app/co.median.android.pkpxbe',
   authorName: 'Абдуррахим Бердиев',
-  authorPhoto: 'https://static.tildacdn.info/tild6137-3239-4731-b932-343437323234/__1.jpg',
+  authorPhoto: 'https://bemat.ru/author-berdiyev.jpg',
   authorTags: ['Аспирант пед. наук', 'TEFL', 'C2', '2000+ учеников', 'Автор BEMAT'],
 };
