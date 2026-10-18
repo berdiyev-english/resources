@@ -18,9 +18,13 @@ function ResourceThumb({ resource, className }: { resource: Resource; className?
 
   return (
     <img
+      // палитра stone по умолчанию: картинка не «прыгает» при загрузке
       src={resource.img}
       alt={`${resource.title} — изучение английского`}
-      loading="lazy"
+      // eager: скриншоты лежат локально в /public и они маленькие —
+      // на мобильных lazy-загрузка часто «не доезжала» до картинки,
+      // из-за чего превью (в т.ч. кота Боба) не было видно.
+      loading="eager"
       decoding="async"
       onError={() => setBroken(true)}
       className={cn('object-cover bg-stone-100', className)}
@@ -74,8 +78,13 @@ export function ResourceCard({ resource, compact = false }: { resource: Resource
         rel="noopener noreferrer"
         className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-4 bg-white rounded-2xl border border-stone-100 shadow-sm hover:border-violet-200 hover:shadow transition-all no-underline text-inherit"
       >
-        {/* Мобильная версия превью — маленький квадрат; на sm+ — крупный */}
-        <ResourceThumb resource={resource} className="w-full h-32 sm:w-28 sm:h-28 rounded-xl shrink-0 overflow-hidden" />
+        {/* Превью: мобильная версия — широкий блок фиксированной высоты,
+            чтобы высота карточки не менялась при загрузке картинки (нет «прыжков»);
+            на sm+ — квадрат слева. */}
+        <ResourceThumb
+          resource={resource}
+          className="w-full h-40 min-h-40 sm:w-28 sm:h-28 sm:min-h-0 rounded-xl shrink-0 overflow-hidden"
+        />
 
         <div className="flex-1 min-w-0 flex flex-col">
           <div className="flex items-start gap-3">
