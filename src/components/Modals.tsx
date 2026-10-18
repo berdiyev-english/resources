@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Bell, BellRing, CheckCircle, CheckCircle2, Flame, Sparkles, Star } from 'lucide-react';
 import logo from '../assets/logo.png';
-import catHungry from '../assets/cathungry.png';
-import catFedImg from '../assets/catfed.png';
+// Кот Боб лежит в public/ под именем cat-bob.png и приходит с сервера как есть.
+// Через import Vite переименовывал его в assets/cathungry-<hash>.png — из-за этого
+// на хостинге кот давал 404 («приложение не видит кота»). Публичный путь стабильный.
+const catHungry = '/cat-bob.png';
+const catFedImg = '/cat-bob-fed.png';
 import { GOAL_OPTIONS, type UserGoal } from '../lib/storage';
 import { requestNotificationPermission, sendTestNotification } from '../lib/notify';
 import { useUser } from '../state/UserContext';

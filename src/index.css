@@ -75,13 +75,21 @@
 
 /* Статус-бар (время/батарея) на iPhone в standalone и в WebView-приложениях
    лежит ПОВЕРХ страницы — при viewport-fit=cover шапа уезжала под часы.
-   Добавляем отступ safe-area к sticky-шапке и не даём тексту залезать под вырез. */
+   Шапка теперь position:fixed (sticky в WebView-обёртках «улетал»), поэтому:
+   1) добавляем ей отступ safe-area сверху (и высоту шапки — всему body-app);
+   2) фон должен покрывать и зону статуса. */
+.app-header {
+  --app-header-h: calc(3.5rem + env(safe-area-inset-top, 0px));
+}
 @supports (padding: env(safe-area-inset-top)) {
   .app-header {
     padding-top: env(safe-area-inset-top, 0px);
-    /* фон должен покрывать и зону статуса */
     background-color: rgba(250, 250, 249, 0.98);
   }
+}
+/* Компенсируем фиксированную шапку: контент не залезает под неё. */
+.body-app {
+  padding-top: var(--app-header-h, 3.5rem);
 }
 
 /* Статичный SEO-фолбэк в #root (до рендера React) */

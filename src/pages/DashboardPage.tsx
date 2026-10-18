@@ -17,8 +17,8 @@ import {
   Trophy,
   Wand2,
 } from 'lucide-react';
-import catHungry from '../assets/cathungry.png';
-import catFedImg from '../assets/catfed.png';
+import catHungry from '../assets/cat-bob.png';
+import catFedImg from '../assets/cat-bob-fed.png';
 import { GOAL_LABELS } from '../lib/storage';
 import { CATEGORY_META } from '../data/tasks';
 import { GOAL_RECOMMENDATIONS, RESOURCE_BY_ID } from '../data/resources';
