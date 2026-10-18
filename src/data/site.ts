@@ -25,6 +25,9 @@ export const CONTACTS = {
   donate: 'https://pay.cloudtips.ru/p/8f56d7d3',
   rustore: 'https://www.rustore.ru/catalog/app/co.median.android.pkpxbe',
   authorName: 'Абдуррахим Бердиев',
-  authorPhoto: 'https://bemat.ru/author-berdiyev.jpg',
+  // ВАЖНО: раньше тут был https://bemat.ru/... — на localhost и в WebView-приложении
+  // фото не грузилось (внешний домен + кеш). Теперь файл лежит локально в public/,
+  // Vite копирует его в dist/author-berdiyev.jpg, а корень репозитория синхронизируется скриптом.
+  authorPhoto: '/author-berdiyev.jpg',
   authorTags: ['Аспирант пед. наук', 'TEFL', 'C2', '2000+ учеников', 'Автор BEMAT'],
 };

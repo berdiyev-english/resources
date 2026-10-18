@@ -5,7 +5,7 @@
    3) клик по уведомлению открывал личный кабинет.
    Полноценный офлайн-режим можно включить через vite-plugin-pwa (см. README). */
 
-const VERSION = 'bemat-sw-v2';
+const VERSION = 'bemat-sw-v3';
 
 self.addEventListener('install', () => {
   self.skipWaiting();

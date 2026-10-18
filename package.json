@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "build:seo": "npm run build && node scripts/prerender.mjs",
+    "build:seo": "npm run build && node scripts/prerender.mjs && node scripts/deploy-root.mjs",
     "preview": "vite preview",
     "serve:dist": "node scripts/serve-dist.mjs",
     "smoke": "node scripts/smoke-test.mjs",

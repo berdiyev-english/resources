@@ -3,23 +3,16 @@
   "short_name": "BEMAT",
   "description": "Фильмы, книги с переводом, грамматика, разговорная практика с ИИ и подготовка к ЕГЭ, ОГЭ, IELTS, TOEFL.",
   "id": "/",
-  "start_url": "/",
+  "start_url": "/?utm_source=pwa",
   "scope": "/",
   "display": "standalone",
-  "display_override": [
-    "standalone",
-    "fullscreen",
-    "minimal-ui"
-  ],
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
   "background_color": "#fafaf9",
   "theme_color": "#ffffff",
   "lang": "ru",
   "dir": "ltr",
-  "categories": [
-    "education",
-    "productivity"
-  ],
+  "categories": ["education", "productivity"],
   "icons": [
     {
       "src": "/icophot/favicon-96x96.png",
@@ -49,7 +42,7 @@
     {
       "name": "Мой план на день",
       "short_name": "План",
-      "url": "/"
+      "url": "/dashboard"
     },
     {
       "name": "Книги на английском",
@@ -61,12 +54,5 @@
       "short_name": "Видео",
       "url": "/video"
     }
-  ],
-  "launch_handler": {
-    "client_mode": [
-      "navigate-existing",
-      "auto"
-    ]
-  },
-  "handle_links": "preferred"
+  ]
 }

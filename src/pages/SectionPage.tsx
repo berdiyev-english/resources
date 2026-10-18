@@ -41,14 +41,17 @@ export function SectionPage({ section }: { section: SectionId }) {
       <div className="px-4 lg:px-0 pt-3 pb-6">
         {/* Компактный заголовок в стиле приложения — без длинных SEO-вступлений.
             Весь информационный текст (о разделе, FAQ) — строго под списком сайтов. */}
-        <h1 className="flex items-center gap-2 text-xl sm:text-2xl font-black text-stone-900 mb-1">
+        {/* В h1 — полный SEO-заголовок раздела (например «Книги на английском с
+            переводом и по уровням»), а не короткая подпись навигации: так
+            поисковики видят ключевой запрос, а смоук-тест проверяет именно его. */}
+        <h1 className="flex items-start gap-2 text-xl sm:text-2xl font-black text-stone-900 mb-1">
           <span
             aria-hidden="true"
             className="w-9 h-9 rounded-xl grad-violet-soft flex items-center justify-center text-lg shrink-0"
           >
             {meta.emoji}
           </span>
-          {meta.navLabel}
+          <span>{meta.h1}</span>
         </h1>
         <p className="text-stone-500 text-[13px] sm:text-sm mb-1">{meta.tagline}</p>
 
@@ -76,7 +79,11 @@ export function SectionPage({ section }: { section: SectionId }) {
           ))}
         </div>
 
-        {/* ВСЯ ИНФОРМАЦИЯ — под сайтами */}
+        {/* ВСЯ ИНФОРМАЦИЯ — под сайтами.
+            ВАЖНО: контент внутри <details> присутствует в DOM всегда (он просто
+            визуально скрыт, пока блок свёрнут). Поэтому поисковики индексируют
+            SEO-тексты и FAQ, а смоук-тест наjsdom находит их через textContent —
+            раскрывать блок программно не нужно. */}
         <details className="mt-8 bg-white border border-stone-100 rounded-2xl shadow-sm overflow-hidden">
           <summary className="list-none cursor-pointer select-none flex items-center justify-between gap-3 p-4 [&::-webkit-details-marker]:hidden">
             <span>

@@ -73,15 +73,29 @@
 .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
 .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
 
-/* Статус-бар (время/батарея) на iPhone в standalone и в WebView-приложениях
-   лежит ПОВЕРХ страницы — при viewport-fit=cover шапа уезжала под часы.
-   Добавляем отступ safe-area к sticky-шапке и не даём тексту залезать под вырез. */
-@supports (padding: env(safe-area-inset-top)) {
-  .app-header {
-    padding-top: env(safe-area-inset-top, 0px);
-    /* фон должен покрывать и зону статуса */
-    background-color: rgba(250, 250, 249, 0.98);
-  }
+/* ============================================================
+   ВЕРХНЯЯ ШАПКА И СТАТУС-БАР (время/батарея на телефоне).
+
+   Проблема была в двух вещах:
+   1) env(safe-area-inset-top) = 0 в обычных браузерах Android/WebView,
+      поэтому одного safe-area НЕ ХВАТАЛО — шапка залезала под системные часы.
+      Решение: базовый запас 24px + сверху ещё 12px «воздуха» внутри шапки.
+   2) Старый service worker кешировал битые /assets/logo-*.png (404),
+      а старый корневой index.html ссылался на assets/index-*.js со старым
+      CSS без этих правил — правки «не применялись». Теперь SW кеш выбрасывает,
+      а корень пересобирается скриптом deploy-root.mjs.
+   ============================================================ */
+.app-header {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 24px);
+  background-color: rgba(250, 250, 249, 0.98);
+}
+/* Внутри шапки — дополнительный «воздух», чтобы логотип и время не слипались */
+.app-header > div {
+  padding-top: 12px;
+}
+/* Первый экран тоже получает запас, чтобы контент не прятался под шапку */
+main {
+  padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
 }
 
 /* Статичный SEO-фолбэк в #root (до рендера React) */
