@@ -6,7 +6,7 @@ import { BottomNav, Header, SiteFooter } from './components/Header';
 import { InstallBanner } from './components/InstallBanner';
 import { StreakPopup } from './components/Modals';
 import { Seo } from './lib/seo';
-import { HomePage } from './pages/HomePage';
+import { HomePage, CatalogPage } from './pages/HomePage';
 import { SectionPage } from './pages/SectionPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { FavoritesPage } from './pages/FavoritesPage';
@@ -86,8 +86,9 @@ function NotFoundPage() {
 function Shell() {
   const { user, newDayReached, dismissNewDay } = useUser();
   const location = useLocation();
-  // Первая страница — лендинг: на ней нет нижней панели,
-  // зато нет и повторов «Каталог» в навигации.
+  // Лендинг (главная) — витрина: на ней нижней панели приложения нет.
+  // Со страницы /catalog и всех разделов можно вернуться на лендинг
+  // через меню («О проекте» и т.п.), поэтому нижняя панель есть везде.
   const isLanding = location.pathname === '/';
 
   useEffect(() => {
@@ -106,6 +107,8 @@ function Shell() {
       <main className="mx-auto w-full max-w-3xl lg:max-w-5xl">
         <Routes>
           <Route path="/" element={<HomePage />} />
+          {/* Каталог — отдельная страница приложения (вкладка «Каталог» внизу) */}
+          <Route path="/catalog" element={<CatalogPage />} />
           <Route path="/books" element={<SectionPage section="books" />} />
           <Route path="/video" element={<SectionPage section="video" />} />
           <Route path="/practice" element={<SectionPage section="practice" />} />

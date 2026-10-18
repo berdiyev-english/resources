@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronDown } from 'lucide-react';
 import { SECTION_META, groupsOfSection, resourcesOfSection, type SectionId } from '../data/resources';
 import { Seo, breadcrumbs, faqPage, itemList } from '../lib/seo';
 import { Accordion } from '../components/UI';
@@ -39,14 +39,21 @@ export function SectionPage({ section }: { section: SectionId }) {
       <Breadcrumbs items={[{ label: 'Главная', to: '/' }, { label: meta.navLabel }]} />
 
       <div className="px-4 lg:px-0 pt-3 pb-6">
-        <h1 className="text-2xl sm:text-3xl font-black text-stone-900 mb-2">
-          <span aria-hidden="true">{meta.emoji}</span> {meta.h1}
+        {/* Компактный заголовок в стиле приложения — без длинных SEO-вступлений.
+            Весь информационный текст (о разделе, FAQ) — строго под списком сайтов. */}
+        <h1 className="flex items-center gap-2 text-xl sm:text-2xl font-black text-stone-900 mb-1">
+          <span
+            aria-hidden="true"
+            className="w-9 h-9 rounded-xl grad-violet-soft flex items-center justify-center text-lg shrink-0"
+          >
+            {meta.emoji}
+          </span>
+          {meta.navLabel}
         </h1>
-        <p className="text-stone-500 text-sm sm:text-base mb-3">{meta.tagline}</p>
-        <p className="text-sm text-stone-600 leading-relaxed max-w-3xl">{meta.intro}</p>
+        <p className="text-stone-500 text-[13px] sm:text-sm mb-1">{meta.tagline}</p>
 
         {favCount > 0 && (
-          <p className="text-xs text-amber-600 font-bold mt-3">
+          <p className="text-xs text-amber-600 font-bold mt-2">
             ⭐ В этом разделе у тебя в избранном: {favCount}.{' '}
             <Link to="/favorites" className="underline">
               Посмотреть все
@@ -54,9 +61,10 @@ export function SectionPage({ section }: { section: SectionId }) {
           </p>
         )}
 
-        <SectionChips active={section} className="mt-5 px-0" />
+        <SectionChips active={section} className="mt-4 px-0" />
 
-        <div className="mt-6">
+        {/* СПИСОК САЙТОВ — главное на странице, идёт первым */}
+        <div className="mt-5">
           {groups.map((g, i) => (
             <Accordion key={g.group} title={g.group} subtitle={`${g.items.length} ресурсов`} defaultOpen={i === 0}>
               <div className="pt-1">
@@ -68,17 +76,27 @@ export function SectionPage({ section }: { section: SectionId }) {
           ))}
         </div>
 
-        <div className="mt-10">
-          <TextBlocks blocks={meta.seoBlocks} />
-        </div>
-
-        <div className="mt-10">
-          <FaqSection items={meta.faq} />
-        </div>
+        {/* ВСЯ ИНФОРМАЦИЯ — под сайтами */}
+        <details className="mt-8 bg-white border border-stone-100 rounded-2xl shadow-sm overflow-hidden">
+          <summary className="list-none cursor-pointer select-none flex items-center justify-between gap-3 p-4 [&::-webkit-details-marker]:hidden">
+            <span>
+              <span className="block font-bold text-sm text-stone-900">ℹ️ Об этом разделе</span>
+              <span className="block text-xs text-stone-500 mt-0.5">Как заниматься и частые вопросы</span>
+            </span>
+            <span className="shrink-0 w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 group-open:rotate-180 transition-transform">
+              <ChevronDown size={16} />
+            </span>
+          </summary>
+          <div className="px-4 pb-4 space-y-6">
+            <p className="text-sm text-stone-600 leading-relaxed">{meta.intro}</p>
+            <TextBlocks blocks={meta.seoBlocks} />
+            <FaqSection items={meta.faq} />
+          </div>
+        </details>
 
         <Link
           to="/dashboard"
-          className="mt-8 flex items-center justify-center gap-2 w-full py-4 rounded-2xl grad-violet text-white font-bold no-underline"
+          className="mt-6 flex items-center justify-center gap-2 w-full py-4 rounded-2xl grad-violet text-white font-bold no-underline"
         >
           {user.isOnboarded ? 'Открыть мой план на сегодня' : 'Собрать план занятий на 15 минут'} <ArrowRight size={18} />
         </Link>
