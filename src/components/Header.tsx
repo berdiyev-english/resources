@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import {
   ArrowRight,
@@ -43,13 +43,39 @@ export function Header() {
   const [supportOpen, setSupportOpen] = useState(false);
   const [installOpen, setInstallOpen] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
-  const { user, reset } = useUser();
+  const menuDrawerRef = useRef<HTMLDivElement>(null);
+  const { user, hasProfile, reset } = useUser();
   const location = useLocation();
   const isDesktop = useMediaQuery('(min-width: 1024px)');
+  // После первого визита логотип возвращает сразу к плану, а не на приветственный экран.
+  const logoDestination = hasProfile ? '/dashboard' : '/';
 
   useEffect(() => {
     setMenuOpen(false);
   }, [location.pathname]);
+
+  // Открытое меню — настоящий мобильный диалог: фон не прокручивается,
+  // фокус оказывается в нём, а Escape и клик по подложке его закрывают.
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const activeBeforeOpen = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const originalBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false);
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    const focusTimer = window.setTimeout(() => menuDrawerRef.current?.focus(), 0);
+
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener('keydown', closeOnEscape);
+      document.body.style.overflow = originalBodyOverflow;
+      activeBeforeOpen?.focus();
+    };
+  }, [menuOpen]);
 
   // В меню показываем только то, чего нет в других местах:
   // на телефоне — разделы, которых нет в нижней панели; на десктопе — только действия.
@@ -62,7 +88,7 @@ export function Header() {
           а body-app отступает на её высоту (см. index.css). */}
       <header className="app-header fixed top-0 left-0 right-0 z-40 bg-[#fafaf9]/95 backdrop-blur-md border-b border-stone-100">
         <div className="mx-auto max-w-5xl px-4 h-14 flex items-center justify-between gap-3">
-          <Link to="/" className="flex items-center gap-2 no-underline shrink-0">
+          <Link to={logoDestination} className="flex items-center gap-2 no-underline shrink-0">
             <img
               src="/icophot/favicon-96x96.png"
               alt="BEMAT — Вема"
@@ -76,8 +102,7 @@ export function Header() {
           {/* Desktop: полная навигация. На телефоне её заменяет нижняя панель. */}
           <nav aria-label="Основная навигация" className="hidden lg:flex items-center gap-0.5 flex-1 justify-center overflow-x-auto no-scrollbar">
             <NavLink
-              to="/"
-              end
+              to="/catalog"
               className={({ isActive }) =>
                 cn(DESKTOP_LINK, isActive ? 'bg-violet-50 text-violet-700' : 'text-stone-600 hover:bg-stone-100')
               }
@@ -133,6 +158,8 @@ export function Header() {
             <button
               onClick={() => setMenuOpen(true)}
               aria-label="Открыть меню"
+              aria-expanded={menuOpen}
+              aria-controls="site-menu-drawer"
               className="w-11 h-11 lg:w-9 lg:h-9 flex items-center justify-center rounded-full bg-stone-900 text-white lg:bg-stone-100 lg:text-stone-700 shrink-0"
             >
               <Menu size={20} />
@@ -141,23 +168,33 @@ export function Header() {
         </div>
       </header>
 
-      {/* Дровер */}
+      {/* Дровер. На телефоне занимает безопасную высоту экрана, не попадает
+          под статус-бар и оставляет кнопку закрытия доступной при прокрутке. */}
       {menuOpen && (
-        <div className="fixed inset-0 z-[90] bg-stone-900/30 backdrop-blur-sm flex justify-end" onClick={() => setMenuOpen(false)}>
+        <div className="fixed inset-0 z-[90] flex justify-end bg-stone-900/30 backdrop-blur-sm" onClick={() => setMenuOpen(false)}>
           <div
-            className="w-[88%] max-w-sm h-full bg-[#fafaf9] p-5 shadow-2xl overflow-y-auto pb-safe"
+            ref={menuDrawerRef}
+            id="site-menu-drawer"
+            tabIndex={-1}
+            className="mobile-menu-drawer min-w-0 bg-[#fafaf9] shadow-2xl outline-none"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
+            aria-modal="true"
             aria-label="Меню"
           >
-            <div className="flex justify-between items-center mb-5">
+            <div className="mobile-menu-drawer__header">
               <h3 className="font-bold text-xl text-stone-900">Меню</h3>
-              <button onClick={() => setMenuOpen(false)} aria-label="Закрыть меню" className="p-2 bg-stone-100 rounded-full">
+              <button
+                onClick={() => setMenuOpen(false)}
+                aria-label="Закрыть меню"
+                className="w-11 h-11 flex items-center justify-center bg-stone-100 rounded-full text-stone-700"
+              >
                 <X size={20} />
               </button>
             </div>
 
-            {/* На телефоне: разделы, которых нет в нижней панели */}
+            <div className="mobile-menu-drawer__content">
+              {/* На телефоне: разделы, которых нет в нижней панели */}
             {!isDesktop && (
               <div className="grid grid-cols-2 gap-2 mb-4">
                 <Link
@@ -167,7 +204,7 @@ export function Header() {
                   <Home size={16} className="text-violet-600" /> Мой план
                 </Link>
                 <Link
-                  to="/"
+                  to="/catalog"
                   className="flex items-center gap-2 px-3 py-3 rounded-xl bg-white border border-stone-100 font-bold text-sm text-stone-700 no-underline hover:border-violet-200"
                 >
                   <LayoutGrid size={16} className="text-violet-600" /> Каталог
@@ -277,6 +314,7 @@ export function Header() {
               >
                 <GraduationCap size={18} /> Telegram-канал BEMAT
               </a>
+            </div>
             </div>
           </div>
         </div>

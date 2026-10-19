@@ -36,7 +36,7 @@ export function SectionPage({ section }: { section: SectionId }) {
         }}
       />
 
-      <Breadcrumbs items={[{ label: 'Главная', to: '/' }, { label: meta.navLabel }]} />
+      <Breadcrumbs items={[{ label: 'Каталог', to: '/catalog' }, { label: meta.navLabel }]} />
 
       <div className="px-4 lg:px-0 pt-3 pb-6">
         {/* Компактный заголовок в стиле приложения — без длинных SEO-вступлений.

@@ -1,5 +1,5 @@
 import { Component, useEffect, type ReactNode } from 'react';
-import { BrowserRouter, Link, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, Link, MemoryRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { Home, LayoutGrid } from 'lucide-react';
 import catBob from './assets/cat-bob.png';
 import { InstallProvider } from './state/InstallContext';
@@ -83,7 +83,7 @@ export function NotFoundPage() {
 
         <div className="flex flex-wrap justify-center gap-2 mb-8">
           <Link
-            to="/"
+            to="/catalog"
             className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl grad-violet text-white text-sm font-bold no-underline shadow-lg shadow-violet-600/20"
           >
             <LayoutGrid size={16} aria-hidden="true" /> Каталог ресурсов
@@ -113,13 +113,22 @@ export function NotFoundPage() {
   );
 }
 
+/**
+ * Корневой URL остаётся публичной стартовой страницей только для первого визита.
+ * После создания/сохранения профиля он сразу ведёт в кабинет, чтобы пользователь
+ * возвращался в приложение, а не каждый раз видел приветственную витрину.
+ */
+function RootRoute() {
+  const { hasProfile } = useUser();
+  return hasProfile ? <Navigate to="/dashboard" replace /> : <HomePage />;
+}
+
 function Shell() {
-  const { user, newDayReached, dismissNewDay } = useUser();
+  const { user, hasProfile, newDayReached, dismissNewDay } = useUser();
   const location = useLocation();
-  // Лендинг (главная) — витрина: на ней нижней панели приложения нет.
-  // Со страницы /catalog и всех разделов можно вернуться на лендинг
-  // через меню («О проекте» и т.п.), поэтому нижняя панель есть везде.
-  const isLanding = location.pathname === '/';
+  // Лендинг нужен только на самом первом визите. Во всех остальных состояниях
+  // корень маршрута мгновенно перенаправляет в кабинет.
+  const isLanding = location.pathname === '/' && !hasProfile;
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -136,7 +145,7 @@ function Shell() {
 
       <main className="mx-auto w-full max-w-3xl lg:max-w-5xl">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<RootRoute />} />
           {/* Каталог — отдельная страница приложения (вкладка «Каталог» внизу) */}
           <Route path="/catalog" element={<CatalogPage />} />
           <Route path="/books" element={<SectionPage section="books" />} />

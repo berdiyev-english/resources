@@ -64,7 +64,7 @@ export function AboutPage() {
         }}
       />
 
-      <Breadcrumbs items={[{ label: 'Главная', to: '/' }, { label: 'О проекте' }]} />
+      <Breadcrumbs items={[{ label: 'Каталог', to: '/catalog' }, { label: 'О проекте' }]} />
 
       <div className="px-4 lg:px-0 pt-3 pb-6">
         <div className="flex flex-col sm:flex-row items-center gap-5 mb-8">

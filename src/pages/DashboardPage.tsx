@@ -301,7 +301,7 @@ export function DashboardPage() {
                   <p className="text-xs text-stone-500 mb-3">
                     Отмечай звёздочкой сайты, которыми пользуешься постоянно — они появятся здесь.
                   </p>
-                  <Link to="/" className="text-xs font-bold text-violet-600 no-underline">
+                  <Link to="/catalog" className="text-xs font-bold text-violet-600 no-underline">
                     Открыть каталог →
                   </Link>
                 </Card>

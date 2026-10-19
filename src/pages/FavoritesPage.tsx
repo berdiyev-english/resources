@@ -28,7 +28,7 @@ export function FavoritesPage() {
         }}
       />
 
-      <Breadcrumbs items={[{ label: 'Главная', to: '/' }, { label: 'Избранное' }]} />
+      <Breadcrumbs items={[{ label: 'Каталог', to: '/catalog' }, { label: 'Избранное' }]} />
 
       <div className="px-4 lg:px-0 pt-3 pb-6">
         <h1 className="text-2xl sm:text-3xl font-black text-stone-900 mb-2">

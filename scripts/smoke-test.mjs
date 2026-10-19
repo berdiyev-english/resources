@@ -13,6 +13,18 @@ import { pathToFileURL } from 'node:url';
 
 const ROOT = process.cwd();
 const TMP = path.join(ROOT, 'node_modules', '.smoke');
+const SAVED_PROFILE = JSON.stringify({
+  version: 4,
+  name: 'Аня',
+  goal: 'fun',
+  isGuest: false,
+  isOnboarded: true,
+  streak: 3,
+  bestStreak: 5,
+  completedTasks: [],
+  customTasks: [],
+  favorites: [],
+});
 
 function expose(key, value) {
   try {
@@ -41,7 +53,7 @@ async function bundleApp() {
   return pathToFileURL(outfile).href;
 }
 
-function setupDom(route, errors) {
+function setupDom(route, errors, initialStorage = {}) {
   const virtualConsole = new VirtualConsole();
   virtualConsole.on('jsdomError', (e) => {
     if (!/not implemented/i.test(e.message)) errors.push(`jsdom: ${e.message}`);
@@ -93,12 +105,16 @@ function setupDom(route, errors) {
     /* ignore */
   }
 
+  for (const [key, value] of Object.entries(initialStorage)) {
+    window.localStorage.setItem(key, value);
+  }
+
   return window;
 }
 
-async function renderRoute(AppComponent, React, createRoot, route) {
+async function renderRoute(AppComponent, React, createRoot, route, initialStorage = {}) {
   const errors = [];
-  const window = setupDom(route, errors);
+  const window = setupDom(route, errors, initialStorage);
   const container = window.document.getElementById('root');
   createRoot(container).render(React.createElement(AppComponent));
   await new Promise((r) => setTimeout(r, 350));
@@ -123,6 +139,15 @@ async function main() {
         ['FAQ отрисован', (_c, t) => t.includes('Что такое BEMAT')],
         ['На лендинге нет нижней панели', (c) => !c.querySelector('nav[aria-label="Навигация по приложению"]')],
         ['Спонсора дня больше нет', (_c, t) => !/Спонсор/i.test(t)],
+      ],
+    },
+    {
+      route: '/',
+      initialStorage: { bemat_user_v3: SAVED_PROFILE },
+      checks: [
+        ['Сохранённый профиль сразу открывает кабинет', (_c, t, w) => w.location.pathname === '/dashboard' && t.includes('Личный кабинет')],
+        ['Сохранённый профиль не видит приветственный лендинг', (_c, t) => !t.includes('Как это работает')],
+        ['После редиректа доступна нижняя навигация', (c) => !!c.querySelector('nav[aria-label="Навигация по приложению"]')],
       ],
     },
     {
@@ -183,10 +208,16 @@ async function main() {
   const allErrors = [];
 
   for (const testCase of cases) {
-    const { container, text, errors } = await renderRoute(App, React, createRoot, testCase.route);
+    const { window, container, text, errors } = await renderRoute(
+      App,
+      React,
+      createRoot,
+      testCase.route,
+      testCase.initialStorage
+    );
     console.log(`${testCase.route}`);
     for (const [name, check] of testCase.checks) {
-      const ok = Boolean(check(container, text));
+      const ok = Boolean(check(container, text, window));
       console.log(`  ${ok ? '✅' : '❌'} ${name}`);
       if (!ok) failed += 1;
     }
@@ -266,14 +297,26 @@ async function main() {
 
     const drawer = container.querySelector('[role="dialog"][aria-label="Меню"]');
     const hrefs = drawer ? [...drawer.querySelectorAll('a')].map((a) => a.getAttribute('href')) : [];
-    const hasExtra = ['/', '/courses', '/bots', '/about', '/favorites'].every((h) => hrefs.includes(h));
+    const hasExtra = ['/catalog', '/courses', '/bots', '/about', '/favorites'].every((h) => hrefs.includes(h));
     const noDuplicates = !['/books', '/video', '/practice', '/speak'].some((h) => hrefs.includes(h));
-    const ok = Boolean(drawer) && hasExtra && noDuplicates;
+    const mobileDrawer =
+      drawer?.getAttribute('aria-modal') === 'true' &&
+      drawer.classList.contains('mobile-menu-drawer') &&
+      drawer.querySelector('[aria-label="Закрыть меню"]')?.classList.contains('w-11') &&
+      window.document.body.style.overflow === 'hidden' &&
+      window.document.activeElement === drawer;
+
+    drawer?.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await new Promise((r) => setTimeout(r, 100));
+    const closedWithEscape = !container.querySelector('[role="dialog"][aria-label="Меню"]') && window.document.body.style.overflow === '';
+    const ok = Boolean(drawer) && hasExtra && noDuplicates && mobileDrawer && closedWithEscape;
 
     console.log(`\nНавигация`);
     console.log(`  ${drawer ? '✅' : '❌'} Меню открывается`);
     console.log(`  ${hasExtra ? '✅' : '❌'} В меню есть Каталог, Курсы, Боты, О проекте, Избранное`);
     console.log(`  ${noDuplicates ? '✅' : '❌'} Меню не повторяет нижнюю панель (без Книги/Видео/Практика/Разговор)`);
+    console.log(`  ${mobileDrawer ? '✅' : '❌'} Дровер получает фокус, блокирует фон и имеет крупную кнопку закрытия`);
+    console.log(`  ${closedWithEscape ? '✅' : '❌'} Меню закрывается клавишей Escape и возвращает прокрутку странице`);
     if (!ok) failed += 1;
     if (errors.length) allErrors.push(...errors);
     console.log('');

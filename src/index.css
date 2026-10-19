@@ -102,6 +102,34 @@
   padding-top: var(--app-header-h);
 }
 
+/* Мобильный дровер: не заходит под статус-бар/индикатор дома, не прокручивает
+   страницу под собой и оставляет заголовок с крестиком доступным всегда. */
+.mobile-menu-drawer {
+  width: min(88vw, 24rem);
+  max-width: calc(100vw - 0.75rem);
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.mobile-menu-drawer__header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.25rem 0.75rem;
+  background: #fafaf9;
+  border-bottom: 1px solid #e7e5e4;
+}
+.mobile-menu-drawer__content {
+  padding: 1.25rem;
+  padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+}
+
 /* Статичный SEO-фолбэк в #root (до рендера React) */
 .seo-fallback {
   max-width: 760px;

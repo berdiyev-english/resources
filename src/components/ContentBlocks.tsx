@@ -31,7 +31,7 @@ export function SectionChips({ active, className }: { active?: SectionId; classN
   return (
     <div className={cn('flex gap-2 overflow-x-auto no-scrollbar px-4 lg:px-0 pb-1', className)}>
       <Link
-        to="/"
+        to="/catalog"
         className={cn(
           'shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border no-underline',
           !active ? 'bg-violet-600 text-white border-violet-600' : 'bg-white text-stone-600 border-stone-200'
