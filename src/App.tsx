@@ -49,7 +49,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 // --------------------------------- Каркас ---------------------------------
 
 // --------------------------------- 404 ---------------------------------
-// Та же стилистика, что и у всего приложения (кот Боб, фиолетовые акценты).
+// Та же стилистика, что и у всего приложения (кошка Вема, фиолетовые акценты).
 
 export function NotFoundPage() {
   return (
@@ -63,11 +63,11 @@ export function NotFoundPage() {
         }}
       />
       <div className="px-4 pt-10 pb-16 text-center">
-        {/* Кот Боб потерялся */}
+        {/* Вема уже ищет нужную страницу. */}
         <div className="relative inline-block mb-6">
           <img
             src={catBob}
-            alt='Кот Боб ничего не нашёл'
+            alt="Вема ничего не нашла"
             width={128}
             height={128}
             className="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-white shadow-xl animate-breathe"
@@ -78,7 +78,7 @@ export function NotFoundPage() {
         <p className="text-[13px] font-black uppercase tracking-[0.2em] text-violet-500 mb-2">Ошибка 404</p>
         <h1 className="text-2xl sm:text-3xl font-black text-stone-900 mb-2">Мяу… такой страницы нет</h1>
         <p className="text-sm text-stone-500 mb-8 max-w-sm mx-auto">
-          Боб прошёлся по всем полкам — этой ссылки здесь нет. Возможно, она устарела или в ней опечатка.
+          Вема уже прошлась по всем полкам, но этой ссылки здесь нет. Возможно, она устарела или в ней опечатка.
         </p>
 
         <div className="flex flex-wrap justify-center gap-2 mb-8">

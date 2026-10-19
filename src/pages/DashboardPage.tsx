@@ -42,7 +42,7 @@ export function DashboardPage() {
     if (!hasProfile) setShowOnboarding(true);
   }, [hasProfile]);
 
-  // Когда Боб «наелся» — показываем попап один раз на переходе
+  // Когда Вема «наелась» — показываем попап один раз на переходе
   const prevFed = useRef(today.catFed);
   useEffect(() => {
     if (today.catFed && !prevFed.current) setShowCat(true);
@@ -65,7 +65,7 @@ export function DashboardPage() {
         seo={{
           path: '/dashboard',
           title: 'Личный кабинет — план занятий английским | BEMAT',
-          description: 'Твой план на 15 минут в день: задания, стрик, кот Боб и избранные сайты для изучения английского.',
+          description: 'Твой план на 15 минут в день: задания, стрик, Вема и избранные сайты для изучения английского.',
           noindex: true,
         }}
       />
@@ -114,7 +114,7 @@ export function DashboardPage() {
         <div className="grid lg:grid-cols-3 gap-5">
           {/* Левая колонка */}
           <div className="lg:col-span-2 space-y-5">
-            {/* Боб */}
+            {/* Вема */}
             <button
               onClick={() => setShowCat(true)}
               className={cn(
@@ -131,13 +131,13 @@ export function DashboardPage() {
                 >
                   <img
                     src={today.catFed ? catFedImg : catHungry}
-                    alt={today.catFed ? 'Кот Боб сыт' : 'Кот Боб голодный'}
+                    alt={today.catFed ? 'Вема сыта' : 'Вема голодна'}
                     className="w-full h-full object-cover"
                   />
                 </span>
                 <span className="flex-1 min-w-0">
                   <span className="block font-bold text-stone-900 text-base mb-0.5">
-                    {today.catFed ? 'Боб сыт! 😸' : 'Боб голодный 😿'}
+                    {today.catFed ? 'Вема сыта! 😸' : 'Вема голодна 😿'}
                   </span>
                   <span className="block text-xs text-stone-500 mb-2">
                     {today.catFed
@@ -240,7 +240,7 @@ export function DashboardPage() {
                   ) : (
                     <>
                       <span className="block font-bold text-white text-sm">Включить напоминания</span>
-                      <span className="block text-xs text-violet-100">Боб напомнит позаниматься, если забудешь</span>
+                      <span className="block text-xs text-violet-100">Вема напомнит позаниматься, если забудешь</span>
                     </>
                   )}
                 </span>

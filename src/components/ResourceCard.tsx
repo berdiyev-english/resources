@@ -23,7 +23,7 @@ function ResourceThumb({ resource, className }: { resource: Resource; className?
       alt={`${resource.title} — изучение английского`}
       // eager: скриншоты лежат локально в /public и они маленькие —
       // на мобильных lazy-загрузка часто «не доезжала» до картинки,
-      // из-за чего превью (в т.ч. кота Боба) не было видно.
+      // из-за чего превью (в т.ч. Вему) не было видно.
       loading="eager"
       decoding="async"
       onError={() => setBroken(true)}

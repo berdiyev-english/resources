@@ -50,8 +50,6 @@ export function SectionPage({ section }: { section: SectionId }) {
           </span>
           {meta.navLabel}
         </h1>
-        <p className="text-stone-500 text-[13px] sm:text-sm mb-1">{meta.tagline}</p>
-
         {favCount > 0 && (
           <p className="text-xs text-amber-600 font-bold mt-2">
             ⭐ В этом разделе у тебя в избранном: {favCount}.{' '}

@@ -16,7 +16,7 @@ export const AI_BOTS = [
   { label: 'ОГЭ с ИИ', url: 'https://t.me/OGE_ENG_HELPER_BOT', desc: 'ОГЭ на «5»' },
   { label: 'IELTS Expert', url: 'https://t.me/IELTS_berdiyev_bot', desc: 'Цель 7+' },
   { label: 'TOEFL Expert', url: 'https://t.me/TOBEENG_TOEFL_IBT_BOT', desc: 'Цель 100+' },
-  { label: 'Боб — английский с ИИ', url: 'https://t.me/Tobeeng_GPT_bot', desc: 'Разговор за 3 месяца' },
+  { label: 'Вема — английский с ИИ', url: 'https://t.me/Tobeeng_GPT_bot', desc: 'Разговор за 3 месяца' },
 ];
 
 export const CONTACTS = {
@@ -25,6 +25,8 @@ export const CONTACTS = {
   donate: 'https://pay.cloudtips.ru/p/8f56d7d3',
   rustore: 'https://www.rustore.ru/catalog/app/co.median.android.pkpxbe',
   authorName: 'Абдуррахим Бердиев',
-  authorPhoto: 'https://bemat.ru/author-berdiyev.jpg',
+  // Локальный файл из public/: фото не зависит от доступности bemat.ru,
+  // корректно работает на preview-доменах, в PWA и при медленном интернете.
+  authorPhoto: '/author-berdiyev.jpg',
   authorTags: ['Аспирант пед. наук', 'TEFL', 'C2', '2000+ учеников', 'Автор BEMAT'],
 };

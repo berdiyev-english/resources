@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "build:seo": "npm run build && node scripts/prerender.mjs",
+    "deploy:root": "npm run build:seo && node scripts/preview.mjs && node scripts/deploy-root.mjs",
     "preview": "vite preview",
     "serve:dist": "node scripts/serve-dist.mjs",
     "smoke": "node scripts/smoke-test.mjs",

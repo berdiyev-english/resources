@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Bell, BellRing, CheckCircle, CheckCircle2, Flame, Sparkles, Star } from 'lucide-react';
 import logo from '../assets/logo.png';
-// Кот Боб лежит в public/ под именем cat-bob.png и приходит с сервера как есть.
+// Вема лежит в public/ под именем cat-bob.png и приходит с сервера как есть.
 // Через import Vite переименовывал его в assets/cathungry-<hash>.png — из-за этого
 // на хостинге кот давал 404 («приложение не видит кота»). Публичный путь стабильный.
 const catHungry = '/cat-bob.png';
@@ -29,10 +29,10 @@ export function OnboardingModal({ isOpen, onClose }: { isOpen: boolean; onClose:
   }, [isOpen]);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={step === 1 ? 'Привет! Я Боб 🐱' : 'Твоя цель'} maxWidth="max-w-md">
+    <Modal isOpen={isOpen} onClose={onClose} title={step === 1 ? 'Привет! Я Вема 🐱' : 'Твоя цель'} maxWidth="max-w-md">
       <div className="text-center">
         <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 shadow-xl border-4 border-white">
-          <img src={logo} alt="Кот Боб — маскот BEMAT" className="w-full h-full object-cover" />
+          <img src={logo} alt="Вема — маскот BEMAT" className="w-full h-full object-cover" />
         </div>
 
         {step === 1 ? (
@@ -123,7 +123,7 @@ export function StreakPopup({ isOpen, onClose }: { isOpen: boolean; onClose: () 
           <>
             <h3 className="text-2xl font-black text-stone-900 mb-2">Стрик зародился!</h3>
             <p className="text-stone-500 mb-2 text-sm">Занимайся каждый день, чтобы не потерять серию.</p>
-            <p className="text-stone-400 text-xs mb-6">Боб верит в тебя! 🐱</p>
+            <p className="text-stone-400 text-xs mb-6">Вема верит в тебя! 🐱</p>
           </>
         ) : (
           <>
@@ -131,7 +131,7 @@ export function StreakPopup({ isOpen, onClose }: { isOpen: boolean; onClose: () 
               {streak} {daysWord(streak)} подряд!
             </h3>
             <p className="text-stone-500 mb-2 text-sm">Отличная серия! Не останавливайся.</p>
-            <p className="text-stone-400 text-xs mb-6">Боб гордится тобой 😸</p>
+            <p className="text-stone-400 text-xs mb-6">Вема гордится тобой 😸</p>
           </>
         )}
 
@@ -167,7 +167,7 @@ export function StreakPopup({ isOpen, onClose }: { isOpen: boolean; onClose: () 
   );
 }
 
-// ------------------------------ Кормление Боба ------------------------------
+// ------------------------------ Кормление Вемы ------------------------------
 
 export function CatFeedPopup({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { today } = useUser();
@@ -177,7 +177,7 @@ export function CatFeedPopup({ isOpen, onClose }: { isOpen: boolean; onClose: ()
   const remaining = required.length - doneRequired;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Боб и твой план" maxWidth="max-w-sm">
+    <Modal isOpen={isOpen} onClose={onClose} title="Вема и твой план" maxWidth="max-w-sm">
       <div className="text-center">
         <div
           className={cn(
@@ -187,7 +187,7 @@ export function CatFeedPopup({ isOpen, onClose }: { isOpen: boolean; onClose: ()
         >
           <img
             src={catFed ? catFedImg : catHungry}
-            alt={catFed ? 'Кот Боб сыт' : 'Кот Боб голодный'}
+            alt={catFed ? 'Вема сыта' : 'Вема голодна'}
             className="w-full h-full object-cover"
           />
         </div>
@@ -195,14 +195,14 @@ export function CatFeedPopup({ isOpen, onClose }: { isOpen: boolean; onClose: ()
         {catFed ? (
           <>
             <div className="text-4xl mb-2" aria-hidden="true">🎉</div>
-            <h3 className="text-xl font-black text-stone-900 mb-1">Боб сыт!</h3>
+            <h3 className="text-xl font-black text-stone-900 mb-1">Вема сыта!</h3>
             <p className="text-stone-500 text-sm mb-6">Приходи завтра — будет новый план 😸</p>
           </>
         ) : (
           <>
             <div className="text-4xl mb-2" aria-hidden="true">😿</div>
-            <h3 className="text-xl font-black text-stone-900 mb-1">Боб голодный!</h3>
-            <p className="text-stone-500 text-sm mb-2">Выполни все задания, чтобы покормить его</p>
+            <h3 className="text-xl font-black text-stone-900 mb-1">Вема голодна!</h3>
+            <p className="text-stone-500 text-sm mb-2">Выполни все задания, чтобы покормить её</p>
             <p className="text-xs text-stone-400 mb-6">Осталось: {remaining}</p>
           </>
         )}
@@ -451,7 +451,7 @@ export function NotifModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
         <div className="w-20 h-20 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg mb-3">
           <img src={catHungry} alt="" className="w-full h-full object-cover" />
         </div>
-        <p className="text-sm text-stone-600">Боб напомнит позаниматься, если день прошёл без заданий</p>
+        <p className="text-sm text-stone-600">Вема напомнит позаниматься, если день прошёл без заданий</p>
       </div>
 
       <div className="flex items-center justify-between p-4 bg-white rounded-xl border border-stone-100 mb-4">

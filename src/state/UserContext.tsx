@@ -29,7 +29,7 @@ export interface DayTask extends TaskTemplate {
 }
 
 interface TodaySummary {
-  /** Задания, которые нужно выполнить, чтобы покормить Боба: план + свои задания */
+  /** Задания, которые нужно выполнить, чтобы покормить Вемы: план + свои задания */
   required: DayTask[];
   /** Дополнительные задания (не обязательные) */
   optional: DayTask[];

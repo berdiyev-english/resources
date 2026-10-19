@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#fafaf9" />
+    <title>Страница не найдена | BEMAT</title>
+    <style>
+      :root { color-scheme: light; font-family: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-width: 320px; min-height: 100vh; color: #1c1917; background: #fafaf9; }
+      .page { min-height: 100vh; display: flex; flex-direction: column; }
+      .header { height: calc(3.5rem + env(safe-area-inset-top, 0px)); padding: env(safe-area-inset-top, 0px) 1rem 0; display: flex; align-items: center; border-bottom: 1px solid #f0eeec; background: rgba(250, 250, 249, .96); }
+      .brand { max-width: 1024px; width: 100%; margin: 0 auto; display: inline-flex; align-items: center; gap: .5rem; color: #292524; font-size: 1.25rem; font-weight: 900; letter-spacing: -.04em; text-decoration: none; }
+      .brand img { width: 2.25rem; height: 2.25rem; border: 1px solid #e7e5e4; border-radius: 999px; background: #fff; box-shadow: 0 1px 2px rgb(0 0 0 / .06); }
+      main { flex: 1; display: grid; place-items: center; padding: 2.5rem 1rem max(4rem, env(safe-area-inset-bottom, 0px)); }
+      .content { max-width: 42rem; text-align: center; }
+      .cat-wrap { position: relative; display: inline-block; margin-bottom: 1.5rem; }
+      .cat-wrap::before { position: absolute; inset: .5rem; z-index: 0; border-radius: 999px; background: linear-gradient(135deg, #8b5cf6, #6366f1); filter: blur(24px); opacity: .22; content: ""; }
+      .cat { position: relative; display: block; width: 8rem; height: 8rem; object-fit: cover; border: 4px solid #fff; border-radius: 999px; box-shadow: 0 20px 28px rgb(28 25 23 / .15); animation: breathe 4s ease-in-out infinite; }
+      .search { position: absolute; top: -.65rem; right: -.9rem; z-index: 1; font-size: 2rem; transform: rotate(12deg); }
+      .eyebrow { margin: 0 0 .5rem; color: #8b5cf6; font-size: .75rem; font-weight: 900; letter-spacing: .2em; text-transform: uppercase; }
+      h1 { margin: 0 0 .6rem; font-size: clamp(1.65rem, 5vw, 2.25rem); line-height: 1.12; letter-spacing: -.04em; }
+      .copy { max-width: 30rem; margin: 0 auto 2rem; color: #78716c; font-size: .95rem; line-height: 1.55; }
+      .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .65rem; margin-bottom: 2rem; }
+      .button { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 3rem; padding: .75rem 1.15rem; border: 1px solid #e7e5e4; border-radius: 1rem; color: #44403c; background: #fff; font-size: .875rem; font-weight: 700; text-decoration: none; transition: transform .15s ease, border-color .15s ease; }
+      .button:hover { border-color: #c4b5fd; transform: translateY(-1px); }
+      .button--primary { border-color: transparent; color: #fff; background: linear-gradient(135deg, #8b5cf6, #6366f1); box-shadow: 0 10px 24px rgb(124 58 237 / .2); }
+      .label { margin: 0 0 .75rem; color: #a8a29e; font-size: .7rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+      .links { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; }
+      .links a { padding: .65rem .85rem; border: 1px solid #e7e5e4; border-radius: .75rem; color: #57534e; background: #fff; font-size: .82rem; font-weight: 700; text-decoration: none; }
+      .links a:hover { border-color: #c4b5fd; color: #6d28d9; }
+      footer { padding: 1.25rem 1rem max(1.25rem, env(safe-area-inset-bottom, 0px)); color: #a8a29e; font-size: .7rem; text-align: center; }
+      @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+      @media (prefers-reduced-motion: reduce) { .cat { animation: none; } .button { transition: none; } }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <a class="brand" href="/" aria-label="На главную BEMAT">
+          <img src="/icophot/favicon-96x96.png" alt="" width="36" height="36" />
+          BEMAT
+        </a>
+      </header>
+      <main>
+        <section class="content" aria-labelledby="page-title">
+          <div class="cat-wrap">
+            <img class="cat" src="/cat-bob.png" alt="Вема ничего не нашла" width="128" height="128" />
+            <span class="search" aria-hidden="true">🔍</span>
+          </div>
+          <p class="eyebrow">Ошибка 404</p>
+          <h1 id="page-title">Мяу… такой страницы нет</h1>
+          <p class="copy">Вема уже прошлась по всем полкам, но этой ссылки здесь нет. Возможно, она устарела или в ней опечатка.</p>
+          <div class="actions">
+            <a class="button button--primary" href="/">▦&nbsp; Каталог ресурсов</a>
+            <a class="button" href="/dashboard">⌂&nbsp; Мой план занятий</a>
+          </div>
+          <p class="label">Или загляни в разделы</p>
+          <nav class="links" aria-label="Разделы сайта">
+            <a href="/books">📚 Книги</a>
+            <a href="/video">🎬 Видео</a>
+            <a href="/practice">✍️ Практика</a>
+            <a href="/speak">🗣 Разговор</a>
+          </nav>
+        </section>
+      </main>
+      <footer>Сделано с Вемой 🐱</footer>
+    </div>
+  </body>
+</html>

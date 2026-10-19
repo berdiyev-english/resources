@@ -118,7 +118,7 @@ async function main() {
       checks: [
         ['Заголовок h1', (c) => !!c.querySelector('h1')],
         ['Лендинг: есть описание приложения', (_c, t) => t.includes('Как это работает')],
-        ['Каталог с разделами', (_c, t) => t.includes('Каталог ресурсов') && t.includes('Книги')],
+        ['Поиск и разделы каталога', (_c, t) => t.includes('Поиск по каталогу') && t.includes('Книги')],
         ['Ресурсы видны', (_c, t) => t.includes('2books') && t.includes('Inoriginal')],
         ['FAQ отрисован', (_c, t) => t.includes('Что такое BEMAT')],
         ['На лендинге нет нижней панели', (c) => !c.querySelector('nav[aria-label="Навигация по приложению"]')],
@@ -128,10 +128,10 @@ async function main() {
     {
       route: '/books',
       checks: [
-        ['H1 раздела', (c) => /Книги на английском/.test(c.querySelector('h1')?.textContent || '')],
+        ['Компактный H1 раздела', (c) => c.querySelector('h1')?.textContent?.trim().endsWith('Книги')],
         ['Ресурсы раздела', (_c, t) => t.includes('Linguasaur') && t.includes('Project Gutenberg')],
         ['Группа «Мемы и юмор» на месте', (_c, t) => t.includes('Мемы и юмор на английском')],
-        ['SEO-текст раздела', (_c, t) => t.includes('С чего начать читать')],
+        ['Блок с описанием раздела', (_c, t) => t.includes('Об этом разделе')],
         ['FAQ раздела', (_c, t) => t.includes('Где читать книги на английском с переводом')],
         ['Музыкальных сервисов нет', (_c, t) => !/LyricsTraining|песн/i.test(t)],
       ],
@@ -149,7 +149,7 @@ async function main() {
           return !!nav && ![...nav.querySelectorAll('a')].some((a) => a.getAttribute('href') === '/');
         }],
         ['План на сегодня есть', (_c, t) => t.includes('План на сегодня')],
-        ['Кот Боб на месте', (_c, t) => t.includes('Боб')],
+        ['Вема на месте', (_c, t) => t.includes('Вема')],
         ['Задания отрисованы', (c) => (c.querySelectorAll('[aria-label="Отметить выполненным"]').length > 0)],
       ],
     },
@@ -158,6 +158,7 @@ async function main() {
       checks: [
         ['H1 «О проекте»', (c) => /О проекте BEMAT/.test(c.querySelector('h1')?.textContent || '')],
         ['Автор указан', (_c, t) => t.includes('Бердиев')],
+        ['Фото автора загружается локально', (c) => !!c.querySelector('img[src="/author-berdiyev.jpg"]')],
         ['FAQ о проекте', (_c, t) => t.includes('BEMAT бесплатный')],
       ],
     },
@@ -170,7 +171,10 @@ async function main() {
     },
     {
       route: '/несуществующая-страница',
-      checks: [['Страница 404', (_c, t) => t.includes('Страница не найдена')]],
+      checks: [
+        ['Страница 404', (_c, t) => t.includes('Мяу… такой страницы нет')],
+        ['На странице 404 Вема ищет ссылку', (_c, t) => t.includes('Вема уже прошлась по всем полкам')],
+      ],
     },
   ];
 

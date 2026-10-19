@@ -35,7 +35,7 @@ const HOME_FAQ = [
   },
   {
     q: 'Сколько времени нужно заниматься в день?',
-    a: 'Достаточно 15 минут, но каждый день. В личном кабинете есть готовый план: три задания разного типа, стрик и кот Боб, который «голодает», если забросить занятия.',
+    a: 'Достаточно 15 минут, но каждый день. В личном кабинете есть готовый план: три задания разного типа, стрик и Вема, которая «голодает», если забросить занятия.',
   },
   {
     q: 'Можно ли учить английский по мемам и фильмам?',
@@ -79,7 +79,7 @@ function WhyFreeBlock() {
             тесты British Council и ExamEnglish для IELTS и TOEFL, ИИ-репетиторы для проверки эссе и устной части.
           </p>
           <p className="text-sm text-stone-600 leading-relaxed">
-            <strong className="text-stone-800">Для речи:</strong> ИИ-собеседник Боб, комнаты Free4talk с реальными
+            <strong className="text-stone-800">Для речи:</strong> ИИ-собеседник Вема, комнаты Free4talk с реальными
             людьми и произношение по видео носителей в YouGlish.
           </p>
         </div>
@@ -283,7 +283,7 @@ export function HomePage() {
               </h1>
               <p className="text-stone-600 text-sm sm:text-base leading-relaxed mb-5 max-w-xl mx-auto sm:mx-0">
                 Фильмы и сериалы с субтитрами, книги с переводом, грамматика, разговорная практика с ИИ и подготовка к
-                ЕГЭ, ОГЭ, IELTS и TOEFL. Собери свой план на 15 минут в день — и покорми кота Боба.
+                ЕГЭ, ОГЭ, IELTS и TOEFL. Собери свой план на 15 минут в день — и покорми Вему.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
                 <Link
@@ -308,7 +308,7 @@ export function HomePage() {
               <div className="absolute inset-0 grad-violet rounded-full blur-2xl opacity-20" aria-hidden="true" />
               <img
                 src={logo}
-                alt="Кот Боб — маскот проекта BEMAT"
+                alt="Вема — маскот проекта BEMAT"
                 className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-[2rem] shadow-2xl border-4 border-white rotate-3"
               />
               <span className="absolute -bottom-2 -right-2 bg-green-400 text-stone-900 px-2.5 py-1 rounded-xl text-[11px] font-black shadow">
@@ -406,13 +406,13 @@ export function HomePage() {
             <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start mb-5">
               <img
                 src={bobSticker}
-                alt="Кот Боб и разделы BEMAT: книги, фильмы, практика, разговор, боты"
+                alt="Вема и разделы BEMAT: книги, фильмы, практика, разговор, боты"
                 loading="lazy"
                 className="w-40 sm:w-48 rounded-2xl bg-white shrink-0"
               />
               <p className="text-sm text-stone-600 leading-relaxed">
-                Боб — твой наставник. Каждый день он даёт три небольших задания под твою цель: чтение, аудирование,
-                грамматику или речь. Выполнил все — Боб сыт. Забросил английский — Боб голодный и грустный 😿
+                Вема — твой наставник. Каждый день она даёт три небольших задания под твою цель: чтение, аудирование,
+                грамматику или речь. Выполнил все — Вема сыта. Забросил английский — Вема голодна и грустит 😿
               </p>
             </div>
             <ol className="space-y-3 list-none p-0 m-0">

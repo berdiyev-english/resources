@@ -29,7 +29,7 @@ self.addEventListener('message', (event) => {
 // Клик по уведомлению — открываем приложение на плане дня
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const target = '/';
+  const target = '/dashboard';
   event.waitUntil(
     (async () => {
       const all = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });

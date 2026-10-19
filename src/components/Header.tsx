@@ -65,7 +65,7 @@ export function Header() {
           <Link to="/" className="flex items-center gap-2 no-underline shrink-0">
             <img
               src="/icophot/favicon-96x96.png"
-              alt="BEMAT — кот Боб"
+              alt="BEMAT — Вема"
               width={36}
               height={36}
               className="w-9 h-9 rounded-full border border-stone-200 shadow-sm bg-white"
@@ -289,7 +289,7 @@ export function Header() {
           </div>
           <p className="text-stone-600 mb-6 text-sm">
             BEMAT — бесплатный проект, я делаю его в одиночку. Поддержка помогает развивать приложение и покупать
-            корм коту Бобу!
+            корм для Вемы!
           </p>
           <div className="space-y-3">
             <a
@@ -438,7 +438,7 @@ export function SiteFooter() {
             © {new Date().getFullYear()} BEMAT. Материалы принадлежат их правообладателям.
           </p>
           <p className="text-[11px] text-stone-400 flex items-center gap-1.5">
-            <Bot size={13} /> Сделано с котом Бобом
+            <Bot size={13} /> Сделано с Вемой
           </p>
         </div>
       </div>
