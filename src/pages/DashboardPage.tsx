@@ -70,12 +70,12 @@ export function DashboardPage() {
         }}
       />
 
-      <div className="px-4 lg:px-0 pt-5">
-        {/* Приветствие */}
-        <div className="flex items-start justify-between gap-3 mb-4">
+      <div className="px-3 sm:px-4 lg:px-0 pt-3 sm:pt-5 pb-2">
+        {/* Приветствие: на телефоне — вертикально, чтобы имя и стрик не теснили друг друга. */}
+        <div className="flex flex-col gap-2 mb-3 sm:flex-row sm:items-start sm:justify-between sm:gap-3 sm:mb-4">
           <div className="min-w-0">
             <p className="text-stone-500 text-[11px] font-bold uppercase tracking-wider">Личный кабинет</p>
-            <h1 className="text-2xl font-black text-stone-800 flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-black text-stone-800 flex items-center gap-2">
               <span className="truncate">Привет, {user.name}</span> 👋
               <button
                 onClick={() => setShowProfile(true)}
@@ -86,7 +86,7 @@ export function DashboardPage() {
               </button>
             </h1>
           </div>
-          <span className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full shadow-sm border border-stone-100 shrink-0">
+          <span className="self-start flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full shadow-sm border border-stone-100 shrink-0">
             <Flame className={cn('w-5 h-5', user.streak > 0 ? 'text-orange-500 fill-orange-500' : 'text-stone-300')} />
             <span className="font-bold text-stone-800 text-sm">
               {user.streak} {daysWord(user.streak)}
@@ -111,21 +111,37 @@ export function DashboardPage() {
           </Card>
         )}
 
-        <div className="grid lg:grid-cols-3 gap-5">
+        {/* Короткая сводка на телефоне — без desktop-сайдбара. */}
+        <Card className="lg:hidden p-3 mb-4">
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <StatBox label="Стрик" value={`${user.streak}`} sub={daysWord(user.streak)} icon={<Flame size={14} className="text-orange-500" />} />
+            <StatBox label="Рекорд" value={`${user.bestStreak}`} sub={daysWord(user.bestStreak)} icon={<Trophy size={14} className="text-amber-500" />} />
+            <StatBox
+              label="Сегодня"
+              value={`${today.doneRequired}/${today.required.length}`}
+              sub="заданий"
+              icon={<CheckCircle2 size={14} className="text-emerald-500" />}
+            />
+          </div>
+        </Card>
+
+        {/* Без grid-cols-1 неявная mobile-колонка имеет ширину содержимого и
+            раздувает кабинет за границы экрана. */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
           {/* Левая колонка */}
-          <div className="lg:col-span-2 space-y-5">
+          <div className="min-w-0 lg:col-span-2 space-y-5">
             {/* Вема */}
             <button
               onClick={() => setShowCat(true)}
               className={cn(
-                'w-full text-left rounded-[2rem] p-5 shadow-sm border transition-shadow hover:shadow-md',
+                'w-full text-left rounded-3xl p-4 sm:rounded-[2rem] sm:p-5 shadow-sm border transition-shadow hover:shadow-md',
                 today.catFed ? 'grad-green-soft border-green-200' : 'grad-orange-soft border-orange-200'
               )}
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 sm:gap-4">
                 <span
                   className={cn(
-                    'w-16 h-16 rounded-full overflow-hidden border-[3px] shadow-md shrink-0',
+                    'w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-[3px] shadow-md shrink-0',
                     today.catFed ? 'border-green-300' : 'border-orange-300'
                   )}
                 >
@@ -150,22 +166,22 @@ export function DashboardPage() {
             </button>
 
             {/* План */}
-            <Card className="p-5 relative overflow-hidden">
+            <Card className="p-4 sm:p-5 relative overflow-hidden">
               <span className="absolute top-0 left-0 w-full h-1.5 bg-stone-100" aria-hidden="true">
                 <span className="block h-full bar-violet transition-all duration-500 rounded-r-full" style={{ width: `${today.progress}%` }} />
               </span>
 
-              <div className="flex justify-between items-start mb-4 mt-1.5">
+              <div className="flex flex-col gap-3 mb-4 mt-1.5 sm:flex-row sm:justify-between sm:items-start">
                 <div>
                   <h2 className="text-lg font-bold text-stone-900">План на сегодня</h2>
-                  <p className="text-stone-500 text-xs flex items-center gap-1.5">
+                  <p className="text-stone-500 text-xs flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
                     <Clock size={12} /> ~{today.totalMinutes} мин · выполнено {today.doneMinutes} мин · цель:{' '}
                     {GOAL_LABELS[user.goal]}
                   </p>
                 </div>
                 <button
                   onClick={() => setShowProfile(true)}
-                  className="px-3 py-1.5 rounded-xl bg-stone-50 border border-stone-200 text-[11px] font-bold text-stone-600 shrink-0"
+                  className="w-full sm:w-auto px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-[11px] font-bold text-stone-600 shrink-0"
                 >
                   Сменить цель
                 </button>
@@ -194,7 +210,7 @@ export function DashboardPage() {
                 </div>
               )}
 
-              <div className="flex flex-col sm:flex-row gap-2 mt-4">
+              <div className="grid grid-cols-2 gap-2 mt-4">
                 <button
                   onClick={() => setShowAdd(true)}
                   className="flex-1 py-3 bg-stone-50 hover:bg-stone-100 border-2 border-dashed border-stone-200 rounded-xl text-sm font-bold text-stone-500 hover:text-violet-600 flex items-center justify-center gap-2"
@@ -214,7 +230,7 @@ export function DashboardPage() {
             <button
               onClick={() => setShowNotif(true)}
               className={cn(
-                'w-full text-left rounded-[2rem] p-5 shadow-sm border',
+                'w-full text-left rounded-3xl p-4 sm:rounded-[2rem] sm:p-5 shadow-sm border',
                 user.notificationsEnabled ? 'grad-violet-soft border-violet-200' : 'grad-violet border-transparent'
               )}
             >
@@ -249,9 +265,9 @@ export function DashboardPage() {
           </div>
 
           {/* Правая колонка */}
-          <div className="space-y-5">
+          <div className="min-w-0 space-y-5">
             {/* Статистика */}
-            <Card className="p-4">
+            <Card className="hidden lg:block p-4">
               <div className="grid grid-cols-3 gap-2 text-center">
                 <StatBox label="Стрик" value={`${user.streak}`} sub={daysWord(user.streak)} icon={<Flame size={14} className="text-orange-500" />} />
                 <StatBox label="Рекорд" value={`${user.bestStreak}`} sub={daysWord(user.bestStreak)} icon={<Trophy size={14} className="text-amber-500" />} />
@@ -346,7 +362,7 @@ function TaskRow({
     <div
       onClick={onToggle}
       className={cn(
-        'flex items-center gap-2.5 p-3 rounded-xl border cursor-pointer transition-colors',
+        'flex items-start gap-2 p-2.5 sm:items-center sm:gap-2.5 sm:p-3 rounded-xl border cursor-pointer transition-colors',
         task.done ? 'bg-stone-50 border-transparent opacity-70' : 'bg-white border-stone-100 hover:border-violet-200 shadow-sm'
       )}
     >
@@ -358,7 +374,7 @@ function TaskRow({
         aria-pressed={task.done}
         aria-label={task.done ? 'Отменить выполнение' : 'Отметить выполненным'}
         className={cn(
-          'w-7 h-7 rounded-full flex items-center justify-center border shrink-0',
+          'w-7 h-7 mt-0.5 sm:mt-0 rounded-full flex items-center justify-center border shrink-0',
           task.done ? 'bg-violet-500 border-violet-500' : 'border-stone-300 bg-white'
         )}
       >
@@ -366,7 +382,7 @@ function TaskRow({
       </button>
 
       <div className="flex-1 min-w-0">
-        <p className={cn('font-bold text-sm text-stone-800 leading-snug', task.done && 'line-through text-stone-400')}>
+        <p className={cn('font-bold text-[13px] sm:text-sm text-stone-800 leading-snug', task.done && 'line-through text-stone-400')}>
           {task.title}
         </p>
         <p className="text-[11px] text-stone-400 flex items-center gap-1.5">
@@ -381,7 +397,7 @@ function TaskRow({
           )}
           · ~{task.time} мин
         </p>
-        {task.hint && !task.done && <p className="text-[11px] text-stone-400 mt-0.5 italic">{task.hint}</p>}
+        {task.hint && !task.done && <p className="hidden sm:block text-[11px] text-stone-400 mt-0.5 italic">{task.hint}</p>}
       </div>
 
       {task.internal && (
@@ -389,7 +405,7 @@ function TaskRow({
           to={task.internal}
           onClick={(e) => e.stopPropagation()}
           aria-label="Открыть раздел"
-          className="p-2 text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-lg shrink-0"
+          className="p-1.5 sm:p-2 text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-lg shrink-0"
         >
           <ArrowRight size={16} />
         </Link>
@@ -401,7 +417,7 @@ function TaskRow({
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
           aria-label="Открыть сайт задания"
-          className="p-2 text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-lg shrink-0"
+          className="p-1.5 sm:p-2 text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-lg shrink-0"
         >
           <ExternalLink size={16} />
         </a>
@@ -414,7 +430,7 @@ function TaskRow({
           }}
           aria-label="Заменить задание"
           title="Заменить задание"
-          className="p-2 text-stone-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg shrink-0"
+          className="p-1.5 sm:p-2 text-stone-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg shrink-0"
         >
           <RefreshCw size={15} />
         </button>
@@ -426,7 +442,7 @@ function TaskRow({
             onRemove();
           }}
           aria-label="Удалить задание"
-          className="p-2 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded-lg shrink-0"
+          className="p-1.5 sm:p-2 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded-lg shrink-0"
         >
           <Trash2 size={15} />
         </button>

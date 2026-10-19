@@ -27,7 +27,9 @@ function ResourceThumb({ resource, className }: { resource: Resource; className?
       loading="eager"
       decoding="async"
       onError={() => setBroken(true)}
-      className={cn('object-cover bg-stone-100', className)}
+      // Логотипы и скриншоты в карточках должны быть видны целиком:
+      // object-cover обрезал верх/низ на широких мобильных карточках.
+      className={cn('object-contain bg-stone-50 p-1.5', className)}
     />
   );
 }

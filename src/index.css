@@ -86,17 +86,16 @@
    .body-app. Раньше из-за этого на iPhone body-app отступал только на 56 px,
    хотя шапка была выше на safe area — первый контент оказывался под шапкой. */
 :root {
-  --app-header-h: 3.5rem;
+  --app-safe-top: env(safe-area-inset-top, 0px);
+  --app-header-h: calc(3.5rem + var(--app-safe-top));
 }
-@supports (padding: env(safe-area-inset-top)) {
-  :root {
-    --app-header-h: calc(3.5rem + env(safe-area-inset-top, 0px));
-  }
-  .app-header {
-    padding-top: env(safe-area-inset-top, 0px);
-    /* фон должен покрывать и зону статуса */
-    background-color: rgba(250, 250, 249, 0.98);
-  }
+/* Делаем высоту явной: кнопка меню всегда находится в 56px-полосе под
+   системным статус-баром, а не может уехать под вырез экрана. */
+.app-header {
+  height: var(--app-header-h);
+  padding-top: var(--app-safe-top);
+  box-sizing: border-box;
+  background-color: rgba(250, 250, 249, 0.98);
 }
 /* Компенсируем fixed-шапку: контент не залезает под неё. */
 .body-app {

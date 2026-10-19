@@ -108,7 +108,7 @@ export function Header() {
             <Link
               to="/favorites"
               aria-label="Избранные сайты"
-              className="relative w-9 h-9 flex items-center justify-center rounded-full bg-amber-50 text-amber-500 border border-amber-100 no-underline"
+              className="relative w-11 h-11 lg:w-9 lg:h-9 flex items-center justify-center rounded-full bg-amber-50 text-amber-500 border border-amber-100 no-underline"
             >
               <Star size={18} className={cn(user.favorites.length > 0 && 'fill-amber-400')} />
               {user.favorites.length > 0 && (
@@ -133,7 +133,7 @@ export function Header() {
             <button
               onClick={() => setMenuOpen(true)}
               aria-label="Открыть меню"
-              className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-900 text-white lg:bg-stone-100 lg:text-stone-700"
+              className="w-11 h-11 lg:w-9 lg:h-9 flex items-center justify-center rounded-full bg-stone-900 text-white lg:bg-stone-100 lg:text-stone-700 shrink-0"
             >
               <Menu size={20} />
             </button>

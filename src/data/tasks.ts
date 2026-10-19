@@ -353,7 +353,7 @@ export const TASK_POOL: TaskTemplate[] = [
     id: 'speak-ai-chat',
     goal: 'speak',
     category: 'speaking',
-    title: '8 минут голосового разговора с ИИ Вемой',
+    title: '8 минут голосового разговора с ИИ Бобом',
     hint: 'Не бойся ошибок — задача просто не останавливаться',
     time: 8,
     link: 'https://t.me/Tobeeng_GPT_bot',

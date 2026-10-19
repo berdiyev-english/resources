@@ -16,13 +16,13 @@ export const AI_BOTS = [
   { label: 'ОГЭ с ИИ', url: 'https://t.me/OGE_ENG_HELPER_BOT', desc: 'ОГЭ на «5»' },
   { label: 'IELTS Expert', url: 'https://t.me/IELTS_berdiyev_bot', desc: 'Цель 7+' },
   { label: 'TOEFL Expert', url: 'https://t.me/TOBEENG_TOEFL_IBT_BOT', desc: 'Цель 100+' },
-  { label: 'Вема — английский с ИИ', url: 'https://t.me/Tobeeng_GPT_bot', desc: 'Разговор за 3 месяца' },
+  { label: 'Боб — Английский с ИИ', url: 'https://t.me/Tobeeng_GPT_bot', desc: 'Разговор за 3 месяца' },
 ];
 
 export const CONTACTS = {
   telegram: 'https://t.me/+NvMX2DrTa3w1NTVi',
   author: 'https://berdiyev-eng.ru',
-  donate: 'https://pay.cloudtips.ru/p/8f56d7d3',
+  donate: 'https://dalink.to/berdiyev_eng',
   rustore: 'https://www.rustore.ru/catalog/app/co.median.android.pkpxbe',
   authorName: 'Абдуррахим Бердиев',
   // Локальный файл из public/: фото не зависит от доступности bemat.ru,
